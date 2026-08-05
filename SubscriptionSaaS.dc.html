@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:oklch(0.15 0.012 265);font-family:'Manrope',system-ui,sans-serif}
+  a{color:oklch(0.85 0.13 195);text-decoration:none}
+  a:hover{color:oklch(0.9 0.1 195)}
+  ::selection{background:oklch(0.85 0.13 195);color:oklch(0.15 0.012 265)}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes shimmer{0%{transform:translateX(-130%)}60%,100%{transform:translateX(240%)}}
+  @keyframes pulseDot{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:1;transform:scale(1.35)}}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:oklch(1 0 0 / .14);border-radius:9px}
+  ::-webkit-scrollbar-track{background:transparent}
+</style>
+</helmet>
+<div style="display:flex;min-height:100vh;background:oklch(0.15 0.012 265);color:oklch(0.95 0.006 265);font-family:'Manrope',system-ui,sans-serif;font-size:14px">
+
+  <aside style="width:246px;flex:none;background:oklch(0.175 0.014 265);border-right:1px solid oklch(1 0 0 / .07);display:flex;flex-direction:column;position:sticky;top:0;height:100vh">
+    <div style="padding:20px 18px 16px;display:flex;align-items:center;gap:11px;border-bottom:1px solid oklch(1 0 0 / .07)">
+      <span style="width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.7 0.17 300));color:oklch(0.15 0.012 265);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px">S</span>
+      <div style="min-width:0">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16.5px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ brandName }}</div>
+        <div style="font-size:11px;color:oklch(0.66 0.01 265);font-weight:600;letter-spacing:.04em;text-transform:uppercase">{{ roleLabel }}</div>
+      </div>
+    </div>
+
+    <nav style="flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:3px">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="8">
+        <button onClick="{{ n.go }}" style="{{ n.style }}">
+          <span style="width:20px;text-align:center;font-size:14px;opacity:.9">{{ n.icon }}</span>
+          <span style="flex:1;text-align:left">{{ n.label }}</span>
+          <sc-if value="{{ n.badge }}" hint-placeholder-val="{{ false }}">
+            <span style="background:oklch(0.65 0.2 25);color:oklch(0.98 0 0);font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:99px;line-height:1.5">{{ n.badge }}</span>
+          </sc-if>
+        </button>
+      </sc-for>
+    </nav>
+
+    <div style="padding:12px;border-top:1px solid oklch(1 0 0 / .07);display:grid;gap:8px">
+      <div style="font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:oklch(0.6 0.01 265);padding:0 6px">View as</div>
+      <div style="display:flex;gap:6px;background:oklch(1 0 0 / .05);padding:4px;border-radius:11px">
+        <button onClick="{{ setAdmin }}" style="{{ adminTabStyle }}">Admin</button>
+        <button onClick="{{ setCustomer }}" style="{{ custTabStyle }}">Customer</button>
+      </div>
+    </div>
+  </aside>
+
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <header style="position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:oklch(0.15 0.012 265 / .82);border-bottom:1px solid oklch(1 0 0 / .07);padding:15px 26px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <div style="min-width:0">
+        <h1 style="font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:700;letter-spacing:-.02em">{{ viewTitle }}</h1>
+        <div style="font-size:12.5px;color:oklch(0.68 0.01 265);font-weight:500;margin-top:2px">{{ viewSub }}</div>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;background:oklch(1 0 0 / .05);border:1px solid oklch(1 0 0 / .1);border-radius:10px;padding:8px 12px;font-size:12.5px;color:oklch(0.72 0.01 265);font-weight:600">
+          <span style="width:7px;height:7px;border-radius:50%;background:oklch(0.8 0.17 150);animation:pulseDot 2s ease-in-out infinite"></span>Cron sync · {{ syncedAt }}
+        </div>
+        <button onClick="{{ toggleNotif }}" style="position:relative;background:oklch(1 0 0 / .05);border:1px solid oklch(1 0 0 / .1);color:inherit;width:38px;height:38px;border-radius:11px;cursor:pointer;font-size:15px">🔔
+          <span style="position:absolute;top:-5px;right:-5px;background:oklch(0.65 0.2 25);color:oklch(0.98 0 0);font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:99px;display:grid;place-items:center;padding:0 4px">{{ notifCount }}</span>
+        </button>
+        <div style="display:flex;align-items:center;gap:9px;background:oklch(1 0 0 / .05);border:1px solid oklch(1 0 0 / .1);border-radius:11px;padding:6px 12px 6px 7px">
+          <span style="width:27px;height:27px;border-radius:8px;display:grid;place-items:center;background:linear-gradient(135deg,oklch(0.7 0.17 300),oklch(0.85 0.13 195));color:oklch(0.15 0.012 265);font-weight:800;font-size:12px">{{ meInitials }}</span>
+          <div style="line-height:1.25">
+            <div style="font-weight:700;font-size:12.5px">{{ meName }}</div>
+            <div style="font-size:10.5px;color:oklch(0.66 0.01 265);font-weight:600">{{ meEmail }}</div>
+          </div>
+        </div>
+      </div>
+      <sc-if value="{{ notifOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:70px;right:26px;width:330px;background:oklch(0.2 0.016 265);border:1px solid oklch(1 0 0 / .12);border-radius:15px;box-shadow:0 28px 60px oklch(0 0 0 / .5);padding:8px;z-index:30">
+          <div style="padding:8px 10px;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:oklch(0.64 0.01 265)">Notifications</div>
+          <sc-for list="{{ notifs }}" as="nt" hint-placeholder-count="4">
+            <div style="display:flex;gap:10px;padding:10px;border-radius:11px;background:oklch(1 0 0 / .03);margin-bottom:6px">
+              <span style="width:26px;height:26px;flex:none;border-radius:8px;display:grid;place-items:center;font-size:12px;{{ nt.iconStyle }}">{{ nt.icon }}</span>
+              <div style="min-width:0">
+                <div style="font-weight:700;font-size:12.5px">{{ nt.title }}</div>
+                <div style="font-size:11.5px;color:oklch(0.7 0.01 265);line-height:1.45;text-wrap:pretty">{{ nt.body }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </header>
+
+    <div style="padding:24px 26px 46px;display:grid;gap:20px;animation:fadeUp .35s ease both">
+
+      <!-- ADMIN OVERVIEW -->
+      <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+            <div style="position:relative;overflow:hidden;background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;padding:17px 18px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.66 0.01 265)">{{ k.label }}</div>
+                <span style="width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:13px;{{ k.iconStyle }}">{{ k.icon }}</span>
+              </div>
+              <div style="font-family:'Space Grotesk',sans-serif;font-size:31px;font-weight:700;letter-spacing:-.02em;margin-top:9px">{{ k.value }}</div>
+              <div style="font-size:12px;font-weight:600;margin-top:3px;{{ k.deltaStyle }}">{{ k.delta }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.35fr .9fr;gap:16px" class="ovgrid">
+          <div style="background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;padding:18px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+              <div>
+                <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px">Capacity by service</div>
+                <div style="font-size:12px;color:oklch(0.68 0.01 265);font-weight:500;margin-top:2px">Used slots against admin-configured screen limits</div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:oklch(0.85 0.13 195)">{{ totalUsed }} / {{ totalCapacity }} slots</div>
+            </div>
+            <div style="display:grid;gap:14px;margin-top:18px">
+              <sc-for list="{{ serviceCapacity }}" as="sc" hint-placeholder-count="5">
+                <div>
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
+                    <span style="width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:10px;font-weight:800;color:oklch(0.98 0 0);{{ sc.chipStyle }}">{{ sc.short }}</span>
+                    <span style="font-weight:700;font-size:13.5px">{{ sc.name }}</span>
+                    <span style="margin-left:auto;font-size:12px;font-weight:700;color:oklch(0.72 0.01 265)">{{ sc.used }}/{{ sc.cap }}</span>
+                  </div>
+                  <div style="height:9px;border-radius:99px;background:oklch(1 0 0 / .07);overflow:hidden">
+                    <div style="height:100%;border-radius:99px;background:linear-gradient(90deg,oklch(0.85 0.13 195),oklch(0.7 0.17 300));width:{{ sc.pct }};transition:width .4s ease"></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;padding:18px">
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px">Expiring soon</div>
+            <div style="font-size:12px;color:oklch(0.68 0.01 265);font-weight:500;margin-top:2px">Auto reminders at 7 / 3 / 1 days</div>
+            <div style="display:grid;gap:9px;margin-top:16px">
+              <sc-for list="{{ expiring }}" as="e" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:11px;background:oklch(1 0 0 / .035);border:1px solid oklch(1 0 0 / .07);border-radius:12px;padding:10px 12px">
+                  <span style="width:30px;height:30px;flex:none;border-radius:9px;display:grid;place-items:center;font-size:11px;font-weight:800;background:oklch(1 0 0 / .08)">{{ e.initials }}</span>
+                  <div style="min-width:0;flex:1">
+                    <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.name }}</div>
+                    <div style="font-size:11.5px;color:oklch(0.68 0.01 265);font-weight:600">{{ e.service }} · {{ e.screen }}</div>
+                  </div>
+                  <span style="font-size:11.5px;font-weight:800;padding:4px 9px;border-radius:99px;white-space:nowrap;{{ e.pillStyle }}">{{ e.daysLabel }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;padding:18px">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px">Revenue · last 8 months</div>
+            <div style="margin-left:auto;display:flex;gap:16px;font-size:12px;font-weight:700;color:oklch(0.7 0.01 265)">
+              <span>MRR <span style="color:oklch(0.85 0.13 195)">PKR {{ mrr }}</span></span>
+              <span>ARPU <span style="color:oklch(0.85 0.13 195)">PKR {{ arpu }}</span></span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:10px;height:150px;margin-top:20px">
+            <sc-for list="{{ revBars }}" as="b" hint-placeholder-count="8">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end">
+                <div style="font-size:11px;font-weight:700;color:oklch(0.72 0.01 265)">{{ b.value }}</div>
+                <div style="width:100%;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,oklch(0.85 0.13 195),oklch(0.7 0.17 300));height:{{ b.h }};transition:height .4s ease"></div>
+                <div style="font-size:11px;font-weight:700;color:oklch(0.6 0.01 265)">{{ b.month }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ADMIN: SERVICES -->
+      <sc-if value="{{ isServices }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px">
+          <sc-for list="{{ servicesView }}" as="s" hint-placeholder-count="5">
+            <div style="background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;padding:18px">
+              <div style="display:flex;align-items:center;gap:12px">
+                <span style="width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:oklch(0.98 0 0);{{ s.chipStyle }}">{{ s.short }}</span>
+                <div style="min-width:0;flex:1">
+                  <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px">{{ s.name }}</div>
+                  <div style="font-size:12px;color:oklch(0.68 0.01 265);font-weight:600">{{ s.accounts }} accounts · {{ s.cap }} slots</div>
+                </div>
+                <button onClick="{{ s.toggle }}" style="{{ s.switchStyle }}"><span style="{{ s.knobStyle }}"></span></button>
+              </div>
+              <div style="font-size:12.5px;color:oklch(0.72 0.01 265);line-height:1.5;margin-top:12px;text-wrap:pretty">{{ s.desc }}</div>
+              <div style="display:grid;gap:7px;margin-top:14px">
+                <sc-for list="{{ s.plans }}" as="p" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:center;gap:10px;background:oklch(1 0 0 / .035);border:1px solid oklch(1 0 0 / .07);border-radius:10px;padding:9px 11px">
+                    <span style="font-weight:700;font-size:13px">{{ p.name }}</span>
+                    <span style="font-size:11.5px;color:oklch(0.66 0.01 265);font-weight:600">{{ p.duration }}</span>
+                    <span style="margin-left:auto;font-weight:800;font-size:13px;color:oklch(0.85 0.13 195)">PKR {{ p.price }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:14px">
+                <button onClick="{{ s.edit }}" style="flex:1;background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .12);color:inherit;font:inherit;font-weight:700;font-size:12.5px;padding:9px;border-radius:10px;cursor:pointer">Edit service</button>
+                <button onClick="{{ s.goStock }}" style="flex:1;background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.7 0.17 300));border:none;color:oklch(0.15 0.012 265);font:inherit;font-weight:800;font-size:12.5px;padding:9px;border-radius:10px;cursor:pointer">Manage screens</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ADMIN: INVENTORY + DYNAMIC SCREEN ALLOCATION -->
+      <sc-if value="{{ isInventory }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:14px;padding:13px 16px">
+          <div style="font-size:12.5px;color:oklch(0.75 0.01 265);font-weight:600;text-wrap:pretty;max-width:640px">Allocation is <strong style="color:oklch(0.9 0.006 265)">not</strong> fixed to one user per screen — set a max-user limit per screen and the system recalculates capacity, used and available slots live.</div>
+          <div style="margin-left:auto;display:flex;gap:20px;font-size:12px;font-weight:700">
+            <span style="color:oklch(0.7 0.01 265)">Capacity <span style="color:oklch(0.9 0.006 265)">{{ totalCapacity }}</span></span>
+            <span style="color:oklch(0.7 0.01 265)">Used <span style="color:oklch(0.85 0.13 195)">{{ totalUsed }}</span></span>
+            <span style="color:oklch(0.7 0.01 265)">Available <span style="color:oklch(0.8 0.17 150)">{{ totalAvailable }}</span></span>
+          </div>
+        </div>
+
+        <sc-for list="{{ accountsView }}" as="a" hint-placeholder-count="3">
+          <div style="background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:13px;padding:16px 18px;border-bottom:1px solid oklch(1 0 0 / .07);flex-wrap:wrap">
+              <span style="width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:oklch(0.98 0 0);{{ a.chipStyle }}">{{ a.short }}</span>
+              <div style="min-width:0">
+                <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+                  <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px">{{ a.service }} {{ a.plan }}</span>
+                  <span style="font-size:11px;font-weight:800;padding:3px 8px;border-radius:99px;{{ a.statusStyle }}">{{ a.status }}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:9px;margin-top:4px;font-size:12.5px;color:oklch(0.7 0.01 265);font-weight:600">
+                  <span>{{ a.email }}</span>
+                  <span style="opacity:.4">·</span>
+                  <span style="font-family:ui-monospace,monospace;letter-spacing:.06em">{{ a.secret }}</span>
+                  <button onClick="{{ a.reveal }}" style="background:oklch(1 0 0 / .07);border:1px solid oklch(1 0 0 / .12);color:oklch(0.85 0.13 195);font:inherit;font-weight:700;font-size:11px;padding:3px 8px;border-radius:7px;cursor:pointer">{{ a.revealLabel }}</button>
+                </div>
+              </div>
+              <div style="margin-left:auto;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+                <div style="text-align:right">
+                  <div style="font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700">{{ a.used }}<span style="color:oklch(0.6 0.01 265);font-size:14px">/{{ a.cap }}</span></div>
+                  <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:oklch(0.64 0.01 265)">slots used</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700;color:oklch(0.8 0.17 150)">{{ a.available }}</div>
+                  <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:oklch(0.64 0.01 265)">available</div>
+                </div>
+                <button onClick="{{ a.addScreen }}" style="background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .12);color:inherit;font:inherit;font-weight:700;font-size:12.5px;padding:9px 13px;border-radius:10px;cursor:pointer">+ Add screen</button>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:13px;padding:16px 18px">
+              <sc-for list="{{ a.screens }}" as="s" hint-placeholder-count="4">
+                <div style="background:oklch(1 0 0 / .035);border:1px solid oklch(1 0 0 / .09);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;align-items:center;gap:9px">
+                    <span style="width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:12px;background:oklch(1 0 0 / .08)">📺</span>
+                    <span style="font-weight:800;font-size:13.5px">{{ s.name }}</span>
+                    <span style="margin-left:auto;font-size:11px;font-weight:800;padding:3px 8px;border-radius:99px;{{ s.pillStyle }}">{{ s.pillLabel }}</span>
+                  </div>
+
+                  <div style="display:flex;align-items:center;gap:10px;background:oklch(0 0 0 / .22);border:1px solid oklch(1 0 0 / .07);border-radius:11px;padding:8px 10px">
+                    <div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:oklch(0.66 0.01 265);line-height:1.3">Max<br>users</div>
+                    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+                      <button onClick="{{ s.dec }}" style="{{ s.decStyle }}">−</button>
+                      <span style="font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700;min-width:22px;text-align:center">{{ s.max }}</span>
+                      <button onClick="{{ s.inc }}" style="{{ s.incStyle }}">+</button>
+                    </div>
+                  </div>
+
+                  <div style="height:7px;border-radius:99px;background:oklch(1 0 0 / .07);overflow:hidden">
+                    <div style="height:100%;border-radius:99px;width:{{ s.pct }};transition:width .35s ease;{{ s.barStyle }}"></div>
+                  </div>
+
+                  <div style="display:grid;gap:6px">
+                    <sc-for list="{{ s.users }}" as="u" hint-placeholder-count="2">
+                      <div style="display:flex;align-items:center;gap:8px;background:oklch(1 0 0 / .05);border-radius:9px;padding:6px 8px">
+                        <span style="width:22px;height:22px;flex:none;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:800;background:linear-gradient(135deg,oklch(0.7 0.17 300),oklch(0.85 0.13 195));color:oklch(0.15 0.012 265)">{{ u.initials }}</span>
+                        <div style="min-width:0;flex:1">
+                          <div style="font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.name }}</div>
+                          <div style="font-size:10.5px;color:oklch(0.66 0.01 265);font-weight:600">Profile: {{ u.profile }} · {{ u.daysLabel }}</div>
+                        </div>
+                        <button onClick="{{ u.remove }}" style="background:none;border:none;color:oklch(0.7 0.15 25);font:inherit;font-size:14px;cursor:pointer;padding:0 3px" title="Remove">×</button>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ s.isEmpty }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:11.5px;color:oklch(0.6 0.01 265);font-weight:600;padding:6px 2px">No customers assigned yet</div>
+                    </sc-if>
+                  </div>
+
+                  <sc-if value="{{ s.assignOpen }}" hint-placeholder-val="{{ false }}">
+                    <div style="background:oklch(0.22 0.016 265);border:1px solid oklch(1 0 0 / .12);border-radius:11px;padding:7px;display:grid;gap:4px;max-height:172px;overflow-y:auto">
+                      <div style="font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.64 0.01 265);padding:4px 6px">Assign customer</div>
+                      <sc-for list="{{ s.candidates }}" as="c" hint-placeholder-count="3">
+                        <button onClick="{{ c.pick }}" style="display:flex;align-items:center;gap:8px;background:oklch(1 0 0 / .04);border:none;color:inherit;font:inherit;text-align:left;padding:7px 8px;border-radius:9px;cursor:pointer" style-hover="background:oklch(0.85 0.13 195 / .16)">
+                          <span style="width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:9.5px;font-weight:800;background:oklch(1 0 0 / .1)">{{ c.initials }}</span>
+                          <span style="font-weight:700;font-size:12px">{{ c.name }}</span>
+                          <span style="margin-left:auto;font-size:10.5px;color:oklch(0.66 0.01 265);font-weight:600">{{ c.note }}</span>
+                        </button>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+
+                  <button onClick="{{ s.toggleAssign }}" style="{{ s.assignBtnStyle }}">{{ s.assignBtnLabel }}</button>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </sc-if>
+
+      <!-- ADMIN: CUSTOMERS -->
+      <sc-if value="{{ isCustomers }}" hint-placeholder-val="{{ false }}">
+        <div style="background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;overflow:hidden">
+          <div style="display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid oklch(1 0 0 / .07);flex-wrap:wrap">
+            <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="Search name, email or phone…" style="background:oklch(0 0 0 / .25);border:1px solid oklch(1 0 0 / .1);color:inherit;font:inherit;font-size:13px;padding:9px 13px;border-radius:10px;width:290px;outline:none">
+            <div style="display:flex;gap:6px;background:oklch(1 0 0 / .05);padding:4px;border-radius:10px">
+              <sc-for list="{{ custFilters }}" as="f" hint-placeholder-count="3">
+                <button onClick="{{ f.go }}" style="{{ f.style }}">{{ f.label }}</button>
+              </sc-for>
+            </div>
+            <button style="margin-left:auto;background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.7 0.17 300));border:none;color:oklch(0.15 0.012 265);font:inherit;font-weight:800;font-size:12.5px;padding:10px 15px;border-radius:10px;cursor:pointer">+ Add customer</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;min-width:880px">
+              <thead>
+                <tr style="background:oklch(1 0 0 / .03)">
+                  <th style="text-align:left;padding:11px 18px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.64 0.01 265)">Customer</th>
+                  <th style="text-align:left;padding:11px 12px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.64 0.01 265)">Service</th>
+                  <th style="text-align:left;padding:11px 12px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.64 0.01 265)">Screen · Profile</th>
+                  <th style="text-align:left;padding:11px 12px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.64 0.01 265)">Expiry</th>
+                  <th style="text-align:left;padding:11px 12px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.64 0.01 265)">Status</th>
+                  <th style="text-align:right;padding:11px 18px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.64 0.01 265)">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ customersView }}" as="c" hint-placeholder-count="7">
+                  <tr style="border-top:1px solid oklch(1 0 0 / .06)">
+                    <td style="padding:12px 18px">
+                      <div style="display:flex;align-items:center;gap:10px">
+                        <span style="width:31px;height:31px;flex:none;border-radius:9px;display:grid;place-items:center;font-size:11px;font-weight:800;background:oklch(1 0 0 / .08)">{{ c.initials }}</span>
+                        <div>
+                          <div style="font-weight:700;font-size:13px">{{ c.name }}</div>
+                          <div style="font-size:11.5px;color:oklch(0.66 0.01 265);font-weight:600">{{ c.email }} · {{ c.phone }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="padding:12px;font-size:13px;font-weight:600">{{ c.service }}</td>
+                    <td style="padding:12px;font-size:13px;font-weight:600;color:oklch(0.78 0.01 265)">{{ c.screen }}</td>
+                    <td style="padding:12px">
+                      <div style="font-size:13px;font-weight:700">{{ c.expiry }}</div>
+                      <div style="font-size:11.5px;font-weight:700;{{ c.daysStyle }}">{{ c.daysLabel }}</div>
+                    </td>
+                    <td style="padding:12px"><span style="font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:99px;{{ c.statusStyle }}">{{ c.status }}</span></td>
+                    <td style="padding:12px 18px;text-align:right;white-space:nowrap">
+                      <button onClick="{{ c.renew }}" style="background:oklch(0.85 0.13 195 / .14);border:1px solid oklch(0.85 0.13 195 / .3);color:oklch(0.87 0.11 195);font:inherit;font-weight:700;font-size:12px;padding:6px 11px;border-radius:9px;cursor:pointer;margin-right:6px">Renew 30d</button>
+                      <button onClick="{{ c.block }}" style="background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .12);color:inherit;font:inherit;font-weight:700;font-size:12px;padding:6px 11px;border-radius:9px;cursor:pointer">{{ c.blockLabel }}</button>
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ADMIN: PAYMENTS -->
+      <sc-if value="{{ isPayments }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:15px">
+          <sc-for list="{{ paymentsView }}" as="p" hint-placeholder-count="4">
+            <div style="background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;padding:17px">
+              <div style="display:flex;align-items:center;gap:11px">
+                <span style="width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:11px;font-weight:800;background:oklch(1 0 0 / .08)">{{ p.initials }}</span>
+                <div style="min-width:0;flex:1">
+                  <div style="font-weight:700;font-size:13.5px">{{ p.name }}</div>
+                  <div style="font-size:11.5px;color:oklch(0.66 0.01 265);font-weight:600">{{ p.plan }} · {{ p.date }}</div>
+                </div>
+                <span style="font-size:11px;font-weight:800;padding:4px 9px;border-radius:99px;{{ p.statusStyle }}">{{ p.status }}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;margin-top:14px;background:oklch(0 0 0 / .22);border:1px solid oklch(1 0 0 / .07);border-radius:12px;padding:12px">
+                <div style="width:56px;height:70px;flex:none;border-radius:8px;background:repeating-linear-gradient(135deg,oklch(1 0 0 / .07) 0 6px,oklch(1 0 0 / .03) 6px 12px);display:grid;place-items:center;font-size:17px">🧾</div>
+                <div style="min-width:0">
+                  <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.64 0.01 265)">Payment proof</div>
+                  <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-top:3px">PKR {{ p.amount }}</div>
+                  <div style="font-size:12px;color:oklch(0.7 0.01 265);font-weight:600">{{ p.method }} · TID {{ p.tid }}</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:13px">
+                <button onClick="{{ p.approve }}" style="{{ p.approveStyle }}">{{ p.approveLabel }}</button>
+                <button onClick="{{ p.reject }}" style="flex:none;background:oklch(0.6 0.19 25 / .14);border:1px solid oklch(0.6 0.19 25 / .34);color:oklch(0.76 0.15 25);font:inherit;font-weight:700;font-size:12.5px;padding:10px 14px;border-radius:10px;cursor:pointer">Reject</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ADMIN: ACTIVITY LOG -->
+      <sc-if value="{{ isLogs }}" hint-placeholder-val="{{ false }}">
+        <div style="background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;overflow:hidden">
+          <sc-for list="{{ logsView }}" as="l" hint-placeholder-count="7">
+            <div style="display:flex;align-items:flex-start;gap:13px;padding:14px 18px;border-bottom:1px solid oklch(1 0 0 / .06)">
+              <span style="width:30px;height:30px;flex:none;border-radius:9px;display:grid;place-items:center;font-size:13px;{{ l.iconStyle }}">{{ l.icon }}</span>
+              <div style="min-width:0;flex:1">
+                <div style="font-weight:700;font-size:13px;text-wrap:pretty">{{ l.action }}</div>
+                <div style="font-size:11.5px;color:oklch(0.66 0.01 265);font-weight:600;margin-top:2px">{{ l.who }} · {{ l.ip }}</div>
+              </div>
+              <div style="font-size:11.5px;color:oklch(0.62 0.01 265);font-weight:700;white-space:nowrap">{{ l.time }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- CUSTOMER: DASHBOARD -->
+      <sc-if value="{{ isCustHome }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:1.25fr .85fr;gap:16px" class="ovgrid">
+          <div style="position:relative;overflow:hidden;background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:18px;padding:22px">
+            <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 90% 0%,oklch(0.7 0.17 300 / .22),transparent 62%)"></div>
+            <div style="position:relative;display:flex;align-items:center;gap:13px">
+              <span style="width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:oklch(0.98 0 0);{{ mySub.chipStyle }}">{{ mySub.short }}</span>
+              <div>
+                <div style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;letter-spacing:-.02em">{{ mySub.title }}</div>
+                <div style="font-size:12.5px;color:oklch(0.7 0.01 265);font-weight:600">Assigned {{ mySub.screen }} · Profile {{ mySub.profile }}</div>
+              </div>
+              <span style="margin-left:auto;font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:99px;{{ mySub.statusStyle }}">{{ mySub.status }}</span>
+            </div>
+            <div style="position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:11px;margin-top:20px">
+              <sc-for list="{{ mySub.facts }}" as="f" hint-placeholder-count="4">
+                <div style="background:oklch(0 0 0 / .22);border:1px solid oklch(1 0 0 / .07);border-radius:12px;padding:12px 13px">
+                  <div style="font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.64 0.01 265)">{{ f.label }}</div>
+                  <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;margin-top:5px">{{ f.value }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="position:relative;margin-top:18px">
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;color:oklch(0.7 0.01 265);margin-bottom:7px">
+                <span>Billing period</span><span>{{ mySub.daysLeft }} days remaining</span>
+              </div>
+              <div style="height:10px;border-radius:99px;background:oklch(1 0 0 / .07);overflow:hidden">
+                <div style="height:100%;border-radius:99px;background:linear-gradient(90deg,oklch(0.85 0.13 195),oklch(0.7 0.17 300));width:{{ mySub.pct }};transition:width .4s ease"></div>
+              </div>
+            </div>
+            <div style="position:relative;display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+              <button onClick="{{ mySub.renew }}" style="position:relative;overflow:hidden;background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.7 0.17 300));border:none;color:oklch(0.15 0.012 265);font:inherit;font-weight:800;font-size:13.5px;padding:12px 20px;border-radius:12px;cursor:pointer">
+                <span style="position:absolute;top:0;left:0;width:45%;height:100%;background:linear-gradient(90deg,transparent,oklch(1 0 0 / .5),transparent);animation:shimmer 2s ease-in-out infinite"></span>
+                <span style="position:relative">{{ mySub.renewLabel }}</span>
+              </button>
+              <button onClick="{{ goCustPay }}" style="background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .12);color:inherit;font:inherit;font-weight:700;font-size:13.5px;padding:12px 20px;border-radius:12px;cursor:pointer">Upload payment proof</button>
+            </div>
+          </div>
+
+          <div style="display:grid;gap:16px;align-content:start">
+            <div style="background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;padding:18px">
+              <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px">Login details</div>
+              <div style="font-size:12px;color:oklch(0.68 0.01 265);font-weight:500;margin-top:2px">Shared account — use your assigned profile only</div>
+              <div style="display:grid;gap:9px;margin-top:15px">
+                <div style="background:oklch(0 0 0 / .22);border:1px solid oklch(1 0 0 / .07);border-radius:11px;padding:11px 13px">
+                  <div style="font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.64 0.01 265)">Email</div>
+                  <div style="font-family:ui-monospace,monospace;font-size:13px;margin-top:4px">{{ mySub.email }}</div>
+                </div>
+                <div style="background:oklch(0 0 0 / .22);border:1px solid oklch(1 0 0 / .07);border-radius:11px;padding:11px 13px;display:flex;align-items:center;gap:10px">
+                  <div style="min-width:0;flex:1">
+                    <div style="font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:oklch(0.64 0.01 265)">Password</div>
+                    <div style="font-family:ui-monospace,monospace;font-size:13px;margin-top:4px;letter-spacing:.08em">{{ mySub.pass }}</div>
+                  </div>
+                  <button onClick="{{ mySub.revealPass }}" style="background:oklch(1 0 0 / .07);border:1px solid oklch(1 0 0 / .12);color:oklch(0.85 0.13 195);font:inherit;font-weight:700;font-size:11.5px;padding:6px 10px;border-radius:8px;cursor:pointer">{{ mySub.passLabel }}</button>
+                </div>
+              </div>
+            </div>
+            <div style="background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;padding:18px">
+              <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px">Reminders</div>
+              <div style="display:grid;gap:9px;margin-top:14px">
+                <sc-for list="{{ myReminders }}" as="r" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;gap:10px;background:oklch(1 0 0 / .035);border:1px solid oklch(1 0 0 / .07);border-radius:11px;padding:10px 12px">
+                    <span style="width:26px;height:26px;flex:none;border-radius:8px;display:grid;place-items:center;font-size:11px;{{ r.iconStyle }}">{{ r.icon }}</span>
+                    <div style="font-size:12.5px;font-weight:600;color:oklch(0.82 0.01 265);text-wrap:pretty">{{ r.text }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- CUSTOMER: PAYMENTS -->
+      <sc-if value="{{ isCustPay }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:.95fr 1.05fr;gap:16px" class="ovgrid">
+          <div style="background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;padding:18px">
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px">Upload payment proof</div>
+            <div style="font-size:12px;color:oklch(0.68 0.01 265);font-weight:500;margin-top:2px">Admin verifies within 15 minutes</div>
+            <div style="display:grid;gap:10px;margin-top:16px">
+              <div>
+                <div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:oklch(0.64 0.01 265);margin-bottom:6px">Amount (PKR)</div>
+                <input value="{{ payAmount }}" onChange="{{ onPayAmount }}" style="width:100%;background:oklch(0 0 0 / .25);border:1px solid oklch(1 0 0 / .1);color:inherit;font:inherit;font-size:13px;padding:11px 13px;border-radius:11px;outline:none">
+              </div>
+              <div>
+                <div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:oklch(0.64 0.01 265);margin-bottom:6px">Method</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <sc-for list="{{ payMethods }}" as="m" hint-placeholder-count="3">
+                    <button onClick="{{ m.pick }}" style="{{ m.style }}">{{ m.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:oklch(0.64 0.01 265);margin-bottom:6px">Transaction ID</div>
+                <input value="{{ payTid }}" onChange="{{ onPayTid }}" placeholder="e.g. 88421903" style="width:100%;background:oklch(0 0 0 / .25);border:1px solid oklch(1 0 0 / .1);color:inherit;font:inherit;font-size:13px;padding:11px 13px;border-radius:11px;outline:none">
+              </div>
+              <div style="border:1.5px dashed oklch(1 0 0 / .16);border-radius:13px;padding:22px;text-align:center;background:oklch(0 0 0 / .18)">
+                <div style="font-size:24px">📤</div>
+                <div style="font-weight:700;font-size:13px;margin-top:7px">Drop receipt screenshot here</div>
+                <div style="font-size:11.5px;color:oklch(0.66 0.01 265);font-weight:600;margin-top:3px">PNG or JPG · max 5 MB</div>
+              </div>
+              <button onClick="{{ submitPay }}" style="background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.7 0.17 300));border:none;color:oklch(0.15 0.012 265);font:inherit;font-weight:800;font-size:13.5px;padding:13px;border-radius:12px;cursor:pointer">{{ submitLabel }}</button>
+            </div>
+          </div>
+          <div style="background:oklch(0.195 0.015 265);border:1px solid oklch(1 0 0 / .08);border-radius:16px;padding:18px">
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px">Payment history</div>
+            <div style="display:grid;gap:9px;margin-top:15px">
+              <sc-for list="{{ myPayments }}" as="p" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:12px;background:oklch(1 0 0 / .035);border:1px solid oklch(1 0 0 / .07);border-radius:12px;padding:12px 14px">
+                  <div style="min-width:0;flex:1">
+                    <div style="font-weight:700;font-size:13px">{{ p.plan }}</div>
+                    <div style="font-size:11.5px;color:oklch(0.66 0.01 265);font-weight:600">{{ p.date }} · {{ p.method }} · TID {{ p.tid }}</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px">PKR {{ p.amount }}</div>
+                    <span style="font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:99px;{{ p.statusStyle }}">{{ p.status }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;brandName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Rashid.PK&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const TODAY = new Date('2026-07-28T00:00:00Z');
+const DAY = 86400000;
+const SERVICES = [
+  { id: 'nf', name: 'Netflix', short: 'NF', color: 'oklch(0.55 0.22 25)', desc: 'Premium 4K UHD household accounts with per-screen profile allocation.', plans: [{ name: 'Premium 4K', price: '1,500', duration: '30 days' }, { name: 'Premium 4K', price: '4,050', duration: '90 days' }] },
+  { id: 'pv', name: 'Prime Video', short: 'PV', color: 'oklch(0.52 0.14 235)', desc: 'Amazon Prime Video with regional catalogue and 3 concurrent streams.', plans: [{ name: 'Prime HD', price: '900', duration: '30 days' }, { name: 'Prime HD', price: '2,450', duration: '90 days' }] },
+  { id: 'dp', name: 'Disney+', short: 'D+', color: 'oklch(0.45 0.16 265)', desc: 'Disney+ Hotstar bundle including Marvel, Star Wars and Pixar.', plans: [{ name: 'Standard', price: '850', duration: '30 days' }, { name: 'Premium', price: '1,200', duration: '30 days' }] },
+  { id: 'hb', name: 'HBO Max', short: 'HB', color: 'oklch(0.42 0.19 300)', desc: 'HBO Max with Warner catalogue, 4 simultaneous screens per account.', plans: [{ name: 'Ultimate', price: '1,300', duration: '30 days' }] },
+  { id: 'at', name: 'Apple TV+', short: 'A+', color: 'oklch(0.38 0.01 265)', desc: 'Apple TV+ family sharing slots with Dolby Vision originals.', plans: [{ name: 'Family', price: '700', duration: '30 days' }] },
+  { id: 'np', name: 'Netflix + Prime', short: 'N+P', color: 'oklch(0.5 0.19 350)', desc: 'Combo bundle — one Netflix Premium 4K profile plus one Prime Video HD profile, billed together at a discount.', plans: [{ name: 'Combo 4K + HD', price: '2,100', duration: '30 days' }, { name: 'Combo 4K + HD', price: '5,700', duration: '90 days' }] }
+];
+
+function d(offset) { return new Date(TODAY.getTime() + offset * DAY).toISOString().slice(0, 10); }
+
+class Component extends DCLogic {
+  state = {
+    role: 'admin',
+    view: 'overview',
+    notifOpen: false,
+    search: '',
+    custFilter: 'all',
+    assignOpen: null,
+    revealed: {},
+    passShown: false,
+    payMethod: 'JazzCash',
+    payAmount: '1500',
+    payTid: '',
+    paySubmitted: false,
+    serviceOn: { nf: true, pv: true, dp: true, hb: true, at: false, np: true },
+    customers: [
+      { id: 'c1', name: 'Ayesha Khan', email: 'ayesha.k@gmail.com', phone: '0301-2244551', status: 'active', plan: 'Netflix Premium 4K · 30d', profile: 'Ayesha', expiry: d(21) },
+      { id: 'c2', name: 'Bilal Ahmed', email: 'bilal.ah@gmail.com', phone: '0333-9087612', status: 'active', plan: 'Netflix Premium 4K · 90d', profile: 'Bilal', expiry: d(2) },
+      { id: 'c3', name: 'Sana Malik', email: 'sana.malik@outlook.com', phone: '0345-1122334', status: 'active', plan: 'Prime HD · 30d', profile: 'Sana', expiry: d(6) },
+      { id: 'c4', name: 'Hamza Raza', email: 'hamza.raza@gmail.com', phone: '0312-7788990', status: 'active', plan: 'Disney+ Premium · 30d', profile: 'Hamza', expiry: d(44) },
+      { id: 'c5', name: 'Zara Sheikh', email: 'zara.sh@gmail.com', phone: '0300-5566778', status: 'active', plan: 'HBO Ultimate · 30d', profile: 'Zara', expiry: d(1) },
+      { id: 'c6', name: 'Usman Tariq', email: 'usman.t@gmail.com', phone: '0321-4433221', status: 'active', plan: 'Netflix Premium 4K · 30d', profile: 'Usman', expiry: d(12) },
+      { id: 'c7', name: 'Fatima Noor', email: 'fatima.noor@gmail.com', phone: '0308-6677889', status: 'expired', plan: 'Prime HD · 30d', profile: 'Fatima', expiry: d(-4) },
+      { id: 'c8', name: 'Danish Iqbal', email: 'danish.iq@gmail.com', phone: '0349-2211445', status: 'blocked', plan: 'Disney+ Standard · 30d', profile: 'Danish', expiry: d(-19) },
+      { id: 'c9', name: 'Maria Yousaf', email: 'maria.yousaf@gmail.com', phone: '0324-8899001', status: 'active', plan: 'Netflix + Prime Combo · 30d', profile: 'Maria', expiry: d(17) }
+    ],
+    accounts: [
+      { id: 'a1', svc: 'nf', plan: 'Premium 4K', email: 'nf.vault01@primevault.pk', pass: 'Nf!8x2Qv#2026', status: 'Healthy', screens: [
+        { id: 's1', name: 'Screen 1', max: 3, users: ['c1', 'c6'] },
+        { id: 's2', name: 'Screen 2', max: 2, users: ['c2'] },
+        { id: 's3', name: 'Screen 3', max: 1, users: [] },
+        { id: 's4', name: 'Screen 4', max: 3, users: [] }
+      ] },
+      { id: 'a2', svc: 'pv', plan: 'Prime HD', email: 'pv.vault04@primevault.pk', pass: 'Pv$91mZr#26', status: 'Healthy', screens: [
+        { id: 's1', name: 'Screen 1', max: 2, users: ['c3'] },
+        { id: 's2', name: 'Screen 2', max: 2, users: ['c7'] },
+        { id: 's3', name: 'Screen 3', max: 1, users: [] }
+      ] },
+      { id: 'a3', svc: 'hb', plan: 'Ultimate', email: 'hb.vault02@primevault.pk', pass: 'Hb#44kLp!26', status: 'Near limit', screens: [
+        { id: 's1', name: 'Screen 1', max: 2, users: ['c5'] },
+        { id: 's2', name: 'Screen 2', max: 1, users: [] }
+      ] },
+      { id: 'a4', svc: 'np', plan: 'Combo 4K + HD', email: 'combo.vault07@primevault.pk', pass: 'Np@57rTw#26', status: 'Healthy', screens: [
+        { id: 's1', name: 'Netflix screen', max: 3, users: ['c9'] },
+        { id: 's2', name: 'Prime screen', max: 2, users: ['c9'] },
+        { id: 's3', name: 'Netflix screen 2', max: 2, users: [] }
+      ] }
+    ],
+    payments: [
+      { id: 'p1', cust: 'c2', plan: 'Netflix Premium 4K · 90d', amount: '4,050', method: 'JazzCash', tid: '88421903', date: '28 Jul 2026, 10:42', status: 'pending' },
+      { id: 'p2', cust: 'c3', plan: 'Prime HD · 30d', amount: '900', method: 'EasyPaisa', tid: '55190224', date: '28 Jul 2026, 09:15', status: 'pending' },
+      { id: 'p3', cust: 'c6', plan: 'Netflix Premium 4K · 30d', amount: '1,500', method: 'Bank transfer', tid: '77302118', date: '27 Jul 2026, 18:03', status: 'approved' },
+      { id: 'p4', cust: 'c7', plan: 'Prime HD · 30d', amount: '900', method: 'JazzCash', tid: '61228740', date: '24 Jul 2026, 12:20', status: 'rejected' }
+    ],
+    logs: [
+      { icon: '🔗', kind: 'assign', action: 'Assigned Ayesha Khan to Netflix Premium 4K · Screen 1', who: 'admin@primevault.pk', ip: '103.255.4.18', time: '10:52' },
+      { icon: '✅', kind: 'pay', action: 'Approved payment PKR 1,500 · TID 77302118 (Usman Tariq)', who: 'admin@primevault.pk', ip: '103.255.4.18', time: '10:31' },
+      { icon: '⚙️', kind: 'cap', action: 'Changed Netflix Screen 1 capacity from 2 to 3 users', who: 'admin@primevault.pk', ip: '103.255.4.18', time: '09:58' },
+      { icon: '⏰', kind: 'sys', action: 'Cron: 3-day expiry reminder sent to Bilal Ahmed', who: 'system', ip: '127.0.0.1', time: '06:00' },
+      { icon: '🚫', kind: 'block', action: 'Blocked customer Danish Iqbal — chargeback dispute', who: 'admin@primevault.pk', ip: '103.255.4.18', time: 'Yesterday' },
+      { icon: '🔐', kind: 'sys', action: 'Rotated encrypted password for nf.vault01@primevault.pk', who: 'admin@primevault.pk', ip: '103.255.4.18', time: 'Yesterday' },
+      { icon: '📦', kind: 'sys', action: 'Added HBO Max account hb.vault02@primevault.pk (2 screens)', who: 'admin@primevault.pk', ip: '103.255.4.18', time: '26 Jul' }
+    ]
+  };
+
+  log(icon, action) {
+    const t = new Date();
+    const time = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+    this.setState(s => ({ logs: [{ icon, action, who: 'admin@primevault.pk', ip: '103.255.4.18', time }, ...s.logs] }));
+  }
+
+  days(dateStr) { return Math.round((new Date(dateStr + 'T00:00:00Z') - TODAY) / DAY); }
+
+  cust(id) { return this.state.customers.find(c => c.id === id); }
+  svc(id) { return SERVICES.find(s => s.id === id); }
+
+  chip(color) { return 'background:linear-gradient(135deg,' + color + ',oklch(0.3 0.05 285))'; }
+
+  navBtn(active) {
+    return 'display:flex;align-items:center;gap:11px;width:100%;border:none;font:inherit;font-weight:' + (active ? '800' : '600') + ';font-size:13.5px;padding:10px 12px;border-radius:11px;cursor:pointer;transition:background .18s ease;' +
+      (active ? 'background:linear-gradient(90deg,oklch(0.85 0.13 195 / .2),oklch(0.7 0.17 300 / .14));color:oklch(0.93 0.05 195);box-shadow:inset 0 0 0 1px oklch(0.85 0.13 195 / .25)' : 'background:transparent;color:oklch(0.78 0.01 265)');
+  }
+
+  segBtn(active) {
+    return 'flex:1;border:none;font:inherit;font-weight:' + (active ? '800' : '700') + ';font-size:12.5px;padding:8px 10px;border-radius:9px;cursor:pointer;' +
+      (active ? 'background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.7 0.17 300));color:oklch(0.15 0.012 265)' : 'background:transparent;color:oklch(0.72 0.01 265)');
+  }
+
+  pill(tone) {
+    const map = {
+      green: 'background:oklch(0.8 0.17 150 / .16);color:oklch(0.84 0.15 150)',
+      amber: 'background:oklch(0.83 0.15 85 / .16);color:oklch(0.86 0.13 85)',
+      red: 'background:oklch(0.65 0.2 25 / .16);color:oklch(0.78 0.16 25)',
+      cyan: 'background:oklch(0.85 0.13 195 / .16);color:oklch(0.87 0.11 195)',
+      grey: 'background:oklch(1 0 0 / .08);color:oklch(0.74 0.01 265)'
+    };
+    return map[tone] || map.grey;
+  }
+
+  initials(name) { return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase(); }
+
+  setMax(accId, scrId, delta) {
+    const acc = this.state.accounts.find(a => a.id === accId);
+    const scr = acc.screens.find(s => s.id === scrId);
+    const next = scr.max + delta;
+    if (next < scr.users.length || next < 1 || next > 6) return;
+    this.setState(s => ({ accounts: s.accounts.map(a => a.id !== accId ? a : Object.assign({}, a, { screens: a.screens.map(x => x.id !== scrId ? x : Object.assign({}, x, { max: next })) })) }));
+    this.log('⚙️', 'Changed ' + this.svc(acc.svc).name + ' ' + scr.name + ' capacity from ' + scr.max + ' to ' + next + ' users');
+  }
+
+  assign(accId, scrId, custId) {
+    const acc = this.state.accounts.find(a => a.id === accId);
+    const scr = acc.screens.find(s => s.id === scrId);
+    const combo = acc.svc === 'np';
+    this.setState(s => ({
+      assignOpen: null,
+      accounts: s.accounts.map(a => Object.assign({}, a, { screens: a.screens.map(x => {
+        if (a.id === accId && x.id === scrId) return Object.assign({}, x, { users: x.users.concat([custId]) });
+        // a combo customer legitimately occupies one screen per bundled service
+        if (combo && a.id === accId) return x;
+        return Object.assign({}, x, { users: x.users.filter(u => u !== custId) });
+      }) }))
+    }));
+    this.log('🔗', 'Assigned ' + this.cust(custId).name + ' to ' + this.svc(acc.svc).name + ' ' + acc.plan + ' · ' + scr.name);
+  }
+
+  unassign(accId, scrId, custId) {
+    const acc = this.state.accounts.find(a => a.id === accId);
+    const scr = acc.screens.find(s => s.id === scrId);
+    this.setState(s => ({ accounts: s.accounts.map(a => a.id !== accId ? a : Object.assign({}, a, { screens: a.screens.map(x => x.id !== scrId ? x : Object.assign({}, x, { users: x.users.filter(u => u !== custId) })) })) }));
+    this.log('✂️', 'Removed ' + this.cust(custId).name + ' from ' + this.svc(acc.svc).name + ' ' + scr.name);
+  }
+
+  addScreen(accId) {
+    const acc = this.state.accounts.find(a => a.id === accId);
+    const name = 'Screen ' + (acc.screens.length + 1);
+    this.setState(s => ({ accounts: s.accounts.map(a => a.id !== accId ? a : Object.assign({}, a, { screens: a.screens.concat([{ id: 's' + (a.screens.length + 1) + '-' + Date.now(), name, max: 1, users: [] }]) })) }));
+    this.log('📺', 'Added ' + name + ' to ' + this.svc(acc.svc).name + ' ' + acc.plan);
+  }
+
+  renew(custId, dur) {
+    const c = this.cust(custId);
+    const base = Math.max(this.days(c.expiry), 0);
+    this.setState(s => ({ customers: s.customers.map(x => x.id !== custId ? x : Object.assign({}, x, { expiry: d(base + dur), status: 'active' })) }));
+    this.log('🔄', 'Renewed ' + c.name + ' for ' + dur + ' days — new expiry ' + d(base + dur));
+  }
+
+  renderVals() {
+    const st = this.state;
+    const isAdmin = st.role === 'admin';
+    const view = st.view;
+
+    // capacity math
+    let totalCapacity = 0, totalUsed = 0;
+    const perSvc = {};
+    st.accounts.forEach(a => {
+      perSvc[a.svc] = perSvc[a.svc] || { used: 0, cap: 0, accounts: 0 };
+      perSvc[a.svc].accounts += 1;
+      a.screens.forEach(s => {
+        totalCapacity += s.max; totalUsed += s.users.length;
+        perSvc[a.svc].cap += s.max; perSvc[a.svc].used += s.users.length;
+      });
+    });
+
+    const titles = {
+      overview: ['Overview', 'Live capacity, revenue and expiry health'],
+      services: ['Services & plans', 'Create and configure sellable subscription services'],
+      inventory: ['Inventory & screen allocation', 'Dynamic per-screen user limits with live capacity math'],
+      customers: ['Customers', st.customers.length + ' accounts · assignments, renewals and blocks'],
+      payments: ['Payment verification', 'Approve proofs to auto-activate subscriptions'],
+      logs: ['Activity log', 'Who did what, when, and from which IP'],
+      cust_home: ['My subscription', 'Your assigned screen, profile and billing period'],
+      cust_pay: ['Payments', 'Submit a proof and track verification']
+    };
+    const tt = titles[view] || titles.overview;
+
+    const pendingCount = st.payments.filter(p => p.status === 'pending').length;
+    const adminNav = [
+      { k: 'overview', icon: '◧', label: 'Overview' },
+      { k: 'services', icon: '❖', label: 'Services & plans' },
+      { k: 'inventory', icon: '📺', label: 'Inventory & screens' },
+      { k: 'customers', icon: '👥', label: 'Customers' },
+      { k: 'payments', icon: '💳', label: 'Payments', badge: pendingCount ? String(pendingCount) : null },
+      { k: 'logs', icon: '📜', label: 'Activity log' }
+    ];
+    const custNav = [
+      { k: 'cust_home', icon: '◧', label: 'My subscription' },
+      { k: 'cust_pay', icon: '💳', label: 'Payments' }
+    ];
+    const nav = (isAdmin ? adminNav : custNav).map(n => ({
+      icon: n.icon, label: n.label, badge: n.badge || false,
+      style: this.navBtn(view === n.k),
+      go: () => this.setState({ view: n.k, notifOpen: false })
+    }));
+
+    const expiringAll = st.customers.filter(c => c.status !== 'blocked').map(c => ({ c, dl: this.days(c.expiry) })).sort((a, b) => a.dl - b.dl);
+
+    // ------- accounts view (screen allocation) -------
+    const accountsView = st.accounts.map(a => {
+      const svc = this.svc(a.svc);
+      const cap = a.screens.reduce((n, s) => n + s.max, 0);
+      const used = a.screens.reduce((n, s) => n + s.users.length, 0);
+      const assignedIds = [];
+      st.accounts.forEach(x => x.screens.forEach(s => s.users.forEach(u => assignedIds.push(u))));
+      return {
+        service: svc.name, short: svc.short, plan: a.plan, email: a.email,
+        chipStyle: this.chip(svc.color),
+        status: a.status,
+        statusStyle: this.pill(a.status === 'Healthy' ? 'green' : 'amber'),
+        secret: st.revealed[a.id] ? a.pass : '•'.repeat(12),
+        revealLabel: st.revealed[a.id] ? 'Hide' : 'Reveal',
+        reveal: () => this.setState(s => ({ revealed: Object.assign({}, s.revealed, { [a.id]: !s.revealed[a.id] }) })),
+        cap, used, available: cap - used,
+        addScreen: () => this.addScreen(a.id),
+        screens: a.screens.map(s => {
+          const free = s.max - s.users.length;
+          const key = a.id + '/' + s.id;
+          const full = free <= 0;
+          return {
+            name: s.name, max: s.max,
+            pillLabel: full ? 'Full' : free + ' free',
+            pillStyle: this.pill(full ? 'red' : free === s.max ? 'grey' : 'green'),
+            pct: Math.round((s.users.length / Math.max(s.max, 1)) * 100) + '%',
+            barStyle: full ? 'background:linear-gradient(90deg,oklch(0.65 0.2 25),oklch(0.72 0.17 40))' : 'background:linear-gradient(90deg,oklch(0.85 0.13 195),oklch(0.7 0.17 300))',
+            isEmpty: s.users.length === 0,
+            dec: () => this.setMax(a.id, s.id, -1),
+            inc: () => this.setMax(a.id, s.id, 1),
+            decStyle: 'width:28px;height:28px;border-radius:8px;border:1px solid oklch(1 0 0 / .12);background:oklch(1 0 0 / .06);color:inherit;font:inherit;font-size:15px;font-weight:800;cursor:' + (s.max > Math.max(s.users.length, 1) ? 'pointer' : 'not-allowed') + ';opacity:' + (s.max > Math.max(s.users.length, 1) ? '1' : '.35'),
+            incStyle: 'width:28px;height:28px;border-radius:8px;border:none;background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.7 0.17 300));color:oklch(0.15 0.012 265);font:inherit;font-size:15px;font-weight:800;cursor:' + (s.max < 6 ? 'pointer' : 'not-allowed') + ';opacity:' + (s.max < 6 ? '1' : '.35'),
+            users: s.users.map(uid => {
+              const c = this.cust(uid) || { name: 'Unknown', profile: '—', expiry: d(0) };
+              const dl = this.days(c.expiry);
+              return { name: c.name, initials: this.initials(c.name), profile: c.profile, daysLabel: dl < 0 ? 'expired' : dl + 'd left', remove: () => this.unassign(a.id, s.id, uid) };
+            }),
+            assignOpen: st.assignOpen === key,
+            candidates: st.customers.filter(c => c.status !== 'blocked' && assignedIds.indexOf(c.id) === -1).map(c => ({
+              name: c.name, initials: this.initials(c.name), note: c.plan.split(' · ')[0],
+              pick: () => this.assign(a.id, s.id, c.id)
+            })),
+            toggleAssign: () => { if (full) return; this.setState(s2 => ({ assignOpen: s2.assignOpen === key ? null : key })); },
+            assignBtnLabel: full ? 'Screen at capacity' : st.assignOpen === key ? 'Cancel' : '+ Assign customer',
+            assignBtnStyle: 'margin-top:auto;width:100%;border-radius:10px;padding:9px;font:inherit;font-weight:800;font-size:12.5px;cursor:' + (full ? 'not-allowed' : 'pointer') + ';' +
+              (full ? 'background:oklch(1 0 0 / .04);border:1px solid oklch(1 0 0 / .09);color:oklch(0.6 0.01 265)' : 'background:oklch(0.85 0.13 195 / .14);border:1px solid oklch(0.85 0.13 195 / .32);color:oklch(0.88 0.11 195)')
+          };
+        })
+      };
+    });
+
+    // ------- customers table -------
+    const q = st.search.trim().toLowerCase();
+    const screenOf = {};
+    st.accounts.forEach(a => a.screens.forEach(s => s.users.forEach(u => {
+      const label = this.svc(a.svc).name + ' · ' + s.name;
+      screenOf[u] = screenOf[u] ? screenOf[u] + ' + ' + s.name : label;
+    })));
+    const customersView = st.customers
+      .filter(c => st.custFilter === 'all' || c.status === st.custFilter)
+      .filter(c => !q || (c.name + c.email + c.phone).toLowerCase().indexOf(q) > -1)
+      .map(c => {
+        const dl = this.days(c.expiry);
+        return {
+          name: c.name, initials: this.initials(c.name), email: c.email, phone: c.phone,
+          service: c.plan, screen: screenOf[c.id] ? screenOf[c.id] + ' · ' + c.profile : 'Unassigned',
+          expiry: c.expiry,
+          daysLabel: dl < 0 ? Math.abs(dl) + ' days overdue' : dl + ' days left',
+          daysStyle: dl < 0 ? 'color:oklch(0.76 0.16 25)' : dl <= 7 ? 'color:oklch(0.86 0.13 85)' : 'color:oklch(0.68 0.01 265)',
+          status: c.status === 'active' ? 'Active' : c.status === 'expired' ? 'Expired' : 'Blocked',
+          statusStyle: this.pill(c.status === 'active' ? 'green' : c.status === 'expired' ? 'amber' : 'red'),
+          renew: () => this.renew(c.id, 30),
+          blockLabel: c.status === 'blocked' ? 'Unblock' : 'Block',
+          block: () => {
+            this.setState(s => ({ customers: s.customers.map(x => x.id !== c.id ? x : Object.assign({}, x, { status: x.status === 'blocked' ? 'active' : 'blocked' })) }));
+            this.log(c.status === 'blocked' ? '🔓' : '🚫', (c.status === 'blocked' ? 'Unblocked' : 'Blocked') + ' customer ' + c.name);
+          }
+        };
+      });
+
+    const custFilters = [{ k: 'all', label: 'All' }, { k: 'active', label: 'Active' }, { k: 'expired', label: 'Expired' }, { k: 'blocked', label: 'Blocked' }]
+      .map(f => ({ label: f.label, style: this.segBtn(st.custFilter === f.k), go: () => this.setState({ custFilter: f.k }) }));
+
+    // ------- payments -------
+    const paymentsView = st.payments.map(p => {
+      const c = this.cust(p.cust) || { name: 'Unknown' };
+      const pending = p.status === 'pending';
+      return {
+        name: c.name, initials: this.initials(c.name), plan: p.plan, date: p.date,
+        amount: p.amount, method: p.method, tid: p.tid,
+        status: p.status === 'pending' ? 'Pending' : p.status === 'approved' ? 'Approved' : 'Rejected',
+        statusStyle: this.pill(pending ? 'amber' : p.status === 'approved' ? 'green' : 'red'),
+        approveLabel: pending ? 'Approve & activate' : p.status === 'approved' ? 'Activated' : 'Re-approve',
+        approveStyle: 'flex:1;border:none;border-radius:10px;padding:10px;font:inherit;font-weight:800;font-size:12.5px;cursor:pointer;' + (pending ? 'background:linear-gradient(135deg,oklch(0.8 0.17 150),oklch(0.85 0.13 195));color:oklch(0.15 0.012 265)' : 'background:oklch(1 0 0 / .06);color:oklch(0.75 0.01 265);box-shadow:inset 0 0 0 1px oklch(1 0 0 / .12)'),
+        approve: () => {
+          this.setState(s => ({ payments: s.payments.map(x => x.id !== p.id ? x : Object.assign({}, x, { status: 'approved' })) }));
+          this.renew(p.cust, 30);
+          this.log('✅', 'Approved payment PKR ' + p.amount + ' · TID ' + p.tid + ' (' + c.name + ')');
+        },
+        reject: () => {
+          this.setState(s => ({ payments: s.payments.map(x => x.id !== p.id ? x : Object.assign({}, x, { status: 'rejected' })) }));
+          this.log('⛔', 'Rejected payment TID ' + p.tid + ' (' + c.name + ')');
+        }
+      };
+    });
+
+    // ------- customer self view -------
+    const me = this.cust('c1');
+    const myAcc = st.accounts.find(a => a.screens.some(s => s.users.indexOf('c1') > -1));
+    const myScreen = myAcc && myAcc.screens.find(s => s.users.indexOf('c1') > -1);
+    const mySvc = myAcc ? this.svc(myAcc.svc) : SERVICES[0];
+    const dl = this.days(me.expiry);
+    const cycle = 30;
+    const mySub = {
+      title: mySvc.name + ' ' + (myAcc ? myAcc.plan : ''),
+      short: mySvc.short, chipStyle: this.chip(mySvc.color),
+      screen: myScreen ? myScreen.name : 'Unassigned', profile: me.profile,
+      status: dl < 0 ? 'Expired' : 'Active', statusStyle: this.pill(dl < 0 ? 'red' : 'green'),
+      daysLeft: Math.max(dl, 0),
+      pct: Math.max(0, Math.min(100, Math.round(((cycle - Math.max(dl, 0)) / cycle) * 100))) + '%',
+      facts: [
+        { label: 'Start date', value: d(dl - cycle) },
+        { label: 'Expiry date', value: me.expiry },
+        { label: 'Remaining', value: Math.max(dl, 0) + ' days' },
+        { label: 'Screen slot', value: myScreen ? myScreen.users.length + ' / ' + myScreen.max : '—' }
+      ],
+      email: myAcc ? myAcc.email : '—',
+      pass: st.passShown && myAcc ? myAcc.pass : '••••••••••••',
+      passLabel: st.passShown ? 'Hide' : 'Show',
+      revealPass: () => this.setState(s => ({ passShown: !s.passShown })),
+      renewLabel: 'Renew 30 days · PKR 1,500',
+      renew: () => this.renew('c1', 30)
+    };
+
+    const myReminders = [
+      { icon: '⏰', iconStyle: this.pill('amber'), text: 'Reminder scheduled 7 days before expiry (' + d(dl - 7) + ')' },
+      { icon: '📺', iconStyle: this.pill('cyan'), text: 'Use profile "' + me.profile + '" only — other profiles are for different customers' },
+      { icon: '🔐', iconStyle: this.pill('green'), text: 'Never change the account password; access is revoked automatically' }
+    ];
+
+    const myPayments = st.payments.filter(p => p.cust === 'c1' || p.id === 'p3').map(p => ({
+      plan: p.plan, date: p.date, method: p.method, tid: p.tid, amount: p.amount,
+      status: p.status === 'pending' ? 'Pending' : p.status === 'approved' ? 'Approved' : 'Rejected',
+      statusStyle: this.pill(p.status === 'pending' ? 'amber' : p.status === 'approved' ? 'green' : 'red')
+    }));
+
+    return {
+      brandName: this.props.brandName ?? 'PrimeVault SaaS',
+      roleLabel: isAdmin ? 'Admin console' : 'Customer portal',
+      nav, viewTitle: tt[0], viewSub: tt[1],
+      adminTabStyle: this.segBtn(isAdmin), custTabStyle: this.segBtn(!isAdmin),
+      setAdmin: () => this.setState({ role: 'admin', view: 'overview', notifOpen: false }),
+      setCustomer: () => this.setState({ role: 'customer', view: 'cust_home', notifOpen: false }),
+      meName: isAdmin ? 'Imran Vault' : me.name,
+      meEmail: isAdmin ? 'admin@primevault.pk' : me.email,
+      meInitials: isAdmin ? 'IV' : this.initials(me.name),
+      syncedAt: '06:00 PKT',
+      notifOpen: st.notifOpen,
+      toggleNotif: () => this.setState(s => ({ notifOpen: !s.notifOpen })),
+      notifCount: isAdmin ? String(pendingCount + 2) : '2',
+      notifs: isAdmin ? [
+        { icon: '💳', iconStyle: this.pill('amber'), title: pendingCount + ' payments awaiting approval', body: 'Oldest submitted 3 hours ago — auto-activation blocked until verified.' },
+        { icon: '⏰', iconStyle: this.pill('red'), title: 'Zara Sheikh expires tomorrow', body: 'HBO Ultimate · Screen 1. 1-day reminder already sent.' },
+        { icon: '📺', iconStyle: this.pill('cyan'), title: 'Netflix Screen 1 near capacity', body: '2 of 3 slots used. Increase the limit or open Screen 3.' }
+      ] : [
+        { icon: '⏰', iconStyle: this.pill('amber'), title: 'Renewal due in ' + Math.max(dl, 0) + ' days', body: 'Renew early to keep the same screen and profile.' },
+        { icon: '✅', iconStyle: this.pill('green'), title: 'Payment approved', body: 'PKR 1,500 via JazzCash — subscription extended by 30 days.' }
+      ],
+
+      isOverview: isAdmin && view === 'overview',
+      isServices: isAdmin && view === 'services',
+      isInventory: isAdmin && view === 'inventory',
+      isCustomers: isAdmin && view === 'customers',
+      isPayments: isAdmin && view === 'payments',
+      isLogs: isAdmin && view === 'logs',
+      isCustHome: !isAdmin && view === 'cust_home',
+      isCustPay: !isAdmin && view === 'cust_pay',
+
+      kpis: [
+        { label: 'Active customers', value: String(st.customers.filter(c => c.status === 'active').length), icon: '👥', iconStyle: this.pill('cyan'), delta: '+3 this week', deltaStyle: 'color:oklch(0.84 0.15 150)' },
+        { label: 'Slots used', value: totalUsed + '/' + totalCapacity, icon: '📺', iconStyle: this.pill('green'), delta: (totalCapacity - totalUsed) + ' available now', deltaStyle: 'color:oklch(0.7 0.01 265)' },
+        { label: 'Pending payments', value: String(pendingCount), icon: '💳', iconStyle: this.pill('amber'), delta: 'PKR 4,950 to verify', deltaStyle: 'color:oklch(0.86 0.13 85)' },
+        { label: 'Expiring in 7 days', value: String(expiringAll.filter(x => x.dl >= 0 && x.dl <= 7).length), icon: '⏰', iconStyle: this.pill('red'), delta: 'reminders auto-sent', deltaStyle: 'color:oklch(0.76 0.16 25)' }
+      ],
+      totalCapacity, totalUsed, totalAvailable: totalCapacity - totalUsed,
+      serviceCapacity: SERVICES.filter(s => perSvc[s.id]).map(s => ({
+        name: s.name, short: s.short, chipStyle: this.chip(s.color),
+        used: perSvc[s.id].used, cap: perSvc[s.id].cap,
+        pct: Math.round((perSvc[s.id].used / Math.max(perSvc[s.id].cap, 1)) * 100) + '%'
+      })),
+      expiring: expiringAll.slice(0, 5).map(x => ({
+        name: x.c.name, initials: this.initials(x.c.name), service: x.c.plan.split(' · ')[0],
+        screen: screenOf[x.c.id] ? screenOf[x.c.id].split(' · ')[1] : 'Unassigned',
+        daysLabel: x.dl < 0 ? 'overdue' : x.dl + 'd',
+        pillStyle: this.pill(x.dl < 0 ? 'red' : x.dl <= 3 ? 'red' : x.dl <= 7 ? 'amber' : 'grey')
+      })),
+      mrr: '84,600', arpu: '1,208',
+      revBars: [['Dec', 41], ['Jan', 48], ['Feb', 52], ['Mar', 61], ['Apr', 58], ['May', 70], ['Jun', 78], ['Jul', 85]].map(r => ({
+        month: r[0], value: r[1] + 'k', h: Math.round((r[1] / 92) * 100) + '%'
+      })),
+
+      servicesView: SERVICES.map(s => {
+        const on = st.serviceOn[s.id];
+        return {
+          name: s.name, short: s.short, desc: s.desc, chipStyle: this.chip(s.color), plans: s.plans,
+          accounts: perSvc[s.id] ? perSvc[s.id].accounts : 0,
+          cap: perSvc[s.id] ? perSvc[s.id].cap : 0,
+          switchStyle: 'width:44px;height:25px;border-radius:99px;border:none;cursor:pointer;padding:3px;display:flex;justify-content:' + (on ? 'flex-end' : 'flex-start') + ';background:' + (on ? 'linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.7 0.17 300))' : 'oklch(1 0 0 / .12)'),
+          knobStyle: 'width:19px;height:19px;border-radius:50%;background:' + (on ? 'oklch(0.18 0.014 265)' : 'oklch(0.8 0.01 265)') + ';display:block',
+          toggle: () => {
+            this.setState(s2 => ({ serviceOn: Object.assign({}, s2.serviceOn, { [s.id]: !s2.serviceOn[s.id] }) }));
+            this.log('❖', (on ? 'Disabled' : 'Enabled') + ' service ' + s.name);
+          },
+          edit: () => this.log('✏️', 'Opened editor for service ' + s.name),
+          goStock: () => this.setState({ view: 'inventory' })
+        };
+      }),
+
+      accountsView, customersView, custFilters, paymentsView,
+      search: st.search,
+      onSearch: e => this.setState({ search: e.target.value }),
+      logsView: st.logs.map(l => ({
+        icon: l.icon, action: l.action, who: l.who, ip: l.ip, time: l.time,
+        iconStyle: this.pill(l.kind === 'pay' ? 'green' : l.kind === 'block' ? 'red' : l.kind === 'assign' ? 'cyan' : 'grey')
+      })),
+
+      mySub, myReminders, myPayments,
+      goCustPay: () => this.setState({ view: 'cust_pay' }),
+      payAmount: st.payAmount,
+      onPayAmount: e => this.setState({ payAmount: e.target.value }),
+      payTid: st.payTid,
+      onPayTid: e => this.setState({ payTid: e.target.value }),
+      payMethods: ['JazzCash', 'EasyPaisa', 'Bank transfer'].map(m => ({
+        label: m, style: this.segBtn(st.payMethod === m) + ';flex:none;padding:9px 14px',
+        pick: () => this.setState({ payMethod: m })
+      })),
+      submitLabel: st.paySubmitted ? 'Submitted — awaiting verification' : 'Submit for verification',
+      submitPay: () => {
+        if (st.paySubmitted) return;
+        this.setState(s => ({
+          paySubmitted: true,
+          payments: [{ id: 'p' + Date.now(), cust: 'c1', plan: 'Netflix Premium 4K · 30d', amount: s.payAmount, method: s.payMethod, tid: s.payTid || 'PENDING', date: '28 Jul 2026, 11:05', status: 'pending' }].concat(s.payments)
+        }));
+      }
+    };
+  }
+}
+
+</script>
+</body>
+</html>

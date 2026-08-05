@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="image-slot.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:oklch(0.15 0.012 265);font-family:'Manrope',system-ui,sans-serif}
+  a{color:oklch(0.85 0.13 195);text-decoration:none}
+  a:hover{color:oklch(0.9 0.1 195)}
+  ::selection{background:oklch(0.85 0.13 195);color:oklch(0.15 0.012 265)}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  @keyframes pulseGlow{0%,100%{opacity:.5}50%{opacity:1}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes wipe{from{transform:translateX(-104%)}to{transform:translateX(104%)}}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+  @keyframes ringSpin{to{--ang:360deg}}
+  @keyframes gradText{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  @keyframes auraDrift{0%,100%{transform:translate3d(0,0,0) scale(1)}33%{transform:translate3d(4%,-3%,0) scale(1.08)}66%{transform:translate3d(-3%,4%,0) scale(.95)}}
+  @keyframes sheen{0%{transform:translateX(-120%)}60%,100%{transform:translateX(220%)}}
+  @keyframes shake{0%{transform:scale(1)}10%{transform:translateX(-10px) rotate(-2.4deg) scale(1.03)}24%{transform:translateX(9px) rotate(2.2deg) scale(1.03)}38%{transform:translateX(-7px) rotate(-1.6deg) scale(1.02)}52%{transform:translateX(6px) rotate(1.2deg) scale(1.02)}68%{transform:translateX(-4px) rotate(-.7deg) scale(1.01)}84%{transform:translateX(2px) rotate(.3deg)}100%{transform:none}}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  @keyframes kenburns{0%,100%{transform:scale(1.06) translate(0,0)}50%{transform:scale(1.16) translate(-2%,-2%)}}
+</style>
+</helmet>
+<div dir="{{ dir }}" style="min-height:100vh;color:oklch(0.95 0.006 265);font-family:{{ bodyFont }};background:oklch(0.15 0.012 265);overflow-x:hidden;position:relative">
+
+  <div style="position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden">
+    <div style="position:absolute;width:820px;height:820px;top:-300px;right:-180px;border-radius:50%;background:radial-gradient(circle,oklch(0.62 0.2 300 / .34),transparent 64%)"></div>
+    <div style="position:absolute;width:780px;height:780px;top:-240px;left:-220px;border-radius:50%;background:radial-gradient(circle,oklch(0.7 0.17 195 / .3),transparent 64%)"></div>
+    <div style="position:absolute;width:740px;height:740px;bottom:-290px;left:22%;border-radius:50%;background:radial-gradient(circle,oklch(0.62 0.19 340 / .26),transparent 64%)"></div>
+    <div style="position:absolute;width:620px;height:620px;bottom:-200px;right:6%;border-radius:50%;background:radial-gradient(circle,oklch(0.68 0.18 150 / .2),transparent 64%)"></div>
+  </div>
+
+  <!-- POSTER WALL: drop movie / show stills here -->
+  <div style="position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:.8">
+    <div style="position:absolute;width:118%;left:-9%;top:-4%;display:grid;grid-auto-rows:auto;gap:10px;grid-template-columns:repeat(11,1fr)">
+      <sc-for list="{{ posters }}" as="ps" hint-placeholder-count="151">
+        <div style="position:relative;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:{{ ps.art }};pointer-events:none;content-visibility:auto;contain-intrinsic-size:110px 165px;{{ ps.anim }}">
+        </div>
+      </sc-for>
+    </div>
+    <div style="position:absolute;inset:0;background:linear-gradient(oklch(0.15 0.012 265 / .68) 0%,oklch(0.15 0.012 265 / .72) 45%,oklch(0.15 0.012 265 / .86) 58%,oklch(0.15 0.012 265) 66%)"></div>
+  </div>
+  <div style="position:relative;z-index:1">
+
+  <sc-if value="{{ showStoreHeader }}" hint-placeholder-val="{{ true }}">
+  <header style="position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);background:oklch(0.15 0.012 265 / .72);border-bottom:1px solid oklch(1 0 0 / .08)">
+    <div style="max-width:1200px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:11px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.02em">
+        <span style="width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,{{ accent }},{{ accent2 }});color:oklch(0.15 0.012 265);font-weight:800">◆</span>
+        <span>{{ brandName }}</span>
+      </div>
+      <nav style="display:flex;gap:6px;margin-inline-start:12px;font-size:14.5px;font-weight:600;min-width:0;flex:1 1 auto;overflow-x:auto;scrollbar-width:none" class="topnav">
+        <sc-for list="{{ navItems }}" as="ni" hint-placeholder-count="5">
+          <button onClick="{{ ni.go }}" style="background:none;border:none;font:inherit;cursor:pointer;padding:8px 12px;border-radius:9px;white-space:nowrap;transition:background .2s ease;{{ ni.style }}" style-hover="background:oklch(1 0 0 / .07)">{{ ni.label }}</button>
+        </sc-for>
+      </nav>
+      <div style="margin-inline-start:auto;display:flex;align-items:center;gap:10px;flex:none">
+        <div style="position:relative">
+          <button onClick="{{ toggleLang }}" style="display:flex;align-items:center;gap:8px;background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .12);color:inherit;padding:9px 13px;border-radius:11px;font:inherit;font-size:14px;font-weight:600;cursor:pointer">
+            <span style="font-size:15px">🌐</span><span>{{ curLangName }}</span><span style="opacity:.6;font-size:11px">▾</span>
+          </button>
+          <sc-if value="{{ langOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;inset-inline-end:0;top:52px;width:210px;background:oklch(0.19 0.014 265);border:1px solid oklch(1 0 0 / .12);border-radius:14px;padding:7px;box-shadow:0 24px 60px oklch(0 0 0 / .5);display:grid;grid-template-columns:1fr 1fr;gap:4px">
+              <sc-for list="{{ langList }}" as="l" hint-placeholder-count="8">
+                <button onClick="{{ l.pick }}" style="{{ l.style }}">
+                  <span style="font-size:13.5px;font-weight:700">{{ l.native }}</span>
+                  <span style="font-size:11px;opacity:.55">{{ l.en }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ loggedOut }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ goLogin }}" style="background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .12);color:inherit;padding:10px 14px;border-radius:11px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;flex:none;white-space:nowrap" style-hover="background:oklch(1 0 0 / .11)">{{ t.s_login }}</button>
+        </sc-if>
+        <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ logout }}" style="background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .12);color:inherit;padding:10px 14px;border-radius:11px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;flex:none;white-space:nowrap;display:flex;align-items:center;gap:7px" style-hover="background:oklch(1 0 0 / .11)">👤 {{ t.s_logout }}</button>
+        </sc-if>
+        <button onClick="{{ goCart }}" style="background:linear-gradient(135deg,{{ accent }},{{ accent2 }});color:oklch(0.15 0.012 265);border:none;padding:10px 16px;border-radius:11px;font:inherit;font-weight:800;font-size:14px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:8px">🛒 <span>{{ cartCount }}</span></button>
+      </div>
+    </div>
+  </header>
+  </sc-if>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <!-- HERO -->
+  <section style="max-width:1200px;margin:0 auto;padding:70px 22px 40px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center" class="herogrid">
+    <div>
+      <div style="display:inline-flex;align-items:center;gap:9px;background:oklch(0.85 0.13 195 / .12);border:1px solid oklch(0.85 0.13 195 / .3);color:oklch(0.88 0.11 195);padding:7px 14px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.01em">
+        <span style="width:7px;height:7px;border-radius:50%;background:{{ accent }}"></span>{{ t.hero_badge }}
+      </div>
+      <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(38px,5vw,60px);line-height:1.03;letter-spacing:-.03em;margin:20px 0 0;font-weight:700;text-wrap:balance;background:linear-gradient(100deg,oklch(0.96 0.02 265),oklch(0.85 0.14 195),oklch(0.8 0.17 300),oklch(0.96 0.02 265));background-size:280% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;">{{ t.hero_title }}</h1>
+      <p style="margin:20px 0 0;font-size:18px;line-height:1.55;color:oklch(0.86 0.01 265);max-width:560px;text-wrap:pretty">{{ t.hero_sub }}</p>
+      <div style="display:flex;gap:13px;margin-top:30px;flex-wrap:wrap">
+        <a href="#products" style="background:linear-gradient(135deg,{{ accent }},{{ accent2 }});color:oklch(0.15 0.012 265);padding:15px 26px;border-radius:13px;font-weight:800;font-size:16px">{{ t.hero_cta1 }} →</a>
+        <a href="#how" style="background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .14);color:inherit;padding:15px 26px;border-radius:13px;font-weight:700;font-size:16px">{{ t.hero_cta2 }}</a>
+      </div>
+      <div style="display:flex;gap:30px;margin-top:38px;flex-wrap:wrap">
+        <div><div style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:{{ accent }}">{{ t.stat1_n }}</div><div style="font-size:13px;color:oklch(0.7 0.01 265);font-weight:600">{{ t.stat1_l }}</div></div>
+        <div><div style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:{{ accent }}">8</div><div style="font-size:13px;color:oklch(0.7 0.01 265);font-weight:600">{{ t.stat2_l }}</div></div>
+        <div><div style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:{{ accent }}">24/7</div><div style="font-size:13px;color:oklch(0.7 0.01 265);font-weight:600">{{ t.stat3_l }}</div></div>
+      </div>
+    </div>
+    <!-- delivery mock card -->
+    <div style="position:relative">
+      <div style="position:absolute;inset:-30px;background:radial-gradient(circle at 50% 40%,{{ accent2 }},transparent 70%);opacity:.25;filter:blur(30px)"></div>
+      <div style="position:relative;border:1.5px solid transparent;background:linear-gradient(oklch(0.2 0.016 265),oklch(0.2 0.016 265)) padding-box,conic-gradient(from var(--ang),oklch(0.85 0.13 195),oklch(0.75 0.19 300),oklch(0.8 0.17 345),oklch(0.82 0.16 55),oklch(0.82 0.17 150),oklch(0.85 0.13 195)) border-box;border-radius:22px;padding:22px;box-shadow:0 30px 80px oklch(0.4 0.15 300 / .35)">
+        <div style="display:flex;align-items:center;gap:10px;color:oklch(0.85 0.16 150);font-weight:800;font-size:15px"><span style="width:34px;height:34px;border-radius:50%;background:oklch(0.85 0.16 150 / .16);display:grid;place-items:center">✓</span>{{ t.deliver_success }}</div>
+        <div style="margin-top:16px;border-top:1px dashed oklch(1 0 0 / .14);padding-top:16px;display:grid;gap:11px">
+          <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.65 0.01 265);font-weight:700">{{ t.deliver_creds }}</div>
+          <div style="display:flex;justify-content:space-between;gap:10px;background:oklch(1 0 0 / .04);border-radius:10px;padding:11px 13px;font-family:monospace;font-size:13.5px"><span style="opacity:.6">email</span><span>user•••@mail.com</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;background:oklch(1 0 0 / .04);border-radius:10px;padding:11px 13px;font-family:monospace;font-size:13.5px"><span style="opacity:.6">password</span><span>••••••••••</span></div>
+          <div style="display:flex;gap:8px;margin-top:2px">
+            <span style="background:{{ accent }};color:oklch(0.15 0.012 265);font-weight:800;font-size:11px;padding:5px 10px;border-radius:7px">8K UHD</span>
+            <span style="background:oklch(1 0 0 / .08);font-weight:700;font-size:11px;padding:5px 10px;border-radius:7px">{{ t.prod_warranty }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section id="products" style="max-width:1200px;margin:0 auto;padding:54px 22px">
+    <div style="text-align:center;max-width:640px;margin:0 auto 34px">
+      <div style="color:{{ accent }};font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase">{{ t.nav_products }}</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,3.6vw,40px);letter-spacing:-.02em;margin:10px 0 0;font-weight:700;background:linear-gradient(100deg,oklch(0.96 0.02 265),oklch(0.85 0.14 195),oklch(0.8 0.17 300),oklch(0.96 0.02 265));background-size:280% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;">{{ t.prod_title }}</h2>
+      <p style="margin:12px 0 0;color:oklch(0.75 0.01 265);font-size:16px">{{ t.prod_sub }}</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;perspective:1300px" class="prodgrid">
+      <sc-for list="{{ products }}" as="p" hint-placeholder-count="6">
+        <div style="position:relative;overflow:hidden;isolation:isolate;border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .86),oklch(0.19 0.014 265 / .86)) padding-box,{{ p.border }} border-box;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:13px;transform-style:preserve-3d;transition:transform .38s cubic-bezier(.2,.8,.3,1.45),box-shadow .38s ease,background .38s ease;{{ p.anim }}" style-hover="transform:translateY(-16px) scale(1.045) rotateX(7deg) rotateY(-5deg);box-shadow:0 34px 70px oklch(0.62 0.21 300 / .5),0 0 0 1px oklch(0.85 0.13 195 / .35);background:linear-gradient(oklch(0.21 0.02 265 / .92),oklch(0.21 0.02 265 / .92)) padding-box,conic-gradient(from var(--ang),oklch(0.85 0.13 195),oklch(0.75 0.19 300),oklch(0.8 0.17 345),oklch(0.82 0.16 55),oklch(0.82 0.17 150),oklch(0.85 0.13 195)) border-box;animation:ringSpin 4s linear infinite" style-active="transform:translateY(-6px) scale(.97) rotateX(2deg)">
+          <div style="position:absolute;inset:-60%;z-index:0;background:{{ p.streak }};pointer-events:none;{{ p.spin }}"></div>
+          <div style="position:absolute;inset:2px;z-index:0;border-radius:16px;background:oklch(0.19 0.014 265 / .94);pointer-events:none"></div>
+          <div style="position:relative;z-index:1;height:96px;border-radius:12px;background:{{ p.tile }};overflow:hidden;transition:transform .3s cubic-bezier(.2,.8,.3,1.4)" style-hover="transform:scale(1.06)">
+            <image-slot id="{{ p.slotId }}" shape="rect" fit="contain" placeholder="Drop logo" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+            <span style="position:absolute;top:8px;inset-inline-end:8px;background:oklch(0.15 0.012 265 / .6);backdrop-filter:blur(4px);font-size:10px;font-weight:800;padding:3px 7px;border-radius:6px;pointer-events:none">{{ p.quality }}</span>
+          </div>
+          <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:3px">
+            <span style="font-weight:700;font-size:15px">{{ p.name }}</span>
+          </div>
+          <div style="position:relative;z-index:1;display:flex;align-items:baseline;gap:6px;margin-top:auto">
+            <span style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:{{ p.color }}">{{ p.price }}</span>
+            <span style="font-size:12px;color:oklch(0.6 0.01 265);text-decoration:line-through">{{ p.was }}</span>
+          </div>
+          <button onClick="{{ p.buy }}" style="background:linear-gradient(135deg,{{ accent }},{{ accent2 }});color:oklch(0.15 0.012 265);border:none;padding:11px;border-radius:11px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;position:relative;z-index:1;overflow:hidden;transition:transform .22s cubic-bezier(.2,.8,.3,1.5),box-shadow .22s ease" style-hover="transform:translateY(-2px) scale(1.04);box-shadow:0 12px 26px oklch(0.7 0.16 250 / .45)" style-active="transform:scale(.94)"><span style="position:absolute;inset:0;pointer-events:none;{{ p.wipe }}"></span><span style="position:relative">{{ t.prod_buy }}</span></button>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- GENRES -->
+  <section id="genres" style="max-width:1200px;margin:0 auto;padding:20px 22px 34px">
+    <div style="text-align:center;margin:0 auto 22px">
+      <div style="color:oklch(0.85 0.13 195);font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase">{{ t.genre_kicker }}</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(24px,3vw,34px);letter-spacing:-.02em;margin:10px 0 0;font-weight:700">{{ t.genre_title }}</h2>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:11px">
+      <sc-for list="{{ genreChips }}" as="g" hint-placeholder-count="12">
+        <span style="display:inline-flex;align-items:center;gap:9px;background:oklch(0.21 0.02 265 / .82);border:1.5px solid transparent;border-radius:999px;padding:10px 18px;font-weight:700;font-size:14.5px;white-space:nowrap;transition:transform .2s ease,box-shadow .2s ease;{{ g.style }}" style-hover="transform:translateY(-3px) scale(1.04)">
+          <span style="width:9px;height:9px;border-radius:50%;background:{{ g.dot }}"></span>{{ g.name }}
+        </span>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" style="max-width:1200px;margin:0 auto;padding:54px 22px">
+    <div style="text-align:center;max-width:640px;margin:0 auto 40px">
+      <div style="color:{{ accent }};font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase">{{ t.steps_kicker }}</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,3.6vw,40px);letter-spacing:-.02em;margin:10px 0 0;font-weight:700;background:linear-gradient(100deg,oklch(0.96 0.02 265),oklch(0.85 0.14 195),oklch(0.8 0.17 300),oklch(0.96 0.02 265));background-size:280% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;">{{ t.steps_title }}</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px" class="stepgrid">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+        <div style="position:relative;overflow:hidden;isolation:isolate;border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .86),oklch(0.19 0.014 265 / .86)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .75),oklch(0.75 0.19 300 / .75),oklch(0.8 0.17 345 / .6),oklch(0.82 0.17 150 / .7)) border-box;border-radius:18px;padding:26px;transition:transform .25s ease,box-shadow .25s ease;{{ s.anim }}" style-hover="transform:translateY(-6px);box-shadow:0 20px 44px oklch(0.55 0.18 300 / .25)">
+          <div style="width:46px;height:46px;border-radius:13px;background:{{ s.chip }};color:oklch(0.15 0.012 265);display:grid;place-items:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;box-shadow:0 8px 24px oklch(0.6 0.2 300 / .35)">{{ s.n }}</div>
+          <h3 style="font-family:'Space Grotesk',sans-serif;font-size:19px;margin:18px 0 0;font-weight:600">{{ s.t }}</h3>
+          <p style="margin:9px 0 0;color:oklch(0.74 0.01 265);font-size:14.5px;line-height:1.55">{{ s.d }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- PAYMENTS -->
+  <section id="payments" style="max-width:1000px;margin:0 auto;padding:54px 22px">
+    <div style="border:1.5px solid transparent;background:linear-gradient(135deg,oklch(0.24 0.05 300 / .8),oklch(0.22 0.05 195 / .7)) padding-box,conic-gradient(from var(--ang),oklch(0.85 0.13 195),oklch(0.75 0.19 300),oklch(0.8 0.17 345),oklch(0.82 0.16 55),oklch(0.82 0.17 150),oklch(0.85 0.13 195)) border-box;border-radius:24px;padding:clamp(26px,4vw,44px);text-align:center">
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(24px,3vw,34px);letter-spacing:-.02em;font-weight:700;background:linear-gradient(100deg,oklch(0.96 0.02 265),oklch(0.85 0.14 195),oklch(0.8 0.17 300),oklch(0.96 0.02 265));background-size:280% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;">{{ t.pay_title }}</h2>
+      <p style="margin:12px auto 0;color:oklch(0.8 0.01 265);max-width:520px;font-size:16px">{{ t.pay_sub }}</p>
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:11px;margin-top:26px">
+        <sc-for list="{{ pays }}" as="pm" hint-placeholder-count="8">
+          <button onClick="{{ pm.pay }}" style="cursor:pointer;color:inherit;font:inherit;border:1.5px solid transparent;background:linear-gradient(oklch(0.22 0.02 265),oklch(0.22 0.02 265)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .75),oklch(0.75 0.19 300 / .75),oklch(0.8 0.17 345 / .6),oklch(0.82 0.17 150 / .7)) border-box;padding:9px 16px 9px 10px;border-radius:12px;font-weight:700;font-size:14.5px;white-space:nowrap;display:inline-flex;align-items:center;gap:9px;transition:transform .28s cubic-bezier(.2,.8,.3,1.4),box-shadow .28s ease;{{ pm.anim }}" style-hover="transform:translateY(-9px) scale(1.07) rotate(-1.5deg);box-shadow:0 18px 38px oklch(0.62 0.2 300 / .5)">
+            <image-slot id="{{ pm.slotId }}" shape="rounded" radius="6" fit="contain" placeholder="logo" style="width:26px;height:26px;flex:none;transition:transform .28s cubic-bezier(.2,.8,.3,1.4)" style-hover="transform:scale(1.18) rotate(6deg)"></image-slot>
+            {{ pm.label }}
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="max-width:1200px;margin:0 auto;padding:40px 22px 20px">
+    <div style="text-align:center">
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.03em;font-weight:700;text-wrap:balance;background:linear-gradient(100deg,oklch(0.96 0.02 265),oklch(0.85 0.14 195),oklch(0.8 0.17 300),oklch(0.96 0.02 265));background-size:280% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;">{{ t.cta_title }}</h2>
+      <p style="margin:16px auto 0;color:oklch(0.9 0.01 265);max-width:600px;font-size:17px">{{ t.cta_sub }}</p>
+      <div style="font-family:'Space Grotesk',sans-serif;margin-top:24px;font-size:clamp(22px,3.4vw,34px);font-weight:700;background:linear-gradient(135deg,{{ accent }},{{ accent2 }});-webkit-background-clip:text;background-clip:text;color:transparent">{{ siteUrl }}</div>
+      <div style="display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin-top:26px">
+        <a href="#products" style="background:linear-gradient(135deg,{{ accent }},{{ accent2 }});color:oklch(0.15 0.012 265);padding:16px 32px;border-radius:13px;font-weight:800;font-size:17px">{{ t.cta_btn }}</a>
+        <a href="{{ waLink }}" style="background:oklch(0.72 0.16 150);color:oklch(0.15 0.012 265);padding:16px 28px;border-radius:13px;font-weight:800;font-size:17px">💬 {{ whatsapp }}</a>
+      </div>
+    </div>
+  </section>
+
+  </sc-if>
+
+
+  <!-- SHOP -->
+  <sc-if value="{{ isShop }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:1200px;margin:0 auto;padding:44px 22px 60px">
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;font-weight:700;margin:0">{{ t.s_shop_title }}</h1>
+    <p style="margin:10px 0 0;color:oklch(0.78 0.01 265);font-size:16px">{{ t.s_shop_sub }}</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 22px">
+      <sc-for list="{{ shopFilters }}" as="sf" hint-placeholder-count="4">
+        <button onClick="{{ sf.pick }}" style="position:relative;overflow:hidden;isolation:isolate;border:1.5px solid transparent;border-radius:999px;padding:10px 18px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;color:inherit;white-space:nowrap;transition:transform .26s cubic-bezier(.2,.8,.3,1.5),box-shadow .26s ease;{{ sf.style }}" style-hover="transform:translateY(-4px) scale(1.06);box-shadow:0 14px 30px oklch(0.6 0.18 300 / .4)" style-active="transform:scale(.94)">
+          <span style="position:absolute;inset:-160%;z-index:0;background:conic-gradient(from 0deg,transparent 0deg 58deg,oklch(0.85 0.13 195) 72deg,oklch(0.75 0.19 300) 86deg,transparent 100deg 238deg,oklch(0.85 0.13 195) 252deg,oklch(0.75 0.19 300) 266deg,transparent 280deg 360deg);pointer-events:none;{{ sf.spin }}"></span>
+          <span style="position:absolute;inset:1.5px;z-index:0;border-radius:999px;background:oklch(0.2 0.018 265 / .95);pointer-events:none"></span>
+          <span style="position:relative;z-index:1">{{ sf.label }}</span>
+        </button>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;perspective:1300px" class="prodgrid">
+      <sc-for list="{{ shopList }}" as="sp" hint-placeholder-count="6">
+        <div style="position:relative;overflow:hidden;isolation:isolate;border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,{{ sp.border }} border-box;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:13px;transform-style:preserve-3d;transition:transform .38s cubic-bezier(.2,.8,.3,1.45),box-shadow .38s ease" style-hover="transform:translateY(-14px) scale(1.04) rotateX(6deg) rotateY(-4deg);box-shadow:0 32px 66px oklch(0.62 0.21 300 / .45)" style-active="transform:translateY(-5px) scale(.975)">
+          <div style="position:absolute;inset:-60%;z-index:0;background:{{ sp.streak }};pointer-events:none;{{ sp.spin }}"></div>
+          <div style="position:absolute;inset:2px;z-index:0;border-radius:16px;background:oklch(0.19 0.014 265 / .94);pointer-events:none"></div>
+          <div style="position:relative;z-index:1;height:96px;border-radius:12px;background:{{ sp.tile }};overflow:hidden;transition:transform .3s cubic-bezier(.2,.8,.3,1.4)" style-hover="transform:scale(1.06)">
+            <image-slot id="{{ sp.slotId }}" shape="rect" fit="contain" placeholder="Drop logo" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+            <span style="position:absolute;top:8px;inset-inline-end:8px;background:oklch(0.15 0.012 265 / .6);font-size:10px;font-weight:800;padding:3px 7px;border-radius:6px;pointer-events:none">{{ sp.quality }}</span>
+          </div>
+          <span style="position:relative;z-index:1;font-weight:700;font-size:15px">{{ sp.name }}</span>
+          <div style="position:relative;z-index:1;display:flex;align-items:baseline;gap:6px;margin-top:auto">
+            <span style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:{{ sp.color }}">{{ sp.price }}</span>
+            <span style="font-size:12px;color:oklch(0.6 0.01 265);text-decoration:line-through">{{ sp.was }}</span>
+          </div>
+          <button onClick="{{ sp.view }}" style="position:relative;z-index:1;overflow:hidden;background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.72 0.15 300));color:oklch(0.15 0.012 265);border:none;padding:11px;border-radius:12px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;transition:transform .22s cubic-bezier(.2,.8,.3,1.5),box-shadow .22s ease" style-hover="transform:translateY(-2px) scale(1.04);box-shadow:0 12px 26px oklch(0.7 0.16 250 / .45)" style-active="transform:scale(.94)"><span style="position:absolute;inset:0;pointer-events:none;{{ sp.wipe }}"></span><span style="position:relative">{{ t.s_view }}</span></button>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- PRODUCT -->
+  <sc-if value="{{ isProduct }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:1200px;margin:0 auto;padding:44px 22px 60px">
+    <button onClick="{{ goShop }}" style="background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .14);color:inherit;padding:13px 22px;border-radius:12px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;padding:9px 16px;font-size:14px;margin-bottom:22px">← {{ t.s_back }}</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:start" class="herogrid">
+      <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:20px">
+        <div style="height:300px;border-radius:14px;background:{{ sel.tile }};position:relative;overflow:hidden">
+          <image-slot id="{{ sel.heroSlot }}" shape="rect" fit="contain" placeholder="Drop logo" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div>
+          <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;font-weight:700;margin:0">{{ sel.name }}</h1>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+            <span style="background:oklch(0.85 0.13 195);color:oklch(0.15 0.012 265);font-weight:800;font-size:11px;padding:5px 10px;border-radius:7px">{{ selQuality }}</span>
+            <span style="background:oklch(1 0 0 / .08);font-weight:700;font-size:11px;padding:5px 10px;border-radius:7px">{{ t.prod_warranty }}</span>
+            <span style="background:oklch(0.72 0.16 150 / .18);color:oklch(0.85 0.16 150);font-weight:800;font-size:11px;padding:5px 10px;border-radius:7px">{{ t.s_instock }}</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_quality }}</span>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+            <sc-for list="{{ qualities }}" as="q" hint-placeholder-count="3">
+              <button onClick="{{ q.pick }}" style="border:1.5px solid transparent;border-radius:12px;padding:13px 8px;font:inherit;cursor:pointer;color:inherit;display:flex;flex-direction:column;gap:3px;align-items:center;{{ q.style }}">
+                <span style="font-weight:800;font-size:15px">{{ q.label }}</span>
+                <span style="font-size:12px;opacity:.7">{{ q.price }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_duration }}</span>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+            <sc-for list="{{ durations }}" as="d" hint-placeholder-count="4">
+              <button onClick="{{ d.pick }}" style="border:1.5px solid transparent;border-radius:12px;padding:13px 8px;font:inherit;cursor:pointer;color:inherit;display:flex;flex-direction:column;gap:3px;align-items:center;{{ d.style }}">
+                <span style="font-weight:800;font-size:15px">{{ d.label }}</span>
+                <span style="font-size:12px;opacity:.7">{{ d.price }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_total }}</span>
+            <span style="font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;color:{{ sel.color }}">{{ selTotal }}</span>
+          </div>
+          <span style="font-size:13px;color:oklch(0.72 0.01 265);text-align:end;max-width:180px">{{ t.s_instant }}</span>
+        </div>
+        <div style="display:flex;gap:11px;flex-wrap:wrap">
+          <button onClick="{{ addToCart }}" style="background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .14);color:inherit;padding:13px 22px;border-radius:12px;font:inherit;font-weight:700;font-size:15px;cursor:pointer">{{ t.s_addcart }}</button>
+          <button onClick="{{ buyNowDetail }}" style="background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.72 0.15 300));color:oklch(0.15 0.012 265);border:none;padding:13px 22px;border-radius:12px;font:inherit;font-weight:800;font-size:15px;cursor:pointer">{{ t.prod_buy }} →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- CART -->
+  <sc-if value="{{ isCart }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:900px;margin:0 auto;padding:44px 22px 60px">
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;font-weight:700;margin:0">{{ t.s_cart }}</h1>
+    <sc-if value="{{ cartEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:40px;text-align:center;margin-top:24px">
+        <p style="color:oklch(0.78 0.01 265);font-size:16px;margin-bottom:20px">{{ t.s_cart_empty }}</p>
+        <button onClick="{{ goShop }}" style="background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.72 0.15 300));color:oklch(0.15 0.012 265);border:none;padding:13px 22px;border-radius:12px;font:inherit;font-weight:800;font-size:15px;cursor:pointer">{{ t.s_shop_title }}</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ cartHasItems }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:24px">
+        <sc-for list="{{ cart }}" as="ci" hint-placeholder-count="2">
+          <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:16px 18px;display:flex;align-items:center;gap:16px">
+            <div style="width:64px;height:64px;flex:none;border-radius:10px;background:{{ ci.tile }};overflow:hidden;position:relative">
+              <image-slot id="{{ ci.slotId }}" shape="rect" fit="contain" placeholder="" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;flex:1">
+              <span style="font-weight:700;font-size:15.5px">{{ ci.name }}</span>
+              <span style="font-size:13px;color:oklch(0.7 0.01 265)">{{ ci.months }} · {{ ci.quality }}</span>
+            </div>
+            <span style="font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700;color:oklch(0.85 0.13 195)">{{ ci.total }}</span>
+            <button onClick="{{ ci.remove }}" style="background:oklch(1 0 0 / .07);border:none;color:inherit;width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:15px">✕</button>
+          </div>
+        </sc-for>
+        <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_total }}</span>
+            <span style="font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;color:oklch(0.85 0.13 195)">{{ cartTotal }}</span>
+          </div>
+          <button onClick="{{ goCheckout }}" style="background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.72 0.15 300));color:oklch(0.15 0.012 265);border:none;padding:13px 22px;border-radius:12px;font:inherit;font-weight:800;font-size:15px;cursor:pointer">{{ t.s_checkout }} →</button>
+        </div>
+      </div>
+    </sc-if>
+  </section>
+  </sc-if>
+
+  <!-- CHECKOUT -->
+  <sc-if value="{{ isCheckout }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:900px;margin:0 auto;padding:44px 22px 60px">
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;font-weight:700;margin:0">{{ t.s_checkout }}</h1>
+    <div style="display:flex;gap:10px;margin:20px 0 26px">
+      <sc-for list="{{ steps3 }}" as="s3" hint-placeholder-count="3">
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+          <div style="height:5px;border-radius:99px;background:{{ s3.bar }}"></div>
+          <span style="font-size:12.5px;font-weight:700;color:{{ s3.color }}">{{ s3.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:1.2fr .8fr;gap:22px" class="herogrid">
+      <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_email }}</span>
+          <input type="email" value="{{ formEmail }}" onChange="{{ setEmail }}" placeholder="you@mail.com" style="width:100%;background:oklch(0.14 0.012 265 / .9);border:1px solid oklch(1 0 0 / .14);color:inherit;padding:13px 15px;border-radius:11px;font:inherit;font-size:15px" />
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_whatsapp }}</span>
+          <input type="tel" value="{{ formPhone }}" onChange="{{ setPhone }}" placeholder="+92 300 0000000" style="width:100%;background:oklch(0.14 0.012 265 / .9);border:1px solid oklch(1 0 0 / .14);color:inherit;padding:13px 15px;border-radius:11px;font:inherit;font-size:15px" />
+        </div>
+        <p style="font-size:13px;color:oklch(0.7 0.01 265);margin:0">{{ t.s_deliver_note }}</p>
+        <button onClick="{{ goPayment }}" style="background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.72 0.15 300));color:oklch(0.15 0.012 265);border:none;padding:13px 22px;border-radius:12px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;margin-top:4px">{{ t.s_to_payment }} →</button>
+      </div>
+      <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:12px;height:fit-content">
+        <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_summary }}</span>
+        <sc-for list="{{ cart }}" as="su" hint-placeholder-count="2">
+          <div style="display:flex;justify-content:space-between;gap:10px;font-size:14px">
+            <span style="color:oklch(0.82 0.01 265)">{{ su.name }} · {{ su.months }}</span>
+            <span style="font-weight:700">{{ su.total }}</span>
+          </div>
+        </sc-for>
+        <div style="border-top:1px dashed oklch(1 0 0 / .16);margin-top:6px;padding-top:12px;display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_total }}</span>
+          <span style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:oklch(0.85 0.13 195)">{{ cartTotal }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- PAYMENT -->
+  <sc-if value="{{ isPayment }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:720px;margin:0 auto;padding:44px 22px 60px">
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;font-weight:700;margin:0">{{ t.pay_title }}</h1>
+    <p style="margin:10px 0 24px;color:oklch(0.78 0.01 265);font-size:16px">{{ t.c_method }}</p>
+    <div style="display:grid;gap:12px">
+      <sc-for list="{{ payMethods }}" as="pmm" hint-placeholder-count="3">
+        <button onClick="{{ pmm.pick }}" style="border:1.5px solid transparent;border-radius:14px;padding:16px 18px;font:inherit;cursor:pointer;color:inherit;display:flex;align-items:center;gap:14px;text-align:start;{{ pmm.style }}">
+          <div style="width:38px;height:38px;flex:none;position:relative">
+            <image-slot id="{{ pmm.slotId }}" shape="rounded" radius="8" fit="contain" placeholder="logo" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px;flex:1">
+            <span style="font-weight:800;font-size:15.5px">{{ pmm.label }}</span>
+            <span style="font-size:12.5px;color:oklch(0.7 0.01 265)">{{ pmm.note }}</span>
+          </div>
+          <span style="opacity:.5">{{ pmm.tick }}</span>
+        </button>
+      </sc-for>
+    </div>
+    <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:20px;margin-top:20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:3px">
+        <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_total }}</span>
+        <span style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:oklch(0.85 0.13 195)">{{ cartTotal }}</span>
+      </div>
+      <button onClick="{{ payNow }}" style="background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.72 0.15 300));color:oklch(0.15 0.012 265);border:none;padding:13px 22px;border-radius:12px;font:inherit;font-weight:800;font-size:15px;cursor:pointer">{{ t.c_pay }} {{ cartTotal }}</button>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- SUCCESS -->
+  <sc-if value="{{ isSuccess }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:680px;margin:0 auto;padding:60px 22px">
+    <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:30px;text-align:center">
+      <div style="width:66px;height:66px;margin:0 auto;border-radius:50%;background:oklch(0.85 0.16 150 / .16);color:oklch(0.85 0.16 150);display:grid;place-items:center;font-size:32px">✓</div>
+      <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;font-weight:700;margin:0;margin-top:20px">{{ t.deliver_success }}</h1>
+      <p style="margin:12px 0 0;color:oklch(0.8 0.01 265);font-size:15.5px">{{ t.c_delivered }}</p>
+      <div style="display:grid;gap:12px;margin-top:24px;text-align:start">
+        <sc-for list="{{ delivered }}" as="dv" hint-placeholder-count="1">
+          <div style="border:1px dashed oklch(1 0 0 / .18);border-radius:14px;padding:16px;display:grid;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+              <span style="font-weight:800;font-size:15px">{{ dv.name }}</span>
+              <span style="font-size:11.5px;font-weight:800;background:oklch(0.85 0.13 195);color:oklch(0.15 0.012 265);padding:4px 9px;border-radius:6px">{{ dv.months }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;gap:10px;background:oklch(1 0 0 / .05);padding:11px 13px;border-radius:10px;font-family:monospace;font-size:13.5px"><span style="opacity:.6">email</span><span>{{ dv.email }}</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;background:oklch(1 0 0 / .05);padding:11px 13px;border-radius:10px;font-family:monospace;font-size:13.5px"><span style="opacity:.6">password</span><span>{{ dv.pass }}</span></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:11px;justify-content:center;margin-top:24px;flex-wrap:wrap">
+        <button onClick="{{ goAccount }}" style="background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .14);color:inherit;padding:13px 22px;border-radius:12px;font:inherit;font-weight:700;font-size:15px;cursor:pointer">{{ t.s_orders }}</button>
+        <button onClick="{{ goShop }}" style="background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.72 0.15 300));color:oklch(0.15 0.012 265);border:none;padding:13px 22px;border-radius:12px;font:inherit;font-weight:800;font-size:15px;cursor:pointer">{{ t.s_shop_title }}</button>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- ACCOUNT -->
+  <sc-if value="{{ isAccount }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:1000px;margin:0 auto;padding:44px 22px 60px">
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;font-weight:700;margin:0">{{ t.s_orders }}</h1>
+    <div style="display:grid;gap:12px;margin-top:24px">
+      <sc-for list="{{ orders }}" as="o" hint-placeholder-count="3">
+        <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:160px">
+            <span style="font-weight:700;font-size:15.5px">{{ o.name }}</span>
+            <span style="font-size:12.5px;color:oklch(0.68 0.01 265)">{{ o.id }} · {{ o.date }}</span>
+          </div>
+          <span style="font-size:13px;color:oklch(0.75 0.01 265)">{{ o.months }}</span>
+          <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px">{{ o.total }}</span>
+          <span style="font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:999px;{{ o.badge }}">{{ o.status }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- LOGIN -->
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:440px;margin:0 auto;padding:60px 22px">
+    <div style="position:relative;overflow:hidden;isolation:isolate;border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:16px;box-shadow:0 26px 60px oklch(0 0 0 / .5)">
+      <span style="position:absolute;inset:-70%;z-index:0;background:conic-gradient(from 0deg,transparent 0deg 48deg,oklch(0.85 0.13 195) 66deg,oklch(0.75 0.19 300) 84deg,transparent 104deg 228deg,oklch(0.8 0.17 345) 246deg,oklch(0.85 0.13 195) 264deg,transparent 284deg 360deg);pointer-events:none;animation:spin 5.5s linear infinite"></span>
+      <span style="position:absolute;inset:1.5px;z-index:0;border-radius:16.5px;background:oklch(0.19 0.014 265 / .96);pointer-events:none"></span>
+      <h1 style="position:relative;z-index:1;font-family:'Space Grotesk',sans-serif;letter-spacing:-.02em;font-weight:700;margin:0;font-size:26px">{{ loginTitle }}</h1>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_email }}</span>
+        <input type="email" value="{{ formEmail }}" onChange="{{ setEmail }}" placeholder="you@mail.com" style="width:100%;background:oklch(0.14 0.012 265 / .9);border:1px solid oklch(1 0 0 / .14);color:inherit;padding:13px 15px;border-radius:11px;font:inherit;font-size:15px" />
+      </div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_password }}</span>
+        <input type="password" placeholder="••••••••" style="width:100%;background:oklch(0.14 0.012 265 / .9);border:1px solid oklch(1 0 0 / .14);color:inherit;padding:13px 15px;border-radius:11px;font:inherit;font-size:15px" />
+      </div>
+      <button onClick="{{ doLogin }}" style="position:relative;z-index:1;overflow:hidden;background:linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.72 0.15 300));color:oklch(0.15 0.012 265);border:none;padding:13px 22px;border-radius:12px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;transition:transform .26s cubic-bezier(.2,.8,.3,1.5),box-shadow .26s ease" style-hover="transform:translateY(-3px) scale(1.03);box-shadow:0 16px 34px oklch(0.7 0.16 250 / .5)" style-active="transform:scale(.95)">
+        <span style="position:absolute;top:0;bottom:0;width:45%;background:linear-gradient(100deg,transparent,oklch(0.55 0.24 27 / .75),oklch(0.68 0.15 230 / .7),oklch(0.5 0.26 300 / .72),oklch(0.55 0.2 265 / .7),transparent);pointer-events:none;animation:sheen 1.8s ease-in-out infinite"></span>
+        <span style="position:relative">{{ loginTitle }}</span>
+      </button>
+      <button onClick="{{ toggleSignup }}" style="position:relative;z-index:1;background:none;border:none;color:oklch(0.85 0.13 195);font:inherit;font-size:14px;cursor:pointer;transition:transform .2s ease,color .2s ease" style-hover="transform:translateY(-1px);color:oklch(0.92 0.1 195)">{{ loginSwitch }}</button>
+      <div style="position:relative;z-index:1;border-top:1px solid oklch(1 0 0 / .12);padding-top:14px">
+        <button onClick="{{ goShop }}" style="position:relative;overflow:hidden;background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .16);color:inherit;padding:13px 22px;border-radius:12px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;width:100%;transition:transform .26s cubic-bezier(.2,.8,.3,1.5),box-shadow .26s ease,border-color .26s ease" style-hover="transform:translateY(-3px);border-color:oklch(0.85 0.13 195 / .6);box-shadow:0 14px 30px oklch(0.6 0.18 300 / .35)" style-active="transform:scale(.96)">
+          <span style="position:absolute;top:0;bottom:0;width:40%;background:linear-gradient(100deg,transparent,oklch(0.6 0.24 27 / .5),oklch(0.72 0.15 230 / .5),oklch(0.58 0.26 300 / .5),oklch(0.6 0.2 265 / .48),transparent);pointer-events:none;animation:sheen 2.1s ease-in-out infinite;animation-delay:.4s"></span>
+          <span style="position:relative">{{ t.s_guest }}</span>
+        </button>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- CONTACT -->
+  <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:900px;margin:0 auto;padding:44px 22px 60px">
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;font-weight:700;margin:0">{{ t.s_contact }}</h1>
+    <p style="margin:10px 0 26px;color:oklch(0.78 0.01 265);font-size:16px">{{ t.s_contact_sub }}</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px" class="herogrid">
+      <a href="{{ waLink }}" style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:10px;color:inherit;text-decoration:none">
+        <span style="font-size:30px">💬</span>
+        <span style="font-weight:800;font-size:17px">WhatsApp</span>
+        <span style="font-size:14px;color:oklch(0.75 0.01 265)">{{ whatsapp }}</span>
+        <span style="font-size:13px;color:oklch(0.85 0.16 150);font-weight:700">{{ t.s_reply }}</span>
+      </a>
+      <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <span style="font-size:30px">✉️</span>
+        <span style="font-weight:800;font-size:17px">Email</span>
+        <span style="font-size:14px;color:oklch(0.75 0.01 265)">support@{{ siteUrl }}</span>
+        <span style="font-size:13px;color:oklch(0.75 0.01 265)">{{ t.s_reply_mail }}</span>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- ADMIN LOGIN -->
+  <sc-if value="{{ isAdminLogin }}" hint-placeholder-val="{{ false }}">
+  <section style="max-width:430px;margin:0 auto;padding:80px 22px">
+    <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.17 0.014 265),oklch(0.17 0.014 265)) padding-box,linear-gradient(135deg,oklch(0.8 0.18 60),oklch(0.65 0.22 25)) border-box;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;gap:11px">
+        <span style="width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,oklch(0.8 0.18 60),oklch(0.65 0.22 25));color:oklch(0.15 0.012 265);font-weight:800;font-size:17px">⚙</span>
+        <div style="display:flex;flex-direction:column">
+          <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px">{{ t.s_admin }}</span>
+          <span style="font-size:12.5px;color:oklch(0.68 0.01 265)">{{ t.s_admin_only }}</span>
+        </div>
+      </div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_email }}</span>
+        <input type="email" value="{{ adminEmail }}" onChange="{{ setAdminEmail }}" placeholder="admin@primevault.pk" style="width:100%;background:oklch(0.12 0.012 265 / .9);border:1px solid oklch(1 0 0 / .14);color:inherit;padding:13px 15px;border-radius:11px;font:inherit;font-size:15px" />
+      </div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ t.s_password }}</span>
+        <input type="password" value="{{ adminPass }}" onChange="{{ setAdminPass }}" placeholder="••••••••" style="width:100%;background:oklch(0.12 0.012 265 / .9);border:1px solid oklch(1 0 0 / .14);color:inherit;padding:13px 15px;border-radius:11px;font:inherit;font-size:15px" />
+      </div>
+      <sc-if value="{{ adminError }}" hint-placeholder-val="{{ false }}">
+        <span style="font-size:13.5px;color:oklch(0.72 0.2 25);font-weight:600">{{ t.s_bad_creds }}</span>
+      </sc-if>
+      <button onClick="{{ doAdminLogin }}" style="background:linear-gradient(135deg,oklch(0.8 0.18 60),oklch(0.68 0.22 28));color:oklch(0.15 0.012 265);border:none;padding:13px;border-radius:12px;font:inherit;font-weight:800;font-size:15px;cursor:pointer">{{ t.s_login }}</button>
+      <span style="font-size:12.5px;color:oklch(0.6 0.01 265);text-align:center">{{ t.s_demo_creds }}</span>
+      <button onClick="{{ goHome }}" style="background:none;border:none;color:oklch(0.85 0.13 195);font:inherit;font-size:14px;cursor:pointer">← {{ t.s_back_store }}</button>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- ADMIN PORTAL -->
+  <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+  <header style="position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);background:oklch(0.12 0.012 265 / .88);border-bottom:1px solid oklch(0.8 0.18 60 / .28)">
+    <div style="max-width:1100px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:11px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px">
+        <span style="width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,oklch(0.8 0.18 60),oklch(0.65 0.22 25));color:oklch(0.15 0.012 265);font-weight:800">⚙</span>
+        <span>{{ brandName }} · {{ t.s_admin }}</span>
+      </div>
+      <div style="margin-inline-start:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-size:13.5px;color:oklch(0.72 0.01 265)">{{ authEmail }}</span>
+        <button onClick="{{ goHome }}" style="background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .14);color:inherit;padding:9px 14px;border-radius:10px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer">{{ t.s_view_store }}</button>
+        <button onClick="{{ logout }}" style="background:oklch(0.65 0.22 25 / .16);border:1px solid oklch(0.65 0.22 25 / .4);color:oklch(0.82 0.18 25);padding:9px 14px;border-radius:10px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer">{{ t.s_logout }}</button>
+      </div>
+    </div>
+  </header>
+  <section style="max-width:1100px;margin:0 auto;padding:44px 22px 60px">
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,3.2vw,38px);letter-spacing:-.02em;font-weight:700;margin:0">{{ t.s_dashboard }}</h1>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0 28px" class="prodgrid">
+      <sc-for list="{{ adminStats }}" as="st" hint-placeholder-count="4">
+        <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:5px">
+          <span style="font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:oklch(0.68 0.01 265);font-weight:700">{{ st.label }}</span>
+          <span style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:{{ st.color }}">{{ st.value }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:600;margin:0 0 14px">{{ t.s_stock }}</h2>
+    <div style="display:grid;gap:10px">
+      <sc-for list="{{ stock }}" as="sk" hint-placeholder-count="6">
+        <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:15px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <span style="font-weight:700;font-size:15px;flex:1;min-width:130px">{{ sk.name }}</span>
+          <span style="font-size:13px;color:oklch(0.7 0.01 265)">{{ sk.quality }}</span>
+          <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;color:{{ sk.countColor }}">{{ sk.count }}</span>
+          <span style="font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:999px;{{ sk.badge }}">{{ sk.label }}</span>
+          <button onClick="{{ sk.add }}" style="background:oklch(1 0 0 / .06);border:1px solid oklch(1 0 0 / .14);color:inherit;padding:13px 22px;border-radius:12px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;padding:8px 14px;font-size:13px">+ {{ t.s_add_stock }}</button>
+        </div>
+      </sc-for>
+    </div>
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:600;margin:32px 0 14px">{{ t.s_orders }}</h2>
+    <div style="display:grid;gap:10px">
+      <sc-for list="{{ orders }}" as="ao" hint-placeholder-count="3">
+        <div style="border:1.5px solid transparent;background:linear-gradient(oklch(0.19 0.014 265 / .9),oklch(0.19 0.014 265 / .9)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195 / .55),oklch(0.75 0.19 300 / .55)) border-box;border-radius:18px;padding:15px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <span style="font-size:12.5px;color:oklch(0.68 0.01 265);min-width:96px">{{ ao.id }}</span>
+          <span style="font-weight:700;font-size:15px;flex:1;min-width:130px">{{ ao.name }}</span>
+          <span style="font-size:13px;color:oklch(0.7 0.01 265)">{{ ao.date }}</span>
+          <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px">{{ ao.total }}</span>
+          <span style="font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:999px;{{ ao.badge }}">{{ ao.status }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  </sc-if>
+
+  <footer style="border-top:1px solid oklch(1 0 0 / .08);margin-top:40px;background:linear-gradient(oklch(0.13 0.012 265 / .78),oklch(0.13 0.012 265 / .92));backdrop-filter:blur(3px)">
+    <div style="max-width:1200px;margin:0 auto;padding:26px 22px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:oklch(0.82 0.01 265);font-size:13.5px">
+      <span>© {{ brandName }} — {{ t.footer }}</span>
+      <div style="display:flex;gap:16px;align-items:center">
+        <span>{{ siteUrl }}</span>
+        <button onClick="{{ goAdmin }}" style="background:none;border:none;color:oklch(0.62 0.01 265);font:inherit;font-size:13px;cursor:pointer;text-decoration:underline" style-hover="color:oklch(0.85 0.13 195)">{{ t.s_admin }}</button>
+      </div>
+    </div>
+  </footer>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <sc-if value="{{ checkoutOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeCheckout }}" style="position:fixed;inset:0;z-index:60;background:oklch(0.1 0.01 265 / .72);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px">
+      <div onClick="{{ stop }}" style="width:100%;max-width:420px;background:oklch(0.19 0.014 265);border:1px solid oklch(1 0 0 / .13);border-radius:22px;padding:24px;box-shadow:0 40px 100px oklch(0 0 0 / .6);animation:rise .3s ease">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px">{{ activeName }}</div>
+          <button onClick="{{ closeCheckout }}" style="background:oklch(1 0 0 / .07);border:none;color:inherit;width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:16px">✕</button>
+        </div>
+        <div style="height:6px;background:oklch(1 0 0 / .08);border-radius:99px;margin:16px 0;overflow:hidden"><div style="height:100%;width:{{ progressPct }};background:linear-gradient(90deg,{{ accent }},{{ accent2 }});transition:width .4s"></div></div>
+        {{ checkoutBody }}
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:900},&quot;brandName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;PrimeVault&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;oklch(0.85 0.13 195)&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;oklch(0.85 0.13 195)&quot;,&quot;oklch(0.82 0.15 145)&quot;,&quot;oklch(0.8 0.16 300)&quot;,&quot;oklch(0.83 0.15 85)&quot;]},&quot;defaultLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;en&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ur&quot;,&quot;ar&quot;,&quot;es&quot;,&quot;tr&quot;,&quot;fr&quot;,&quot;hi&quot;,&quot;pt&quot;],&quot;tsType&quot;:&quot;string&quot;},&quot;siteUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;www.primevault.pk&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;whatsappNumber&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;+92 300 1234567&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+
+  L() { return this.state.lang || this.props.defaultLang || 'en'; }
+
+  dict() {
+    return {
+      en:{n:'English',dir:'ltr',nav_products:'Products',nav_how:'How it works',nav_payments:'Payments',nav_order:'Order Now',
+        hero_badge:'100% Automated · Instant Delivery',hero_title:'Premium subscriptions. Paid & delivered in seconds.',
+        hero_sub:'No screenshots, no WhatsApp waiting. Pay through a secure gateway and your account details appear instantly on screen and in your email.',
+        hero_cta1:'Browse plans',hero_cta2:'See how it works',stat1_n:'<30s',stat1_l:'Avg delivery',stat2_l:'Languages',stat3_l:'Auto delivery',
+        prod_title:'All your premium accounts, one store',prod_sub:'Cheapest market rate with guaranteed replacement warranty.',prod_buy:'Buy Now',prod_warranty:'Warranty',
+        steps_kicker:'The magic',steps_title:'From click to account in under a minute',
+        pay_title:'Pay your way — fully automatic',pay_sub:'Direct mobile wallets and any bank card. The gateway verifies every transaction in the background.',
+        cta_title:'Save your time. Get instant access.',cta_sub:'Visit the store, pay, and enjoy premium — no delay.',cta_btn:'Order Now',
+        deliver_success:'Payment Successful!',deliver_creds:'Your account details',footer:'Fully automated premium store',
+        c_method:'Choose payment method',c_number:'Enter your mobile number',c_pin:'Approve on your phone',c_pin_sub:'A PIN request was sent to your device. Approving…',c_success:'Payment successful — delivering your account',c_delivered:'Delivered! Check your email too.',c_pay:'Pay',c_continue:'Continue',c_done:'Done',s_home:'Home',s_shop_title:'Shop',s_shop_sub:'Every premium account, cheapest market rate, instant delivery.',s_view:'View plan',s_back:'Back',s_duration:'Choose duration',s_month:'month',s_months:'months',s_total:'Total',s_instant:'Delivered to your screen and email within seconds.',s_addcart:'Add to cart',s_cart:'Cart',s_cart_empty:'Your cart is empty.',s_checkout:'Checkout',s_email:'Email',s_whatsapp:'WhatsApp number',s_deliver_note:'Account details are sent to both your email and WhatsApp.',s_to_payment:'Continue to payment',s_summary:'Order summary',s_details:'Details',s_payment:'Payment',s_done:'Done',s_wallet:'Mobile wallet · instant approval',s_card:'Any bank card · Visa / Mastercard',s_orders:'My orders',s_delivered:'Delivered',s_login:'Log in',s_signup:'Sign up',s_have_acc:'Already have an account? Log in',s_no_acc:'No account? Sign up',s_password:'Password',s_guest:'Continue as guest',s_contact:'Contact & support',s_contact_sub:'Any question, any time — we reply fast.',s_reply:'Usually replies in minutes',s_reply_mail:'Replies within a few hours',s_admin:'Admin panel',s_stock:'Account stock',s_add_stock:'Add 5',s_orders_today:'Orders today',s_revenue:'Revenue today',s_in_stock_total:'Accounts in stock',s_low_stock:'Low stock',s_low:'Low',s_ok:'OK',s_all:'All',s_bundles:'Bundles',s_instock:'In stock',s_logout:'Log out',s_admin_only:'Authorised staff only',s_bad_creds:'Wrong email or password',s_demo_creds:'Demo: admin@primevault.pk / admin123',s_back_store:'Back to store',s_view_store:'View store',s_dashboard:'Dashboard',s_quality:'Choose quality'},
+      ur:{n:'اردو',dir:'rtl',nav_products:'پروڈکٹس',nav_how:'یہ کیسے کام کرتا ہے',nav_payments:'ادائیگی',nav_order:'ابھی آرڈر کریں',
+        hero_badge:'100% خودکار · فوری ڈیلیوری',hero_title:'پریمیم سبسکرپشنز۔ چند سیکنڈ میں ادائیگی اور ڈیلیوری۔',
+        hero_sub:'نہ اسکرین شاٹ، نہ واٹس ایپ کا انتظار۔ محفوظ گیٹ وے سے ادائیگی کریں اور آپ کے اکاؤنٹ کی تفصیلات فوراً اسکرین اور ای میل پر آ جائیں گی۔',
+        hero_cta1:'پلانز دیکھیں',hero_cta2:'یہ کیسے کام کرتا ہے',stat1_n:'<30s',stat1_l:'اوسط ڈیلیوری',stat2_l:'زبانیں',stat3_l:'خودکار ڈیلیوری',
+        prod_title:'تمام پریمیم اکاؤنٹس، ایک ہی اسٹور',prod_sub:'مارکیٹ میں سب سے سستے ریٹ اور ضمانتی ریپلیسمنٹ وارنٹی کے ساتھ۔',prod_buy:'ابھی خریدیں',prod_warranty:'وارنٹی',
+        steps_kicker:'کمال',steps_title:'کلک سے اکاؤنٹ تک، ایک منٹ سے بھی کم میں',
+        pay_title:'اپنی مرضی سے ادائیگی — مکمل خودکار',pay_sub:'براہِ راست موبائل والٹ اور کوئی بھی بینک کارڈ۔ گیٹ وے ہر ٹرانزیکشن کی خود تصدیق کرتا ہے۔',
+        cta_title:'اپنا وقت بچائیں۔ فوری رسائی حاصل کریں۔',cta_sub:'اسٹور پر جائیں، ادائیگی کریں، اور بغیر تاخیر کے پریمیم کا مزہ لیں۔',cta_btn:'ابھی آرڈر کریں',
+        deliver_success:'ادائیگی کامیاب!',deliver_creds:'آپ کے اکاؤنٹ کی تفصیلات',footer:'مکمل خودکار پریمیم اسٹور',
+        c_method:'ادائیگی کا طریقہ منتخب کریں',c_number:'اپنا موبائل نمبر درج کریں',c_pin:'اپنے فون پر منظوری دیں',c_pin_sub:'آپ کے ڈیوائس پر پن کی درخواست بھیجی گئی۔ منظوری ہو رہی ہے…',c_success:'ادائیگی کامیاب — آپ کا اکاؤنٹ بھیجا جا رہا ہے',c_delivered:'ڈیلیور ہو گیا! اپنی ای میل بھی دیکھیں۔',c_pay:'ادائیگی کریں',c_continue:'جاری رکھیں',c_done:'مکمل',s_home:'ہوم',s_shop_title:'اسٹور',s_shop_sub:'ہر پریمیم اکاؤنٹ، سب سے سستے ریٹ، فوری ڈیلیوری۔',s_view:'پلان دیکھیں',s_back:'واپس',s_duration:'مدت منتخب کریں',s_month:'ماہ',s_months:'ماہ',s_total:'کل',s_instant:'چند سیکنڈ میں آپ کی اسکرین اور ای میل پر۔',s_addcart:'کارٹ میں شامل کریں',s_cart:'کارٹ',s_cart_empty:'آپ کا کارٹ خالی ہے۔',s_checkout:'چیک آؤٹ',s_email:'ای میل',s_whatsapp:'واٹس ایپ نمبر',s_deliver_note:'اکاؤنٹ کی تفصیلات ای میل اور واٹس ایپ دونوں پر بھیجی جاتی ہیں۔',s_to_payment:'ادائیگی کی طرف بڑھیں',s_summary:'آرڈر کا خلاصہ',s_details:'تفصیلات',s_payment:'ادائیگی',s_done:'مکمل',s_wallet:'موبائل والٹ · فوری منظوری',s_card:'کوئی بھی بینک کارڈ · ویزا / ماسٹرکارڈ',s_orders:'میرے آرڈرز',s_delivered:'ڈیلیور ہو گیا',s_login:'لاگ اِن',s_signup:'سائن اپ',s_have_acc:'پہلے سے اکاؤنٹ ہے؟ لاگ اِن کریں',s_no_acc:'اکاؤنٹ نہیں؟ سائن اپ کریں',s_password:'پاس ورڈ',s_guest:'بطور مہمان جاری رکھیں',s_contact:'رابطہ اور سپورٹ',s_contact_sub:'کوئی بھی سوال، کسی بھی وقت — ہم فوراً جواب دیتے ہیں۔',s_reply:'عموماً منٹوں میں جواب',s_reply_mail:'چند گھنٹوں میں جواب',s_admin:'ایڈمن پینل',s_stock:'اکاؤنٹ اسٹاک',s_add_stock:'5 شامل کریں',s_orders_today:'آج کے آرڈرز',s_revenue:'آج کی آمدنی',s_in_stock_total:'اسٹاک میں اکاؤنٹس',s_low_stock:'کم اسٹاک',s_low:'کم',s_ok:'ٹھیک',s_all:'سب',s_bundles:'بنڈلز',s_instock:'اسٹاک میں',s_logout:'لاگ آؤٹ',s_admin_only:'صرف مجاز عملہ',s_bad_creds:'ای میل یا پاس ورڈ غلط ہے',s_demo_creds:'ڈیمو: admin@primevault.pk / admin123',s_back_store:'اسٹور پر واپس',s_view_store:'اسٹور دیکھیں',s_dashboard:'ڈیش بورڈ',s_quality:'کوالٹی منتخب کریں'},
+      ar:{n:'العربية',dir:'rtl',nav_products:'المنتجات',nav_how:'كيف يعمل',nav_payments:'الدفع',nav_order:'اطلب الآن',
+        hero_badge:'مؤتمت 100% · تسليم فوري',hero_title:'اشتراكات مميزة. الدفع والتسليم في ثوانٍ.',
+        hero_sub:'لا لقطات شاشة ولا انتظار على واتساب. ادفع عبر بوابة آمنة وتظهر تفاصيل حسابك فوراً على الشاشة وفي بريدك.',
+        hero_cta1:'تصفح الباقات',hero_cta2:'كيف يعمل',stat1_n:'<30s',stat1_l:'متوسط التسليم',stat2_l:'لغات',stat3_l:'تسليم آلي',
+        prod_title:'كل حساباتك المميزة في متجر واحد',prod_sub:'أرخص سعر في السوق مع ضمان استبدال مضمون.',prod_buy:'اشترِ الآن',prod_warranty:'ضمان',
+        steps_kicker:'السحر',steps_title:'من النقر إلى الحساب في أقل من دقيقة',
+        pay_title:'ادفع كما تريد — آلي بالكامل',pay_sub:'محافظ الهاتف المباشرة وأي بطاقة بنكية. تتحقق البوابة من كل معاملة تلقائياً.',
+        cta_title:'وفّر وقتك. احصل على وصول فوري.',cta_sub:'زُر المتجر، ادفع، واستمتع بالمزايا دون تأخير.',cta_btn:'اطلب الآن',
+        deliver_success:'تم الدفع بنجاح!',deliver_creds:'تفاصيل حسابك',footer:'متجر مميز مؤتمت بالكامل',
+        c_method:'اختر طريقة الدفع',c_number:'أدخل رقم هاتفك',c_pin:'وافق على هاتفك',c_pin_sub:'تم إرسال طلب رمز إلى جهازك. جارٍ الموافقة…',c_success:'تم الدفع — يتم تسليم حسابك',c_delivered:'تم التسليم! تحقق من بريدك أيضاً.',c_pay:'ادفع',c_continue:'متابعة',c_done:'تم',s_home:'الرئيسية',s_shop_title:'المتجر',s_shop_sub:'كل حساب مميز، أرخص سعر، تسليم فوري.',s_view:'عرض الباقة',s_back:'رجوع',s_duration:'اختر المدة',s_month:'شهر',s_months:'أشهر',s_total:'الإجمالي',s_instant:'يُسلَّم إلى شاشتك وبريدك في ثوانٍ.',s_addcart:'أضف إلى السلة',s_cart:'السلة',s_cart_empty:'سلتك فارغة.',s_checkout:'إتمام الشراء',s_email:'البريد الإلكتروني',s_whatsapp:'رقم واتساب',s_deliver_note:'تُرسل بيانات الحساب إلى بريدك وواتساب.',s_to_payment:'متابعة إلى الدفع',s_summary:'ملخص الطلب',s_details:'البيانات',s_payment:'الدفع',s_done:'تم',s_wallet:'محفظة الهاتف · موافقة فورية',s_card:'أي بطاقة بنكية · فيزا / ماستركارد',s_orders:'طلباتي',s_delivered:'تم التسليم',s_login:'تسجيل الدخول',s_signup:'إنشاء حساب',s_have_acc:'لديك حساب؟ سجّل الدخول',s_no_acc:'لا يوجد حساب؟ أنشئ حساباً',s_password:'كلمة المرور',s_guest:'المتابعة كزائر',s_contact:'التواصل والدعم',s_contact_sub:'أي سؤال، في أي وقت — نرد بسرعة.',s_reply:'يرد عادةً في دقائق',s_reply_mail:'يرد خلال ساعات',s_admin:'لوحة الإدارة',s_stock:'مخزون الحسابات',s_add_stock:'أضف 5',s_orders_today:'طلبات اليوم',s_revenue:'إيرادات اليوم',s_in_stock_total:'حسابات في المخزون',s_low_stock:'مخزون منخفض',s_low:'منخفض',s_ok:'جيد',s_all:'الكل',s_bundles:'الحزم',s_instock:'متوفر',s_logout:'تسجيل الخروج',s_admin_only:'للموظفين المصرح لهم فقط',s_bad_creds:'البريد أو كلمة المرور غير صحيحة',s_demo_creds:'تجريبي: admin@primevault.pk / admin123',s_back_store:'رجوع إلى المتجر',s_view_store:'عرض المتجر',s_dashboard:'لوحة المعلومات',s_quality:'اختر الجودة'},
+      es:{n:'Español',dir:'ltr',nav_products:'Productos',nav_how:'Cómo funciona',nav_payments:'Pagos',nav_order:'Ordenar ahora',
+        hero_badge:'100% Automático · Entrega instantánea',hero_title:'Suscripciones premium. Pago y entrega en segundos.',
+        hero_sub:'Sin capturas, sin esperar en WhatsApp. Paga con una pasarela segura y los datos de tu cuenta aparecen al instante en pantalla y en tu correo.',
+        hero_cta1:'Ver planes',hero_cta2:'Cómo funciona',stat1_n:'<30s',stat1_l:'Entrega media',stat2_l:'Idiomas',stat3_l:'Entrega automática',
+        prod_title:'Todas tus cuentas premium en una tienda',prod_sub:'El precio más bajo del mercado con garantía de reemplazo.',prod_buy:'Comprar',prod_warranty:'Garantía',
+        steps_kicker:'La magia',steps_title:'Del clic a la cuenta en menos de un minuto',
+        pay_title:'Paga a tu manera — totalmente automático',pay_sub:'Billeteras móviles y cualquier tarjeta. La pasarela verifica cada transacción automáticamente.',
+        cta_title:'Ahorra tiempo. Acceso instantáneo.',cta_sub:'Visita la tienda, paga y disfruta premium sin demora.',cta_btn:'Ordenar ahora',
+        deliver_success:'¡Pago exitoso!',deliver_creds:'Datos de tu cuenta',footer:'Tienda premium totalmente automática',
+        c_method:'Elige método de pago',c_number:'Ingresa tu número de móvil',c_pin:'Aprueba en tu teléfono',c_pin_sub:'Se envió una solicitud de PIN a tu dispositivo. Aprobando…',c_success:'Pago exitoso — entregando tu cuenta',c_delivered:'¡Entregado! Revisa tu correo también.',c_pay:'Pagar',c_continue:'Continuar',c_done:'Listo',s_home:'Inicio',s_shop_title:'Tienda',s_shop_sub:'Todas las cuentas premium, el precio más bajo, entrega instantánea.',s_view:'Ver plan',s_back:'Atrás',s_duration:'Elige la duración',s_month:'mes',s_months:'meses',s_total:'Total',s_instant:'Entregado en tu pantalla y correo en segundos.',s_addcart:'Añadir al carrito',s_cart:'Carrito',s_cart_empty:'Tu carrito está vacío.',s_checkout:'Pagar',s_email:'Correo',s_whatsapp:'Número de WhatsApp',s_deliver_note:'Los datos se envían a tu correo y a WhatsApp.',s_to_payment:'Continuar al pago',s_summary:'Resumen del pedido',s_details:'Datos',s_payment:'Pago',s_done:'Listo',s_wallet:'Billetera móvil · aprobación instantánea',s_card:'Cualquier tarjeta · Visa / Mastercard',s_orders:'Mis pedidos',s_delivered:'Entregado',s_login:'Iniciar sesión',s_signup:'Registrarse',s_have_acc:'¿Ya tienes cuenta? Inicia sesión',s_no_acc:'¿Sin cuenta? Regístrate',s_password:'Contraseña',s_guest:'Continuar como invitado',s_contact:'Contacto y soporte',s_contact_sub:'Cualquier duda, a cualquier hora — respondemos rápido.',s_reply:'Responde en minutos',s_reply_mail:'Responde en pocas horas',s_admin:'Panel de administración',s_stock:'Stock de cuentas',s_add_stock:'Añadir 5',s_orders_today:'Pedidos hoy',s_revenue:'Ingresos hoy',s_in_stock_total:'Cuentas en stock',s_low_stock:'Stock bajo',s_low:'Bajo',s_ok:'OK',s_all:'Todos',s_bundles:'Paquetes',s_instock:'En stock',s_logout:'Cerrar sesión',s_admin_only:'Solo personal autorizado',s_bad_creds:'Correo o contraseña incorrectos',s_demo_creds:'Demo: admin@primevault.pk / admin123',s_back_store:'Volver a la tienda',s_view_store:'Ver tienda',s_dashboard:'Panel',s_quality:'Elige la calidad'},
+      tr:{n:'Türkçe',dir:'ltr',nav_products:'Ürünler',nav_how:'Nasıl çalışır',nav_payments:'Ödemeler',nav_order:'Şimdi sipariş ver',
+        hero_badge:'%100 Otomatik · Anında teslimat',hero_title:'Premium abonelikler. Saniyeler içinde ödeme ve teslimat.',
+        hero_sub:'Ekran görüntüsü yok, WhatsApp beklemesi yok. Güvenli ağ geçidiyle ödeyin, hesap bilgileriniz anında ekranda ve e-postanızda.',
+        hero_cta1:'Planlara göz at',hero_cta2:'Nasıl çalışır',stat1_n:'<30s',stat1_l:'Ort. teslimat',stat2_l:'Diller',stat3_l:'Otomatik teslimat',
+        prod_title:'Tüm premium hesaplarınız tek mağazada',prod_sub:'Garantili değişim ile piyasanın en ucuz fiyatı.',prod_buy:'Satın al',prod_warranty:'Garanti',
+        steps_kicker:'Sihir',steps_title:'Tıklamadan hesaba bir dakikadan kısa sürede',
+        pay_title:'Dilediğiniz gibi ödeyin — tamamen otomatik',pay_sub:'Mobil cüzdanlar ve her banka kartı. Ağ geçidi her işlemi otomatik doğrular.',
+        cta_title:'Zamandan tasarruf edin. Anında erişin.',cta_sub:'Mağazayı ziyaret edin, ödeyin ve gecikmeden premium keyfini çıkarın.',cta_btn:'Şimdi sipariş ver',
+        deliver_success:'Ödeme başarılı!',deliver_creds:'Hesap bilgileriniz',footer:'Tamamen otomatik premium mağaza',
+        c_method:'Ödeme yöntemi seçin',c_number:'Cep telefonu numaranızı girin',c_pin:'Telefonunuzda onaylayın',c_pin_sub:'Cihazınıza PIN isteği gönderildi. Onaylanıyor…',c_success:'Ödeme başarılı — hesabınız teslim ediliyor',c_delivered:'Teslim edildi! E-postanızı da kontrol edin.',c_pay:'Öde',c_continue:'Devam',c_done:'Tamam',s_home:'Ana sayfa',s_shop_title:'Mağaza',s_shop_sub:'Tüm premium hesaplar, en ucuz fiyat, anında teslimat.',s_view:'Planı gör',s_back:'Geri',s_duration:'Süre seçin',s_month:'ay',s_months:'ay',s_total:'Toplam',s_instant:'Saniyeler içinde ekranınıza ve e-postanıza teslim.',s_addcart:'Sepete ekle',s_cart:'Sepet',s_cart_empty:'Sepetiniz boş.',s_checkout:'Ödeme',s_email:'E-posta',s_whatsapp:'WhatsApp numarası',s_deliver_note:'Hesap bilgileri e-postanıza ve WhatsApp’a gönderilir.',s_to_payment:'Ödemeye geç',s_summary:'Sipariş özeti',s_details:'Bilgiler',s_payment:'Ödeme',s_done:'Tamam',s_wallet:'Mobil cüzdan · anında onay',s_card:'Her banka kartı · Visa / Mastercard',s_orders:'Siparişlerim',s_delivered:'Teslim edildi',s_login:'Giriş yap',s_signup:'Kayıt ol',s_have_acc:'Hesabınız var mı? Giriş yapın',s_no_acc:'Hesabınız yok mu? Kayıt olun',s_password:'Şifre',s_guest:'Misafir olarak devam',s_contact:'İletişim ve destek',s_contact_sub:'Her soru, her zaman — hızlı yanıtlıyoruz.',s_reply:'Genelde dakikalar içinde yanıtlar',s_reply_mail:'Birkaç saat içinde yanıtlar',s_admin:'Yönetim paneli',s_stock:'Hesap stoğu',s_add_stock:'5 ekle',s_orders_today:'Bugünkü siparişler',s_revenue:'Bugünkü gelir',s_in_stock_total:'Stoktaki hesaplar',s_low_stock:'Az stok',s_low:'Az',s_ok:'Tamam',s_all:'Tümü',s_bundles:'Paketler',s_instock:'Stokta',s_logout:'Çıkış yap',s_admin_only:'Yalnızca yetkili personel',s_bad_creds:'E-posta veya şifre hatalı',s_demo_creds:'Demo: admin@primevault.pk / admin123',s_back_store:'Mağazaya dön',s_view_store:'Mağazayı gör',s_dashboard:'Panel',s_quality:'Kalite seçin'},
+      fr:{n:'Français',dir:'ltr',nav_products:'Produits',nav_how:'Comment ça marche',nav_payments:'Paiements',nav_order:'Commander',
+        hero_badge:'100% Automatique · Livraison instantanée',hero_title:'Abonnements premium. Payés et livrés en quelques secondes.',
+        hero_sub:'Pas de captures, pas d’attente sur WhatsApp. Payez via une passerelle sécurisée et vos identifiants apparaissent aussitôt à l’écran et par e-mail.',
+        hero_cta1:'Voir les offres',hero_cta2:'Comment ça marche',stat1_n:'<30s',stat1_l:'Livraison moy.',stat2_l:'Langues',stat3_l:'Livraison auto',
+        prod_title:'Tous vos comptes premium, une boutique',prod_sub:'Le prix le plus bas du marché avec garantie de remplacement.',prod_buy:'Acheter',prod_warranty:'Garantie',
+        steps_kicker:'La magie',steps_title:'Du clic au compte en moins d’une minute',
+        pay_title:'Payez comme vous voulez — 100% automatique',pay_sub:'Portefeuilles mobiles et toute carte bancaire. La passerelle vérifie chaque transaction automatiquement.',
+        cta_title:'Gagnez du temps. Accès instantané.',cta_sub:'Visitez la boutique, payez et profitez du premium sans délai.',cta_btn:'Commander',
+        deliver_success:'Paiement réussi !',deliver_creds:'Détails de votre compte',footer:'Boutique premium entièrement automatisée',
+        c_method:'Choisissez le mode de paiement',c_number:'Entrez votre numéro de mobile',c_pin:'Approuvez sur votre téléphone',c_pin_sub:'Une demande de code a été envoyée à votre appareil. Approbation…',c_success:'Paiement réussi — livraison de votre compte',c_delivered:'Livré ! Vérifiez aussi votre e-mail.',c_pay:'Payer',c_continue:'Continuer',c_done:'Terminé',s_home:'Accueil',s_shop_title:'Boutique',s_shop_sub:'Tous les comptes premium, le prix le plus bas, livraison instantanée.',s_view:'Voir l’offre',s_back:'Retour',s_duration:'Choisissez la durée',s_month:'mois',s_months:'mois',s_total:'Total',s_instant:'Livré à l’écran et par e-mail en quelques secondes.',s_addcart:'Ajouter au panier',s_cart:'Panier',s_cart_empty:'Votre panier est vide.',s_checkout:'Paiement',s_email:'E-mail',s_whatsapp:'Numéro WhatsApp',s_deliver_note:'Les identifiants sont envoyés par e-mail et sur WhatsApp.',s_to_payment:'Continuer vers le paiement',s_summary:'Récapitulatif',s_details:'Informations',s_payment:'Paiement',s_done:'Terminé',s_wallet:'Portefeuille mobile · validation immédiate',s_card:'Toute carte bancaire · Visa / Mastercard',s_orders:'Mes commandes',s_delivered:'Livré',s_login:'Se connecter',s_signup:'S’inscrire',s_have_acc:'Déjà un compte ? Connectez-vous',s_no_acc:'Pas de compte ? Inscrivez-vous',s_password:'Mot de passe',s_guest:'Continuer en invité',s_contact:'Contact et assistance',s_contact_sub:'Une question, à tout moment — nous répondons vite.',s_reply:'Répond en quelques minutes',s_reply_mail:'Répond en quelques heures',s_admin:'Panneau d’administration',s_stock:'Stock de comptes',s_add_stock:'Ajouter 5',s_orders_today:'Commandes du jour',s_revenue:'Revenus du jour',s_in_stock_total:'Comptes en stock',s_low_stock:'Stock faible',s_low:'Faible',s_ok:'OK',s_all:'Tous',s_bundles:'Packs',s_instock:'En stock',s_logout:'Se déconnecter',s_admin_only:'Personnel autorisé uniquement',s_bad_creds:'E-mail ou mot de passe incorrect',s_demo_creds:'Démo : admin@primevault.pk / admin123',s_back_store:'Retour à la boutique',s_view_store:'Voir la boutique',s_dashboard:'Tableau de bord',s_quality:'Choisissez la qualité'},
+      hi:{n:'हिंदी',dir:'ltr',nav_products:'प्रोडक्ट्स',nav_how:'यह कैसे काम करता है',nav_payments:'भुगतान',nav_order:'अभी ऑर्डर करें',
+        hero_badge:'100% स्वचालित · तुरंत डिलीवरी',hero_title:'प्रीमियम सब्सक्रिप्शन। सेकंडों में भुगतान और डिलीवरी।',
+        hero_sub:'न स्क्रीनशॉट, न व्हाट्सएप का इंतज़ार। सुरक्षित गेटवे से भुगतान करें और आपके अकाउंट की जानकारी तुरंत स्क्रीन और ईमेल पर आ जाएगी।',
+        hero_cta1:'प्लान देखें',hero_cta2:'यह कैसे काम करता है',stat1_n:'<30s',stat1_l:'औसत डिलीवरी',stat2_l:'भाषाएँ',stat3_l:'स्वतः डिलीवरी',
+        prod_title:'आपके सभी प्रीमियम अकाउंट, एक स्टोर',prod_sub:'गारंटीड रिप्लेसमेंट वारंटी के साथ मार्केट में सबसे सस्ता रेट।',prod_buy:'अभी खरीदें',prod_warranty:'वारंटी',
+        steps_kicker:'कमाल',steps_title:'क्लिक से अकाउंट तक, एक मिनट से भी कम में',
+        pay_title:'अपने तरीके से भुगतान करें — पूरी तरह स्वचालित',pay_sub:'मोबाइल वॉलेट और कोई भी बैंक कार्ड। गेटवे हर लेन-देन को स्वतः सत्यापित करता है।',
+        cta_title:'अपना समय बचाएँ। तुरंत एक्सेस पाएँ।',cta_sub:'स्टोर पर जाएँ, भुगतान करें, और बिना देरी प्रीमियम का आनंद लें।',cta_btn:'अभी ऑर्डर करें',
+        deliver_success:'भुगतान सफल!',deliver_creds:'आपके अकाउंट की जानकारी',footer:'पूरी तरह स्वचालित प्रीमियम स्टोर',
+        c_method:'भुगतान विधि चुनें',c_number:'अपना मोबाइल नंबर दर्ज करें',c_pin:'अपने फ़ोन पर मंज़ूरी दें',c_pin_sub:'आपके डिवाइस पर पिन अनुरोध भेजा गया। मंज़ूरी हो रही है…',c_success:'भुगतान सफल — आपका अकाउंट भेजा जा रहा है',c_delivered:'डिलीवर हो गया! अपना ईमेल भी देखें।',c_pay:'भुगतान करें',c_continue:'जारी रखें',c_done:'हो गया',s_home:'होम',s_shop_title:'स्टोर',s_shop_sub:'हर प्रीमियम अकाउंट, सबसे सस्ता रेट, तुरंत डिलीवरी।',s_view:'प्लान देखें',s_back:'वापस',s_duration:'अवधि चुनें',s_month:'महीना',s_months:'महीने',s_total:'कुल',s_instant:'कुछ सेकंड में आपकी स्क्रीन और ईमेल पर।',s_addcart:'कार्ट में डालें',s_cart:'कार्ट',s_cart_empty:'आपका कार्ट खाली है।',s_checkout:'चेकआउट',s_email:'ईमेल',s_whatsapp:'व्हाट्सएप नंबर',s_deliver_note:'अकाउंट की जानकारी ईमेल और व्हाट्सएप दोनों पर भेजी जाती है।',s_to_payment:'भुगतान पर जाएँ',s_summary:'ऑर्डर सारांश',s_details:'जानकारी',s_payment:'भुगतान',s_done:'पूर्ण',s_wallet:'मोबाइल वॉलेट · तुरंत मंज़ूरी',s_card:'कोई भी बैंक कार्ड · Visa / Mastercard',s_orders:'मेरे ऑर्डर',s_delivered:'डिलीवर हो गया',s_login:'लॉग इन',s_signup:'साइन अप',s_have_acc:'अकाउंट है? लॉग इन करें',s_no_acc:'अकाउंट नहीं? साइन अप करें',s_password:'पासवर्ड',s_guest:'गेस्ट के रूप में जारी रखें',s_contact:'संपर्क और सहायता',s_contact_sub:'कोई भी सवाल, कभी भी — हम जल्दी जवाब देते हैं।',s_reply:'मिनटों में जवाब',s_reply_mail:'कुछ घंटों में जवाब',s_admin:'एडमिन पैनल',s_stock:'अकाउंट स्टॉक',s_add_stock:'5 जोड़ें',s_orders_today:'आज के ऑर्डर',s_revenue:'आज की आमदनी',s_in_stock_total:'स्टॉक में अकाउंट',s_low_stock:'कम स्टॉक',s_low:'कम',s_ok:'ठीक',s_all:'सभी',s_bundles:'बंडल',s_instock:'स्टॉक में',s_logout:'लॉग आउट',s_admin_only:'केवल अधिकृत स्टाफ',s_bad_creds:'ईमेल या पासवर्ड गलत है',s_demo_creds:'डेमो: admin@primevault.pk / admin123',s_back_store:'स्टोर पर वापस',s_view_store:'स्टोर देखें',s_dashboard:'डैशबोर्ड',s_quality:'क्वालिटी चुनें'},
+      pt:{n:'Português',dir:'ltr',nav_products:'Produtos',nav_how:'Como funciona',nav_payments:'Pagamentos',nav_order:'Peça agora',
+        hero_badge:'100% Automático · Entrega instantânea',hero_title:'Assinaturas premium. Pagas e entregues em segundos.',
+        hero_sub:'Sem prints, sem esperar no WhatsApp. Pague por um gateway seguro e os dados da sua conta aparecem na hora na tela e no e-mail.',
+        hero_cta1:'Ver planos',hero_cta2:'Como funciona',stat1_n:'<30s',stat1_l:'Entrega média',stat2_l:'Idiomas',stat3_l:'Entrega automática',
+        prod_title:'Todas as suas contas premium, uma loja',prod_sub:'O preço mais baixo do mercado com garantia de reposição.',prod_buy:'Comprar',prod_warranty:'Garantia',
+        steps_kicker:'A mágica',steps_title:'Do clique à conta em menos de um minuto',
+        pay_title:'Pague do seu jeito — totalmente automático',pay_sub:'Carteiras móveis e qualquer cartão. O gateway verifica cada transação automaticamente.',
+        cta_title:'Economize tempo. Acesso instantâneo.',cta_sub:'Visite a loja, pague e aproveite o premium sem atrasos.',cta_btn:'Peça agora',
+        deliver_success:'Pagamento aprovado!',deliver_creds:'Dados da sua conta',footer:'Loja premium totalmente automatizada',
+        c_method:'Escolha a forma de pagamento',c_number:'Digite seu número de celular',c_pin:'Aprove no seu telefone',c_pin_sub:'Um pedido de PIN foi enviado ao seu aparelho. Aprovando…',c_success:'Pagamento aprovado — entregando sua conta',c_delivered:'Entregue! Verifique seu e-mail também.',c_pay:'Pagar',c_continue:'Continuar',c_done:'Concluído',s_home:'Início',s_shop_title:'Loja',s_shop_sub:'Todas as contas premium, o preço mais baixo, entrega instantânea.',s_view:'Ver plano',s_back:'Voltar',s_duration:'Escolha a duração',s_month:'mês',s_months:'meses',s_total:'Total',s_instant:'Entregue na sua tela e e-mail em segundos.',s_addcart:'Adicionar ao carrinho',s_cart:'Carrinho',s_cart_empty:'Seu carrinho está vazio.',s_checkout:'Finalizar',s_email:'E-mail',s_whatsapp:'Número de WhatsApp',s_deliver_note:'Os dados são enviados por e-mail e WhatsApp.',s_to_payment:'Ir para o pagamento',s_summary:'Resumo do pedido',s_details:'Dados',s_payment:'Pagamento',s_done:'Concluído',s_wallet:'Carteira móvel · aprovação imediata',s_card:'Qualquer cartão · Visa / Mastercard',s_orders:'Meus pedidos',s_delivered:'Entregue',s_login:'Entrar',s_signup:'Criar conta',s_have_acc:'Já tem conta? Entre',s_no_acc:'Sem conta? Crie uma',s_password:'Senha',s_guest:'Continuar como visitante',s_contact:'Contato e suporte',s_contact_sub:'Qualquer dúvida, a qualquer hora — respondemos rápido.',s_reply:'Responde em minutos',s_reply_mail:'Responde em poucas horas',s_admin:'Painel de administração',s_stock:'Estoque de contas',s_add_stock:'Adicionar 5',s_orders_today:'Pedidos hoje',s_revenue:'Receita hoje',s_in_stock_total:'Contas em estoque',s_low_stock:'Estoque baixo',s_low:'Baixo',s_ok:'OK',s_all:'Todos',s_bundles:'Pacotes',s_instock:'Em estoque',s_logout:'Sair',s_admin_only:'Apenas equipe autorizada',s_bad_creds:'E-mail ou senha incorretos',s_demo_creds:'Demo: admin@primevault.pk / admin123',s_back_store:'Voltar à loja',s_view_store:'Ver loja',s_dashboard:'Painel',s_quality:'Escolha a qualidade'}
+    };
+  }
+
+  toggleLang = () => this.setState(s => ({ langOpen: !s.langOpen }));
+  pickLang = (code) => this.setState({ lang: code, langOpen: false });
+  stop = (e) => e.stopPropagation();
+
+  buy = (prod, i) => {
+    this.setState({ shake: i });
+    setTimeout(() => this.setState({ shake: null, checkoutOpen: true, product: prod, step: 0, method: null }), 600);
+  };
+  closeCheckout = () => this.setState({ checkoutOpen: false });
+  chooseMethod = (m) => { this.setState({ method: m, step: 2 }); setTimeout(() => this.setState({ step: 3 }), 1800); setTimeout(() => this.setState({ step: 4 }), 3400); };
+
+  state = { lang: null, langOpen: false, checkoutOpen: false, step: 0, product: null, method: null, shake: null,
+    route: 'home', selected: 0, months: 1, quality: '1080p HD', filter: 'all', cart: [], method2: null,
+    email: '', phone: '', signup: false, delivered: [], stockBump: {},
+    auth: null, adminEmail: '', adminPass: '', adminError: false };
+
+  login = (role, email) => { this.setState({ auth: { role, email } }); };
+  logout = () => { this.setState({ auth: null, route: 'home', adminEmail: '', adminPass: '', adminError: false }); window.scrollTo(0, 0); };
+  tryAdminLogin = () => {
+    const { adminEmail, adminPass } = this.state;
+    if (adminEmail.trim().toLowerCase() === 'admin@primevault.pk' && adminPass === 'admin123') {
+      this.setState({ auth: { role: 'admin', email: adminEmail.trim() }, route: 'admin', adminError: false });
+      window.scrollTo(0, 0);
+    } else this.setState({ adminError: true });
+  };
+
+  go = (route) => { this.setState({ route }); window.scrollTo(0, 0); };
+  pickFilter = (filter) => this.setState({ filter });
+  openProduct = (i, quality) => { this.setState({ route: 'product', selected: i, months: 1, quality: quality || '1080p HD' }); window.scrollTo(0, 0); };
+  pickMonths = (m) => this.setState({ months: m });
+  pickQuality = (q) => this.setState({ quality: q });
+  addItem = (item, then) => this.setState(s => ({ cart: s.cart.concat([item]), route: then || s.route }), () => window.scrollTo(0, 0));
+  removeItem = (idx) => this.setState(s => ({ cart: s.cart.filter((_, k) => k !== idx) }));
+  setField = (key) => (e) => this.setState({ [key]: e.target.value });
+  pickMethod2 = (m) => this.setState({ method2: m });
+  bumpStock = (name) => this.setState(s => ({ stockBump: Object.assign({}, s.stockBump, { [name]: (s.stockBump[name] || 0) + 5 }) }));
+
+  MONTHS = [[1,1],[3,2.7],[6,5],[12,9]];
+
+  priceNum = (p) => parseInt(String(p.price).replace(/[^0-9]/g, ''), 10) || 0;
+  money = (n) => 'Rs ' + n.toLocaleString('en-US');
+
+  siteVals(products, t, accent) {
+    const s = this.state, route = s.route;
+    const navKeys = [['home', t.s_home], ['shop', t.s_shop_title], ['account', t.s_orders], ['contact', t.s_contact]];
+    const navItems = navKeys.map(([key, label]) => ({
+      label, go: () => this.go(key),
+      style: route === key ? 'color:oklch(0.15 0.012 265);background:oklch(0.85 0.13 195)' : 'color:oklch(0.8 0.01 265)'
+    }));
+
+    const chip = (on) => on
+      ? 'background:linear-gradient(oklch(0.2 0.02 265),oklch(0.2 0.02 265)) padding-box,linear-gradient(135deg,oklch(0.85 0.13 195),oklch(0.75 0.19 300)) border-box;box-shadow:0 8px 22px oklch(0.6 0.18 300 / .3)'
+      : 'background:oklch(0.2 0.016 265 / .8);border-color:oklch(1 0 0 / .14)';
+
+    const filters = [['all', t.s_all], ['hd', '1080p HD'], ['4k', '4K UHD'], ['8k', '8K UHD']];
+    const shopFilters = filters.map(([key, label]) => ({
+      label, pick: () => this.pickFilter(key), style: chip(s.filter === key),
+      spin: `animation:spin ${3 + (filters.findIndex(f => f[0] === key) * 0.4)}s linear infinite`
+    }));
+    const TIERS = { hd: ['1080p HD', 1], '4k': ['4K UHD', 1.3], '8k': ['8K UHD', 1.6] };
+    const tier = TIERS[s.filter];
+    const visible = products;
+    const shopList = visible.map((p) => {
+      const i = products.indexOf(p);
+      const monthly = parseInt(String(p.price).replace(/[^0-9]/g, ''), 10) || 0;
+      const view = () => { this.setState({ shake: i }); setTimeout(() => { this.setState({ shake: null }); this.openProduct(i, tier ? tier[0] : undefined); }, 480); };
+      if (!tier) return Object.assign({}, p, { view });
+      const [label, mult] = tier;
+      return Object.assign({}, p, {
+        quality: label,
+        price: (s.filter === '8k' && p.name === 'Netflix + Prime') ? 'Rs 850' : this.money(Math.round(monthly * mult)),
+        was: s.filter === '4k' ? ''
+          : s.filter === '8k' ? ({ 'Netflix': 'Rs 1450', 'Prime Video': 'Rs 800', 'Disney+': 'Rs 650' }[p.name] || p.was)
+          : p.was,
+        view
+      });
+    });
+
+    const sel = products[s.selected] || products[0];
+    const base = this.priceNum(sel);
+    const QUALITIES = [['1080p HD', 1], ['4K UHD', 1.3], ['8K UHD', 1.6]];
+    const qMult = (QUALITIES.find(q => q[0] === s.quality) || QUALITIES[0])[1];
+    const qualities = QUALITIES.map(([label, mult]) => ({
+      label,
+      price: this.money(Math.round(base * mult)),
+      pick: () => this.pickQuality(label),
+      style: chip(s.quality === label)
+    }));
+    const durations = this.MONTHS.map(([m, mult]) => ({
+      label: m + ' ' + (m === 1 ? t.s_month : t.s_months),
+      price: this.money(Math.round(base * mult * qMult)),
+      pick: () => this.pickMonths(m), style: chip(s.months === m)
+    }));
+    const selMult = (this.MONTHS.find(x => x[0] === s.months) || [1, 1])[1];
+    const selTotalNum = Math.round(base * selMult * qMult);
+    const monthsLabel = (m) => m + ' ' + (m === 1 ? t.s_month : t.s_months);
+    const mkItem = () => ({ name: sel.name, quality: s.quality, tile: sel.tile, slotId: sel.slotId,
+      months: monthsLabel(s.months), total: this.money(selTotalNum), num: selTotalNum });
+
+    const cart = s.cart.map((c, idx) => Object.assign({}, c, { remove: () => this.removeItem(idx) }));
+    const cartTotalNum = s.cart.reduce((sum, c) => sum + c.num, 0);
+
+    const stepIdx = { checkout: 0, payment: 1, success: 2 }[route] ?? 0;
+    const steps3 = [t.s_details, t.s_payment, t.s_done].map((label, i) => ({
+      label, bar: i <= stepIdx ? 'linear-gradient(90deg,oklch(0.85 0.13 195),oklch(0.75 0.19 300))' : 'oklch(1 0 0 / .1)',
+      color: i <= stepIdx ? 'oklch(0.88 0.11 195)' : 'oklch(0.6 0.01 265)'
+    }));
+
+    const methodData = [['JazzCash', t.s_wallet], ['EasyPaisa', t.s_wallet], ['NayaPay', t.s_wallet], ['SadaPay', t.s_wallet], ['UBL', t.s_card], ['MCB', t.s_card], ['Visa / Mastercard', t.s_card]];
+    const payMethods = methodData.map(([label, note]) => ({
+      label, note, slotId: 'pay-' + label.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      tick: s.method2 === label ? '●' : '○', pick: () => this.pickMethod2(label), style: chip(s.method2 === label)
+    }));
+
+    const payNow = () => {
+      const items = (s.cart.length ? s.cart : [mkItem()]);
+      this.setState({
+        route: 'success',
+        delivered: items.map((c, k) => ({ name: c.name, months: c.months,
+          email: 'premium' + (k + 1) + '@' + (this.props.siteUrl || 'primevault.pk').replace(/^www\./, ''),
+          pass: 'Xk9' + (k + 4) + 'Qz' + (k + 7) + 'Rm' })),
+        cart: []
+      });
+      window.scrollTo(0, 0);
+    };
+
+    const badge = (kind) => kind === 'done'
+      ? 'background:oklch(0.72 0.16 150 / .18);color:oklch(0.86 0.16 150)'
+      : kind === 'low' ? 'background:oklch(0.7 0.19 60 / .18);color:oklch(0.85 0.16 75)'
+      : 'background:oklch(0.65 0.22 25 / .18);color:oklch(0.78 0.2 25)';
+
+    const orderData = [
+      ['#PV-2418', 'Netflix', 3, 945, '24 Jul 2026'],
+      ['#PV-2402', 'Disney+', 1, 300, '21 Jul 2026'],
+      ['#PV-2377', 'Netflix + Prime', 6, 2500, '14 Jul 2026']
+    ];
+    const orders = orderData.map(([id, name, m, total, date]) => ({
+      id, name, date, months: monthsLabel(m), total: this.money(total),
+      status: t.s_delivered, badge: badge('done')
+    }));
+
+    const stock = products.map((p) => {
+      const n = ({ 'Netflix': 42, 'Prime Video': 28, 'Disney+': 9, 'Apple TV+': 15, 'HBO Max': 3, 'Netflix + Prime': 11, 'Netflix + HBO Max': 7, 'Netflix + Disney+': 6, 'Prime + Disney+': 8, 'HBO Max + Prime': 5, 'Netflix + Apple TV+': 4, 'All 5 in One': 3 })[p.name] || 10;
+      const count = n + (s.stockBump[p.name] || 0);
+      const low = count < 10;
+      return { name: p.name, quality: p.quality, count,
+        countColor: low ? 'oklch(0.8 0.18 60)' : 'oklch(0.86 0.15 150)',
+        label: low ? t.s_low : t.s_ok, badge: badge(low ? 'low' : 'done'),
+        add: () => this.bumpStock(p.name) };
+    });
+    const adminStats = [
+      { label: t.s_orders_today, value: '18', color: 'oklch(0.85 0.13 195)' },
+      { label: t.s_revenue, value: this.money(14250), color: 'oklch(0.86 0.15 150)' },
+      { label: t.s_in_stock_total, value: String(stock.reduce((a, b) => a + b.count, 0)), color: 'oklch(0.8 0.17 300)' },
+      { label: t.s_low_stock, value: String(stock.filter(x => x.count < 10).length), color: 'oklch(0.8 0.18 60)' }
+    ];
+
+    return {
+      navItems, goCart: () => this.go('cart'), goShop: () => this.go('shop'), goLogin: () => this.go('login'),
+      goCheckout: () => this.go(s.cart.length ? 'checkout' : 'shop'),
+      goPayment: () => this.go('payment'), goAccount: () => this.go('account'),
+      cartCount: s.cart.length,
+      isHome: route === 'home', isShop: route === 'shop', isProduct: route === 'product',
+      isCart: route === 'cart', isCheckout: route === 'checkout', isPayment: route === 'payment',
+      isSuccess: route === 'success', isContact: route === 'contact',
+      isAccount: route === 'account' && !!s.auth && s.auth.role === 'user',
+      isLogin: route === 'login' || (route === 'account' && !s.auth),
+      isAdmin: route === 'admin' && !!s.auth && s.auth.role === 'admin',
+      isAdminLogin: route === 'admin' && !(s.auth && s.auth.role === 'admin'),
+      showStoreHeader: !(route === 'admin' && s.auth && s.auth.role === 'admin'),
+      authEmail: s.auth ? s.auth.email : '',
+      adminEmail: s.adminEmail, adminPass: s.adminPass, adminError: s.adminError,
+      loggedIn: !!s.auth, loggedOut: !s.auth, goAdmin: () => this.go('admin'),
+      setAdminEmail: this.setField('adminEmail'), setAdminPass: this.setField('adminPass'),
+      doAdminLogin: this.tryAdminLogin, logout: this.logout, goHome: () => this.go('home'),
+      shopFilters, shopList,
+      sel: Object.assign({}, sel, { heroSlot: 'hero-' + sel.slotId }),
+      durations, qualities, selQuality: s.quality, selTotal: this.money(selTotalNum),
+      addToCart: () => this.addItem(mkItem(), 'cart'),
+      buyNowDetail: () => this.addItem(mkItem(), 'checkout'),
+      cart, cartEmpty: s.cart.length === 0, cartHasItems: s.cart.length > 0,
+      cartTotal: this.money(cartTotalNum || selTotalNum),
+      steps3, formEmail: s.email, formPhone: s.phone,
+      setEmail: this.setField('email'), setPhone: this.setField('phone'),
+      payMethods, payNow,
+      delivered: s.delivered,
+      orders, stock, adminStats,
+      loginTitle: s.signup ? t.s_signup : t.s_login,
+      loginSwitch: s.signup ? t.s_have_acc : t.s_no_acc,
+      toggleSignup: () => this.setState(st => ({ signup: !st.signup })),
+      doLogin: () => { this.login('user', s.email || 'user@mail.com'); this.go('account'); }
+    };
+  }
+
+  renderVals() {
+    const d = this.dict();
+    const lang = this.L();
+    const t = d[lang] || d.en;
+    const genreHead = {
+      en:['Genres','Every genre, every night'],
+      ur:['جونرا','ہر جونر، ہر رات'],
+      ar:['الأنواع','كل نوع، كل ليلة'],
+      es:['Géneros','Todos los géneros, cada noche'],
+      tr:['Türler','Her tür, her gece'],
+      fr:['Genres','Tous les genres, chaque soir'],
+      hi:['जॉनर','हर जॉनर, हर रात'],
+      pt:['Gêneros','Todos os gêneros, toda noite']
+    };
+    const gh = genreHead[lang] || genreHead.en;
+    t.genre_kicker = gh[0]; t.genre_title = gh[1];
+    const accent = this.props.accentColor || 'oklch(0.85 0.13 195)';
+    const accent2 = 'oklch(0.72 0.15 300)';
+    const codes = ['en','ur','ar','es','tr','fr','hi','pt'];
+
+    const langList = codes.map(c => ({
+      native: d[c].n, en: c.toUpperCase(), pick: () => this.pickLang(c),
+      style: `text-align:start;display:flex;flex-direction:column;gap:1px;background:${c===lang?'oklch(0.85 0.13 195 / .16)':'transparent'};border:1px solid ${c===lang?'oklch(0.85 0.13 195 / .4)':'transparent'};color:inherit;padding:9px 11px;border-radius:9px;cursor:pointer;font:inherit`
+    }));
+
+    const tile = `linear-gradient(135deg, color-mix(in oklch, ${accent} 30%, oklch(0.22 0.014 265)), oklch(0.22 0.014 265))`;
+    const prodData = [
+      ['Netflix','1080p HD','Rs 350','Rs 450'],
+      ['Prime Video','1080p HD','Rs 250','Rs 300'],
+      ['Disney+','1080p HD','Rs 300','Rs 450'],
+      ['Apple TV','1080p HD','Rs 2600','Rs 5500'],
+      ['HBO Max','1080p HD','Rs 350','Rs 1200'],
+      ['Netflix + Prime','1080p HD','Rs 500','Rs 1900']
+    ];
+    const genres = [
+      ['Action','oklch(0.62 0.2 30)','oklch(0.35 0.15 20)'],
+      ['Crime','oklch(0.5 0.12 265)','oklch(0.24 0.06 265)'],
+      ['Horror','oklch(0.42 0.16 350)','oklch(0.2 0.06 320)'],
+      ['Drama','oklch(0.55 0.11 60)','oklch(0.28 0.06 45)'],
+      ['Thriller','oklch(0.48 0.14 200)','oklch(0.24 0.07 220)'],
+      ['Sci-Fi','oklch(0.58 0.18 195)','oklch(0.26 0.09 240)'],
+      ['Romance','oklch(0.6 0.16 340)','oklch(0.3 0.08 330)'],
+      ['Comedy','oklch(0.68 0.16 90)','oklch(0.32 0.08 80)'],
+      ['Fantasy','oklch(0.55 0.18 300)','oklch(0.26 0.09 290)'],
+      ['Mystery','oklch(0.45 0.1 240)','oklch(0.22 0.05 250)'],
+      ['War','oklch(0.5 0.1 120)','oklch(0.24 0.05 130)'],
+      ['Adventure','oklch(0.6 0.15 150)','oklch(0.28 0.07 160)']
+    ];
+    const genreNames = {
+      en:['Action','Crime','Horror','Drama','Thriller','Sci-Fi','Romance','Comedy','Fantasy','Mystery','War','Adventure'],
+      ur:['ایکشن','کرائم','ہارر','ڈرامہ','تھرلر','سائی فائی','رومانس','کامیڈی','فینٹسی','مسٹری','وار','ایڈونچر'],
+      ar:['أكشن','جريمة','رعب','دراما','إثارة','خيال علمي','رومانسي','كوميديا','فانتازيا','غموض','حرب','مغامرة'],
+      es:['Acción','Crimen','Terror','Drama','Suspenso','Ciencia ficción','Romance','Comedia','Fantasía','Misterio','Guerra','Aventura'],
+      tr:['Aksiyon','Suç','Korku','Dram','Gerilim','Bilim kurgu','Romantik','Komedi','Fantastik','Gizem','Savaş','Macera'],
+      fr:['Action','Crime','Horreur','Drame','Thriller','Science-fiction','Romance','Comédie','Fantastique','Mystère','Guerre','Aventure'],
+      hi:['एक्शन','क्राइम','हॉरर','ड्रामा','थ्रिलर','साई-फाई','रोमांस','कॉमेडी','फैंटेसी','मिस्ट्री','वॉर','एडवेंचर'],
+      pt:['Ação','Crime','Terror','Drama','Suspense','Ficção científica','Romance','Comédia','Fantasia','Mistério','Guerra','Aventura']
+    };
+    const genreChips = (genreNames[lang] || genreNames.en).map((name,i)=>{
+      const g = genres[i];
+      return { name, dot: g[1], style: `background:linear-gradient(oklch(0.21 0.02 265 / .9),oklch(0.21 0.02 265 / .9)) padding-box,linear-gradient(135deg,${g[1]},${g[2]}) border-box` };
+    });
+
+    const posterFiles = [
+      'scenes/tile-01.png','scenes/tile-02.png','scenes/tile-03.png','scenes/tile-04.png','scenes/tile-05.png',
+      'scenes/tile-06.png','scenes/tile-07.png','scenes/tile-08.png','scenes/tile-09.png',
+      'scenes/src-06.jpg','scenes/src-07.jpg','scenes/src-08.jpg','scenes/src-09.jpg','scenes/src-10.jpg',
+      'scenes/src-11.jpg','scenes/src-12.jpg','scenes/src-13.jpg','scenes/src-14.jpg','scenes/src-15.jpg',
+      'scenes/src-16.jpg','scenes/src-17.jpg','scenes/src-18.jpg','scenes/src-19.jpg','scenes/src-20.jpg',
+      'scenes/src-21.jpg','scenes/src-22.jpg','scenes/src-23.jpg','scenes/src-24.jpg','scenes/src-25.jpg',
+      'scenes/src-26.jpg','scenes/src-27.jpg',
+      'scenes/n01.jpg','scenes/n02.jpg','scenes/n03.jpg','scenes/n04.jpg','scenes/n07.jpg',
+      'scenes/n08.jpg','scenes/n09.jpg','scenes/n10.jpg','scenes/n11.jpg','scenes/n12.jpg',
+      'scenes/n13.jpg','scenes/n14.jpg','scenes/n15.jpg','scenes/n16.jpg','scenes/n17.jpg',
+      'scenes/n18.jpg','scenes/n19.jpg','scenes/n20.jpg','scenes/n21.jpg','scenes/n22.jpg',
+      'scenes/n23.jpg','scenes/n24.jpg','scenes/n25.jpg','scenes/n26.jpg','scenes/n27.jpg',
+      'scenes/n28.jpg','scenes/n29.jpg','scenes/n30.jpg','scenes/n31.jpg','scenes/n32.jpg',
+      'scenes/n33.jpg','scenes/n34.jpg','scenes/n35.jpg','scenes/n36.jpg','scenes/n37.jpg',
+      'scenes/n38.jpg','scenes/n39.jpg','scenes/n40.jpg','scenes/n41.jpg','scenes/n42.jpg',
+      'scenes/n43.jpg','scenes/n44.jpg','scenes/n45.jpg','scenes/n46.jpg','scenes/n47.jpg',
+      'scenes/n48.jpg','scenes/n49.jpg','scenes/n50.jpg','scenes/n51.jpg',
+      'scenes/p01.jpg','scenes/p02.jpg','scenes/p03.jpg','scenes/p04.jpg','scenes/p07.jpg',
+      'scenes/p08.jpg','scenes/p09.jpg','scenes/p10.jpg','scenes/p11.jpg','scenes/p12.jpg',
+      'scenes/p13.jpg','scenes/p14.jpg','scenes/p15.jpg','scenes/p16.jpg','scenes/p17.jpg',
+      'scenes/p18.jpg','scenes/p19.jpg','scenes/p20.jpg','scenes/p21.jpg','scenes/p22.jpg',
+      'scenes/p23.jpg','scenes/p24.jpg','scenes/p25.jpg','scenes/p26.jpg','scenes/p27.jpg',
+      'scenes/p28.jpg','scenes/p29.jpg','scenes/p30.jpg','scenes/p31.jpg','scenes/p32.jpg',
+      'scenes/p33.jpg','scenes/p34.jpg','scenes/p35.jpg','scenes/p36.jpg','scenes/p37.jpg',
+      'scenes/p38.jpg','scenes/p39.jpg','scenes/p40.jpg','scenes/p41.jpg','scenes/p42.jpg',
+      'scenes/p43.jpg','scenes/p44.jpg'
+    ];
+    const footerFiles = ['scenes/f29.png'].concat(
+      Array.from({length:28},(_,k)=>`scenes/f${String(k+1).padStart(2,'0')}.jpg`));
+    // never place the same kind of poster next to another of its kind
+    const kindOf = (f) => {
+      const m = f.match(/(tile|src|n|p)-?(\d+)/);
+      const set = m[1], num = +m[2];
+      if (set === 'n') return num <= 14 ? 'kids' : num <= 31 ? 'horror' : 'action';
+      if (set === 'p') return num === 3 ? 'kids' : num >= 17 ? 'horror' : 'action';
+      if (set === 'src') return num >= 23 ? 'horror' : 'action';
+      return 'action';
+    };
+    const buckets = { kids: [], horror: [], action: [] };
+    posterFiles.forEach(f => buckets[kindOf(f)].push(f));
+    const COLS = 11, kinds = ['horror','action','kids'];
+    const mixed = [], mixedKind = [];
+    for (let i = 0; i < posterFiles.length; i++) {
+      const left = i % COLS ? mixedKind[i-1] : null;
+      const up = i >= COLS ? mixedKind[i-COLS] : null;
+      const avail = kinds.filter(k => buckets[k].length);
+      const best = avail.filter(k => k !== left && k !== up).sort((a,b)=>buckets[b].length-buckets[a].length)[0]
+        || avail.filter(k => k !== up).sort((a,b)=>buckets[b].length-buckets[a].length)[0]
+        || avail.sort((a,b)=>buckets[b].length-buckets[a].length)[0];
+      if (!best) break;
+      mixed.push(buckets[best].shift());
+      mixedKind.push(best);
+    }
+    footerFiles.forEach((f,i) => mixed.splice(11 + i*6, 0, f));
+    const posters = mixed.map((f,i)=>({
+      slotId: 'scene-'+i,
+      label: '',
+      art: `url('${f}') center/cover no-repeat, oklch(0.22 0.02 265)`,
+      anim: ''
+    }));
+
+    const hues = ['oklch(0.78 0.17 25)','oklch(0.8 0.14 220)','oklch(0.82 0.15 265)','oklch(0.85 0.06 265)','oklch(0.8 0.17 300)','oklch(0.84 0.15 165)','oklch(0.8 0.17 330)'];
+    const brandBorders = [
+      'linear-gradient(135deg,oklch(0.58 0.25 25),oklch(0.72 0.2 20 / .5))',
+      'linear-gradient(135deg,oklch(0.62 0.16 225),oklch(0.78 0.15 210 / .5))',
+      'linear-gradient(135deg,oklch(0.55 0.2 265),oklch(0.72 0.18 255 / .5))',
+      'linear-gradient(135deg,oklch(0.75 0.02 265),oklch(0.95 0.01 265 / .5))',
+      'linear-gradient(135deg,oklch(0.42 0.04 300),oklch(0.7 0.03 300 / .5))',
+      'linear-gradient(135deg,oklch(0.58 0.25 25),oklch(0.65 0.17 245))',
+      'linear-gradient(135deg,oklch(0.58 0.25 25),oklch(0.62 0.24 300))'
+    ];
+    const streaks = [
+      ['oklch(0.58 0.25 25)','oklch(0.7 0.27 22)'],
+      ['oklch(0.62 0.16 225)','oklch(0.78 0.15 210)'],
+      ['oklch(0.55 0.2 265)','oklch(0.72 0.18 255)'],
+      ['oklch(0.8 0.02 265)','oklch(0.95 0.01 265)'],
+      ['oklch(0.55 0.24 300)','oklch(0.72 0.24 305)'],
+      ['oklch(0.58 0.25 25)','oklch(0.7 0.16 215)'],
+      ['oklch(0.58 0.25 25)','oklch(0.72 0.24 305)']
+    ];
+    const wipes = [
+      'linear-gradient(90deg,transparent,oklch(0.68 0.22 25 / .9) 45%,oklch(0.75 0.2 25 / .95),transparent)',
+      'linear-gradient(90deg,transparent,oklch(0.62 0.17 225 / .92) 45%,oklch(0.78 0.15 210 / .95),transparent)',
+      'linear-gradient(90deg,transparent,oklch(0.72 0.15 245 / .9) 45%,oklch(0.85 0.12 240 / .95),transparent)',
+      'linear-gradient(90deg,transparent,oklch(0.18 0.01 265 / .95) 45%,oklch(0.1 0.01 265 / .98),transparent)',
+      'linear-gradient(90deg,transparent,oklch(0.14 0.005 265 / .96) 45%,oklch(0.06 0 0 / .99),transparent)',
+      'linear-gradient(90deg,transparent,oklch(0.68 0.22 25 / .92) 32%,oklch(0.65 0.17 245 / .95) 62%,transparent)',
+      'linear-gradient(90deg,transparent,oklch(0.68 0.22 25 / .92) 32%,oklch(0.2 0.03 300 / .96) 62%,transparent)'
+    ];
+    const products = prodData.map((p,i) => ({
+      name:p[0], quality:'1080p · 4K · 8K', price:p[2], was:p[3], tile, buy: () => this.buy(p[0], i),
+      slotId: 'logo-'+p[0].toLowerCase().replace(/[^a-z0-9]+/g,'-'),
+      wipe: this.state.shake === i
+        ? `background:${wipes[i % wipes.length]};animation:wipe .58s cubic-bezier(.4,0,.2,1) both`
+        : 'display:none',
+      spin: `animation:spin ${3.2 + i * 0.3}s linear infinite`,
+      border: brandBorders[i % brandBorders.length],
+      streak: (() => {
+        const c = streaks[i % streaks.length];
+        return `conic-gradient(from 0deg,transparent 0deg 62deg,${c[0]} 74deg,${c[1]} 84deg,transparent 96deg 242deg,${c[0]} 254deg,${c[1]} 264deg,transparent 276deg 360deg)`;
+      })(),
+      color: hues[i % hues.length],
+      anim: this.state.shake === i
+        ? 'animation:shake .5s cubic-bezier(.36,.07,.19,.97) both;box-shadow:0 0 0 2px oklch(0.85 0.13 195 / .6),0 26px 54px oklch(0.62 0.21 300 / .45)'
+        : `animation:rise .5s cubic-bezier(.2,.7,.3,1) both;animation-delay:${i*70}ms`
+    }));
+
+    const stepData = {
+      en:[['Select','Pick a plan, quality (up to 8K) and language, then tap Buy Now.'],['Pay instantly','Choose JazzCash, EasyPaisa or a bank card — approved in-app.'],['Instant delivery','Login details appear on screen and land in your email at once.']],
+      ur:[['منتخب کریں','پلان، کوالٹی (8K تک) اور زبان چنیں، پھر خریدیں پر کلک کریں۔'],['فوری ادائیگی','جاز کیش، ایزی پیسا یا بینک کارڈ چنیں — ایپ میں ہی منظور۔'],['فوری ڈیلیوری','لاگ اِن تفصیلات فوراً اسکرین پر اور ای میل میں آ جاتی ہیں۔']],
+      ar:[['اختر','اختر الباقة والجودة (حتى 8K) واللغة ثم اضغط اشترِ الآن.'],['ادفع فوراً','اختر جاز كاش أو إيزي بيسا أو بطاقة — يُعتمد داخل التطبيق.'],['تسليم فوري','تظهر بيانات الدخول على الشاشة وتصل بريدك فوراً.']],
+      es:[['Selecciona','Elige plan, calidad (hasta 8K) e idioma y toca Comprar.'],['Paga al instante','JazzCash, EasyPaisa o tarjeta — aprobado en la app.'],['Entrega instantánea','Los datos aparecen en pantalla y llegan a tu correo al momento.']],
+      tr:[['Seç','Plan, kalite (8K’ya kadar) ve dili seç, Satın Al’a dokun.'],['Anında öde','JazzCash, EasyPaisa veya kart — uygulamada onaylanır.'],['Anında teslimat','Giriş bilgileri ekranda ve e-postanızda anında.']],
+      fr:[['Sélectionnez','Choisissez l’offre, la qualité (jusqu’à 8K) et la langue, puis Acheter.'],['Payez aussitôt','JazzCash, EasyPaisa ou carte — approuvé dans l’app.'],['Livraison instantanée','Les identifiants s’affichent et arrivent par e-mail aussitôt.']],
+      hi:[['चुनें','प्लान, क्वालिटी (8K तक) और भाषा चुनें, फिर खरीदें दबाएँ।'],['तुरंत भुगतान','JazzCash, EasyPaisa या कार्ड — ऐप में ही मंज़ूर।'],['तुरंत डिलीवरी','लॉगिन जानकारी स्क्रीन और ईमेल पर तुरंत आ जाती है।']],
+      pt:[['Selecione','Escolha plano, qualidade (até 8K) e idioma e toque Comprar.'],['Pague na hora','JazzCash, EasyPaisa ou cartão — aprovado no app.'],['Entrega instantânea','Os dados aparecem na tela e chegam ao seu e-mail na hora.']]
+    };
+    const sd = stepData[lang] || stepData.en;
+    const stepsOut = sd.map((s,i) => ({ n:String(i+1), t:s[0], d:s[1], chip:['linear-gradient(135deg,oklch(0.85 0.14 195),oklch(0.78 0.16 230))','linear-gradient(135deg,oklch(0.82 0.17 300),oklch(0.8 0.17 340))','linear-gradient(135deg,oklch(0.85 0.17 150),oklch(0.86 0.15 110))'][i%3], anim:`animation:rise .5s cubic-bezier(.2,.7,.3,1) both;animation-delay:${i*120}ms` }));
+
+    const pays = ['JazzCash','EasyPaisa','NayaPay','SadaPay','UBL','MCB','Visa / Mastercard']
+      .map((label,i) => ({
+        label,
+        slotId: 'pay-' + label.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        anim: `animation:rise .45s ease both;animation-delay:${i*60}ms`,
+        pay: () => { this.setState({ method2: label, route: 'payment' }); window.scrollTo(0, 0); }
+      }));
+
+    // checkout body
+    const methods = ['JazzCash','EasyPaisa','Bank Card'];
+    let checkoutBody = null;
+    const step = this.state.step;
+    const btn = (bg,color) => `background:${bg};color:${color};border:none;width:100%;padding:13px;border-radius:11px;font:inherit;font-weight:800;font-size:15px;cursor:pointer`;
+    if (step === 0 || step === 1) {
+      checkoutBody = React.createElement('div', {style:{display:'grid',gap:10}},
+        React.createElement('div',{style:{fontSize:'14px',color:'oklch(0.75 0.01 265)',fontWeight:600}}, t.c_method),
+        ...methods.map(m => React.createElement('button',{key:m,onClick:()=>this.chooseMethod(m),
+          style:{display:'flex',justifyContent:'space-between',alignItems:'center',background:'oklch(1 0 0 / .05)',border:'1px solid oklch(1 0 0 / .12)',color:'inherit',padding:'14px 15px',borderRadius:'12px',font:'inherit',fontWeight:700,fontSize:'15px',cursor:'pointer'}},
+          React.createElement('span',null,m), React.createElement('span',{style:{opacity:.5}},'→')))
+      );
+    } else if (step === 2) {
+      checkoutBody = React.createElement('div',{style:{textAlign:'center',padding:'14px 0 6px'}},
+        React.createElement('div',{style:{width:'52px',height:'52px',margin:'0 auto',borderRadius:'50%',border:'3px solid oklch(1 0 0 / .12)',borderTopColor:accent,animation:'spin .8s linear infinite'}}),
+        React.createElement('div',{style:{marginTop:'18px',fontWeight:700,fontSize:'16px'}}, t.c_pin),
+        React.createElement('div',{style:{marginTop:'6px',fontSize:'13.5px',color:'oklch(0.7 0.01 265)'}}, t.c_pin_sub)
+      );
+    } else if (step === 3) {
+      checkoutBody = React.createElement('div',{style:{textAlign:'center',padding:'10px 0 6px'}},
+        React.createElement('div',{style:{width:'52px',height:'52px',margin:'0 auto',borderRadius:'50%',background:'oklch(0.85 0.16 150 / .16)',color:'oklch(0.85 0.16 150)',display:'grid',placeItems:'center',fontSize:'26px'}},'✓'),
+        React.createElement('div',{style:{marginTop:'16px',fontWeight:800,fontSize:'16px'}}, t.c_success)
+      );
+    } else {
+      checkoutBody = React.createElement('div',{style:{display:'grid',gap:12}},
+        React.createElement('div',{style:{display:'flex',gap:10,alignItems:'center',color:'oklch(0.85 0.16 150)',fontWeight:800,fontSize:'16px'}},
+          React.createElement('span',{style:{width:'30px',height:'30px',borderRadius:'50%',background:'oklch(0.85 0.16 150 / .16)',display:'grid',placeItems:'center'}},'✓'), t.deliver_success),
+        React.createElement('div',{style:{border:'1px dashed oklch(1 0 0 / .16)',borderRadius:'12px',padding:'14px',display:'grid',gap:9}},
+          React.createElement('div',{style:{fontSize:'11px',textTransform:'uppercase',letterSpacing:'.08em',color:'oklch(0.65 0.01 265)',fontWeight:700}}, t.deliver_creds),
+          React.createElement('div',{style:{display:'flex',justifyContent:'space-between',fontFamily:'monospace',fontSize:'13.5px',background:'oklch(1 0 0 / .04)',padding:'10px 12px',borderRadius:'9px'}},React.createElement('span',{style:{opacity:.6}},'email'),React.createElement('span',null,'premium•••@mail.com')),
+          React.createElement('div',{style:{display:'flex',justifyContent:'space-between',fontFamily:'monospace',fontSize:'13.5px',background:'oklch(1 0 0 / .04)',padding:'10px 12px',borderRadius:'9px'}},React.createElement('span',{style:{opacity:.6}},'password'),React.createElement('span',null,'Xk9•••••2Q'))),
+        React.createElement('div',{style:{fontSize:'13.5px',color:'oklch(0.7 0.01 265)',textAlign:'center'}}, t.c_delivered),
+        React.createElement('button',{onClick:this.closeCheckout,style:{background:`linear-gradient(135deg,${accent},${accent2})`,color:'oklch(0.15 0.012 265)',border:'none',padding:'13px',borderRadius:'11px',font:'inherit',fontWeight:800,fontSize:'15px',cursor:'pointer'}}, t.c_done)
+      );
+    }
+    const progressPct = ['12%','12%','55%','80%','100%'][step] || '12%';
+
+    const brandName = this.props.brandName || 'PrimeVault';
+    const siteUrl = this.props.siteUrl || 'www.primevault.pk';
+    const whatsapp = this.props.whatsappNumber || '+92 300 1234567';
+
+    return {
+      dir: t.dir, bodyFont: t.dir==='rtl' ? "'Noto Naskh Arabic','Manrope',sans-serif" : "'Manrope',sans-serif",
+      t, accent, accent2, brandName, siteUrl, whatsapp, waLink: 'https://wa.me/'+whatsapp.replace(/[^0-9]/g,''),
+      curLangName: t.n, langOpen: this.state.langOpen, toggleLang: this.toggleLang, langList,
+      products, steps: stepsOut, pays, posters, genreChips,
+      checkoutOpen: this.state.checkoutOpen, closeCheckout: this.closeCheckout, stop: this.stop,
+      activeName: this.state.product || '', checkoutBody, progressPct,
+      ...this.siteVals(products, t, accent)
+    };
+  }
+}
+</script>
+</body>
+</html>
