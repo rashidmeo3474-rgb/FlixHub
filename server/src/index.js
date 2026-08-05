@@ -23,8 +23,42 @@ const projectRoot = path.resolve(__dirname, '..', '..');
 const uploadDir = path.join(projectRoot, 'uploads');
 
 const app = express();
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173,https://flix-hub-phi.vercel.app')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(null, false);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 app.use(helmet());
-app.use(cors({ origin: process.env.CLIENT_URL?.split(',') ?? '*', credentials: true }));
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  }
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    res.sendStatus(204);
+    return;
+  }
+  next();
+});
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('dev'));
 app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, max: 40 }));
