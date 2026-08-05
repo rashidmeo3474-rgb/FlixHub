@@ -23,6 +23,8 @@ const projectRoot = path.resolve(__dirname, '..', '..');
 const uploadDir = path.join(projectRoot, 'uploads');
 
 const app = express();
+app.set('trust proxy', 1);
+
 const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173,https://flix-hub-phi.vercel.app')
   .split(',')
   .map((origin) => origin.trim())
@@ -61,7 +63,12 @@ app.use((req, res, next) => {
 });
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('dev'));
-app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, max: 40 }));
+app.use('/api/auth', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 40,
+  standardHeaders: true,
+  legacyHeaders: false
+}));
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRoutes);
