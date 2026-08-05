@@ -25,14 +25,16 @@ const uploadDir = path.join(projectRoot, 'uploads');
 const app = express();
 app.set('trust proxy', 1);
 
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173,https://flix-hub-phi.vercel.app')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOrigins = new Set([
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://flix-hub-phi.vercel.app',
+  ...(process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map((origin) => origin.trim()).filter(Boolean) : [])
+]);
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.has(origin)) {
       callback(null, true);
       return;
     }
@@ -40,7 +42,8 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
 };
 
 app.use(helmet());
@@ -48,7 +51,7 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
+  if (origin && allowedOrigins.has(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -70,6 +73,11 @@ app.use('/api/auth', rateLimit({
   legacyHeaders: false
 }));
 
+app.get('/', (req, res) => res.json({
+  ok: true,
+  message: 'FlixHub API is running',
+  endpoints: ['/api/health', '/api/products', '/api/auth/register', '/api/auth/login']
+}));
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
