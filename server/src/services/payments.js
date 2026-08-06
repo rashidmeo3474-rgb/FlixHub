@@ -6,6 +6,12 @@
 const providers = {
   jazzcash: { label: 'JazzCash', kind: 'wallet' },
   easypaisa: { label: 'EasyPaisa', kind: 'wallet' },
+<<<<<<< HEAD
+=======
+  nayapay: { label: 'NayaPay', kind: 'wallet' },
+  ubl: { label: 'UBL Bank', kind: 'bank' },
+  mcb: { label: 'MCB Bank', kind: 'bank' },
+>>>>>>> 178aa0fd1475a77692598040c72d5b4865dcf9f7
   card: { label: 'Visa / Mastercard', kind: 'card' }
 };
 

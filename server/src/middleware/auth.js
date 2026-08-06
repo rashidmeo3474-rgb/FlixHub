@@ -1,12 +1,21 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
+<<<<<<< HEAD
+=======
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me';
+
+>>>>>>> 178aa0fd1475a77692598040c72d5b4865dcf9f7
 export const protect = async (req, res, next) => {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
   if (!token) return res.status(401).json({ message: 'Not authenticated' });
   try {
+<<<<<<< HEAD
     const payload = jwt.verify(token, process.env.JWT_SECRET);
+=======
+    const payload = jwt.verify(token, JWT_SECRET);
+>>>>>>> 178aa0fd1475a77692598040c72d5b4865dcf9f7
     const user = await User.findById(payload.id);
     if (!user) return res.status(401).json({ message: 'Account no longer exists' });
     req.user = user;

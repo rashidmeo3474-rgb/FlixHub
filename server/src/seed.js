@@ -8,6 +8,7 @@ import Account from './models/Account.js';
 dotenv.config();
 
 const PRODUCTS = [
+<<<<<<< HEAD
   {
     name: 'Netflix',
     quality: '1080p HD',
@@ -71,6 +72,14 @@ const PRODUCTS = [
     category: 'bundle',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/800px-Netflix_2015_logo.svg.png'
   }
+=======
+  { name: 'Netflix',         quality: '1080p HD', monthlyPrice: 350,  compareAt: 450,  accent: '#e50914', category: 'movies' },
+  { name: 'Prime Video',     quality: '4K UHD',   monthlyPrice: 250,  compareAt: 300,  accent: '#00a8e1', category: 'movies' },
+  { name: 'Disney+',         quality: '4K UHD',   monthlyPrice: 300,  compareAt: 450,  accent: '#4b6cf7', category: 'movies' },
+  { name: 'Apple TV+',       quality: '4K UHD',   monthlyPrice: 2600, compareAt: 5500, accent: '#d8d8d8', category: 'movies' },
+  { name: 'HBO Max',         quality: '4K UHD',   monthlyPrice: 350,  compareAt: 1200, accent: '#7b2ff7', category: 'movies' },
+  { name: 'Netflix + Prime', quality: '4K UHD',   monthlyPrice: 500,  compareAt: 1900, accent: '#e50914', category: 'bundle' }
+>>>>>>> 178aa0fd1475a77692598040c72d5b4865dcf9f7
 ];
 
 const slugify = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -97,12 +106,20 @@ const run = async () => {
     if (available < 8) {
       const docs = Array.from({ length: 8 - available }, (_, i) => ({
         product: product._id,
+<<<<<<< HEAD
         login: `${slug}.acct${Date.now().toString(36)}${i}@mailbox.pk`,
+=======
+        login: \`\${slug}.acct\${Date.now().toString(36)}\${i}@mailbox.pk\`,
+>>>>>>> 178aa0fd1475a77692598040c72d5b4865dcf9f7
         password: 'Pv' + Math.random().toString(36).slice(2, 10) + '!',
         profile: 'Profile ' + (i + 1)
       }));
       await Account.insertMany(docs);
+<<<<<<< HEAD
       console.log(`Stocked ${docs.length} accounts for ${p.name}`);
+=======
+      console.log(\`Stocked \${docs.length} accounts for \${p.name}\`);
+>>>>>>> 178aa0fd1475a77692598040c72d5b4865dcf9f7
     }
   }
 
