@@ -15,8 +15,21 @@ export const createOrder = asyncHandler(async (req, res) => {
   if (!req.user && !email) return res.status(422).json({ message: 'Email is required for guest checkout' });
 
   const ids = items.map((i) => i.productId);
-  const products = await Product.find({ _id: { $in: ids }, active: true });
+  
+  // Fallback catalog uses slug as _id (string), real DB uses ObjectId — filter valid ObjectIds only
+  const validIds = ids.filter((id) => mongoose.Types.ObjectId.isValid(id));
+  
+  // Fetch from DB first
+  const products = validIds.length ? await Product.find({ _id: { $in: validIds }, active: true }) : [];
   const byId = new Map(products.map((p) => [String(p._id), p]));
+  
+  // If any IDs weren't found in DB, try fallback by slug
+  const missingIds = ids.filter((id) => !byId.has(String(id)));
+  if (missingIds.length) {
+    const fallbackProducts = await Product.find({ slug: { $in: missingIds }, active: true });
+    fallbackProducts.forEach((p) => byId.set(String(p._id), p));
+    fallbackProducts.forEach((p) => byId.set(p.slug, p)); // also index by slug
+  }
 
   const orderItems = items.map((i) => {
     const product = byId.get(String(i.productId));
