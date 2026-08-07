@@ -50,9 +50,9 @@ export default function ProductDetail() {
 
       <div className="grid grid-2" style={{ marginTop: 22, alignItems: 'start' }}>
         <div className="card">
-          <div className="logo-tile" style={{ height: 300, background: `linear-gradient(135deg, ${product.accent}33, oklch(0.22 0.02 265))` }}>
+          <div className="logo-tile" style={{ height: 300, background: `linear-gradient(135deg, ${product.accent}33, oklch(0.22 0.02 265))`, overflow: 'hidden', borderRadius: 12 }}>
             {logo
-              ? <img src={logo} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 12 }} />
+              ? <img src={logo} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
               : <span className="fallback" style={{ fontSize: 28 }}>{product.name}</span>}
           </div>
         </div>
