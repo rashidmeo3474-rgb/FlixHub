@@ -61,12 +61,12 @@ function ShopCard({ product, months }) {
 
       {/* logo area */}
       <div style={{
-        height: 110, display: 'grid', placeItems: 'center',
+        height: 160, display: 'grid', placeItems: 'center',
         background: `linear-gradient(135deg, ${accent}18, oklch(0.1 0.012 265))`,
       }}>
         {logo
           ? <img src={logo} alt={product.name}
-              style={{ maxHeight: 64, maxWidth: '80%', objectFit: 'contain',
+              style={{ width: '100%', height: '100%', objectFit: 'cover',
                 filter: 'drop-shadow(0 4px 10px oklch(0 0 0 / 0.5))' }} />
           : <span style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 800,
               fontSize: 18, color: accent }}>{product.name}</span>
