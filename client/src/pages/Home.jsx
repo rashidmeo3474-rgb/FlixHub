@@ -6,7 +6,10 @@ import ProductCard from '../components/ProductCard.jsx';
 export default function Home() {
   const { t } = useI18n();
   const { data } = useApi('/products');
-  const products = (data?.products || []).slice(0, 6);
+  // Show exactly these 6 flagship products on home — 1080p tier + bundle
+  const HOME_SLUGS = ['netflix', 'prime-video', 'disney', 'apple-tv-1080p', 'netflix-prime', 'hbo-max'];
+  const all = data?.products || [];
+  const products = HOME_SLUGS.map((slug) => all.find((p) => p.slug === slug)).filter(Boolean);
 
   const steps = [
     { n: '1', title: t('viewPlan'), body: t('duration') },
@@ -42,7 +45,7 @@ export default function Home() {
           <h2 style={{ fontSize: 'clamp(24px, 3vw, 34px)' }}>{t('shop')}</h2>
           <Link to="/shop">{t('browse')} →</Link>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 14 }}>
           {products.map((p) => <ProductCard key={p._id} product={p} />)}
         </div>
       </section>
