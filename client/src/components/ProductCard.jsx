@@ -98,7 +98,7 @@ export default function ProductCard({ product, index = 0 }) {
       {/* ── HERO IMAGE AREA ── */}
       <div className="pcard-hero" style={logo ? {
         backgroundImage: `url(${logo})`,
-        backgroundSize: '100% 100%',
+        backgroundSize: '85%',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
       } : {}}>
