@@ -500,59 +500,91 @@ textarea { min-height: 120px; resize: vertical; font-family: ui-monospace, monos
   100% { left: 125%; }
 }
 
-/* Active nav link */
+@keyframes cart-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40%       { transform: translateY(-4px) scale(1.08); }
+  60%       { transform: translateY(-2px) scale(1.04); }
+}
+
+@keyframes border-color-cycle {
+  0%   { border-color: oklch(0.85 0.13 195 / 0.5); }
+  33%  { border-color: oklch(0.72 0.15 300 / 0.6); }
+  66%  { border-color: oklch(0.85 0.16 150 / 0.5); }
+  100% { border-color: oklch(0.85 0.13 195 / 0.5); }
+}
+
+/* Active nav link — gradient bg + animated underline */
 .nav a.active {
   position: relative;
   background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important;
   color: var(--bg) !important;
   box-shadow: none !important;
   animation: none !important;
+  font-weight: 800 !important;
 }
-.nav a.active::before {
+.nav a.active::after {
   content: '';
   position: absolute;
-  bottom: -2px; left: 10%; right: 10%;
+  bottom: 3px; left: 12%; right: 12%;
   height: 2px;
   border-radius: 99px;
   background: var(--bg);
+  opacity: 0.5;
   animation: nav-underline-grow 2s ease-in-out infinite;
 }
 
-/* Hover — slide background */
+/* Inactive nav links — color on hover + underline slide */
+.nav a {
+  position: relative;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 3px; left: 50%; right: 50%;
+  height: 2px;
+  border-radius: 99px;
+  background: var(--accent);
+  transition: left 0.25s ease, right 0.25s ease;
+}
+.nav a:hover::after {
+  left: 12%; right: 12%;
+}
 .nav a:hover {
-  background: oklch(1 0 0 / 0.09);
-  box-shadow: none;
-  transition: background 0.2s ease;
+  color: var(--accent) !important;
+  background: oklch(0.85 0.13 195 / 0.08) !important;
 }
 
-/* Cart button — shine sweep */
+/* Cart button — gradient + bounce + shine */
 .app-header .btn:not(.btn-ghost) {
-  animation: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important;
+  animation: cart-bounce 2.5s ease-in-out infinite;
   position: relative;
   overflow: hidden;
-  box-shadow: none !important;
+  box-shadow: 0 4px 16px oklch(0.85 0.13 195 / 0.3) !important;
 }
 .app-header .btn:not(.btn-ghost)::before {
   content: '';
   position: absolute;
   top: 0; left: -75%;
   width: 50%; height: 100%;
-  background: linear-gradient(105deg, transparent 30%, oklch(1 0 0 / 0.35) 50%, transparent 70%);
-  animation: btn-shine 2.5s ease-in-out infinite;
+  background: linear-gradient(105deg, transparent 30%, oklch(1 0 0 / 0.4) 50%, transparent 70%);
+  animation: btn-shine 2.2s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
 }
 
-/* Ghost buttons — border pulse only */
-@keyframes border-pulse {
-  0%, 100% { border-color: oklch(1 0 0 / 0.15); }
-  50%       { border-color: oklch(0.85 0.13 195 / 0.6); }
-}
+/* Log in / Language button — animated border cycle */
 .app-header .btn-ghost {
-  animation: border-pulse 3s ease-in-out infinite;
+  border: 1.5px solid oklch(0.85 0.13 195 / 0.5);
+  animation: border-color-cycle 4s linear infinite;
+  transition: background 0.2s ease, color 0.2s ease;
   box-shadow: none !important;
 }
-.app-header .btn-ghost::before { display: none; }
+.app-header .btn-ghost:hover {
+  background: oklch(0.85 0.13 195 / 0.12) !important;
+  color: var(--accent) !important;
+}
 .app-header .header-actions .btn-ghost:last-of-type {
-  animation-delay: 1.5s;
+  animation-delay: 2s;
 }
