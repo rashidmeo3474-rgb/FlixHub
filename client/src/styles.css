@@ -326,21 +326,23 @@ textarea { min-height: 120px; resize: vertical; font-family: ui-monospace, monos
 /* ── HERO IMAGE AREA ── */
 .pcard-hero {
   position: relative;
-  height: 140px;
+  height: 160px;
   overflow: hidden;
   border-radius: 14px 14px 0 0;
   z-index: 2;
-  background: oklch(0.1 0.012 265);
+  background: oklch(0.08 0.01 265);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .pcard-hero-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   position: relative;
   z-index: 2;
   transition: transform 0.4s cubic-bezier(0.2,0.8,0.3,1.4), filter 0.3s ease;
-  filter: drop-shadow(0 4px 14px oklch(0 0 0 / 0.5));
 }
 .pcard--tilting .pcard-hero-img {
   transform: scale(1.1) translateY(-3px);

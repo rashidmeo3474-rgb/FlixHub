@@ -96,10 +96,12 @@ export default function ProductCard({ product, index = 0 }) {
       ))}
 
       {/* ── HERO IMAGE AREA ── */}
-      <div className="pcard-hero">
-        {logo
-          ? <img src={logo} alt={product.name} className="pcard-hero-img" />
-          : null}
+      <div className="pcard-hero" style={logo ? {
+        backgroundImage: `url(${logo})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+      } : {}}>
+        {!logo && null}
 
         {/* genre label bottom-left */}
         {theme.label && (
