@@ -5,11 +5,15 @@ import { useRef, useEffect, useState } from 'react';
 
 /* ── Per-product logo map (local public/logos/) ── */
 const LOGOS = {
-  'netflix':       '/logos/netflix.png',
-  'netflix-480p':  '/logos/netflix.png',
-  'netflix-720p':  '/logos/netflix.png',
-  'netflix-4k':    '/logos/netflix.png',
-  'netflix-8k':    '/logos/netflix.png',
+  'netflix':        '/logos/netflix.png',
+  'netflix-480p':   '/logos/netflix.png',
+  'netflix-720p':   '/logos/netflix.png',
+  'netflix-4k':     '/logos/netflix.png',
+  'netflix-8k':     '/logos/netflix.png',
+  'prime-video':    '/logos/prime-video.png',
+  'prime-480p':     '/logos/prime-video.png',
+  'prime-720p':     '/logos/prime-video.png',
+  'prime-4k':       '/logos/prime-video.png',
 };
 
 /* ── Per-product theme: color, particle style, animation speed ── */
