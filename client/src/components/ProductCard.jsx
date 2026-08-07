@@ -5,11 +5,11 @@ import { useRef, useEffect, useState } from 'react';
 
 /* ── Per-product logo map (local public/logos/) ── */
 const LOGOS = {
-  'netflix':        '/logos/netflix.jpg',
-  'netflix-480p':   '/logos/netflix.jpg',
-  'netflix-720p':   '/logos/netflix.jpg',
-  'netflix-4k':     '/logos/netflix.jpg',
-  'netflix-8k':     '/logos/netflix.jpg',
+  'netflix':        '/logos/netflix.png',
+  'netflix-480p':   '/logos/netflix.png',
+  'netflix-720p':   '/logos/netflix.png',
+  'netflix-4k':     '/logos/netflix.png',
+  'netflix-8k':     '/logos/netflix.png',
   'hbo-max':        '/logos/hbo-max.png',
   'hbo-480p':       '/logos/hbo-max.png',
   'hbo-720p':       '/logos/hbo-max.png',

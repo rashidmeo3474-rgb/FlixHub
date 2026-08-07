@@ -26,9 +26,18 @@ const matchRes = (quality, key) => {
 };
 
 /* small inline card for the shop grid — shows live price for selected months */
+const SHOP_LOGOS = {
+  'netflix':      '/logos/netflix.jpg',
+  'netflix-480p': '/logos/netflix.jpg',
+  'netflix-720p': '/logos/netflix.jpg',
+  'netflix-4k':   '/logos/netflix.jpg',
+  'netflix-8k':   '/logos/netflix.jpg',
+};
+
 function ShopCard({ product, months }) {
   const { t } = useI18n();
   const out   = product.inStock === 0;
+  const logo  = SHOP_LOGOS[product.slug] || product.logo || null;
   const price = product.prices?.[months] ?? priceFor(product.monthlyPrice, months);
   const accent = product.accent || '#54d6e8';
 
@@ -55,8 +64,8 @@ function ShopCard({ product, months }) {
         height: 110, display: 'grid', placeItems: 'center',
         background: `linear-gradient(135deg, ${accent}18, oklch(0.1 0.012 265))`,
       }}>
-        {product.logo
-          ? <img src={product.logo} alt={product.name}
+        {logo
+          ? <img src={logo} alt={product.name}
               style={{ maxHeight: 64, maxWidth: '80%', objectFit: 'contain',
                 filter: 'drop-shadow(0 4px 10px oklch(0 0 0 / 0.5))' }} />
           : <span style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 800,
