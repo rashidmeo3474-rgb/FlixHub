@@ -1,12 +1,12 @@
 export const LANGUAGES = [
-  { code: 'en', native: 'English',  dir: 'ltr' },
-  { code: 'ur', native: 'اردو',     dir: 'rtl' },
-  { code: 'ar', native: 'العربية',  dir: 'rtl' },
-  { code: 'es', native: 'Español',  dir: 'ltr' },
-  { code: 'tr', native: 'Türkçe',   dir: 'ltr' },
-  { code: 'fr', native: 'Français', dir: 'ltr' },
-  { code: 'hi', native: 'हिंदी',     dir: 'ltr' },
-  { code: 'pt', native: 'Português',dir: 'ltr' }
+  { code: 'en', native: 'English',   dir: 'ltr', flag: '🇬🇧' },
+  { code: 'ur', native: 'اردو',      dir: 'rtl', flag: '🇵🇰' },
+  { code: 'ar', native: 'العربية',   dir: 'rtl', flag: '🇸🇦' },
+  { code: 'es', native: 'Español',   dir: 'ltr', flag: '🇪🇸' },
+  { code: 'tr', native: 'Türkçe',    dir: 'ltr', flag: '🇹🇷' },
+  { code: 'fr', native: 'Français',  dir: 'ltr', flag: '🇫🇷' },
+  { code: 'hi', native: 'हिंदी',      dir: 'ltr', flag: '🇮🇳' },
+  { code: 'pt', native: 'Português', dir: 'ltr', flag: '🇧🇷' },
 ];
 
 export const STRINGS = {

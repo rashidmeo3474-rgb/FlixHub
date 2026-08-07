@@ -8,25 +8,55 @@ export default function LanguageSwitcher() {
 
   return (
     <div style={{ position: 'relative' }}>
-      <button className="btn btn-ghost btn-sm" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-        🌐 {current?.native} ▾
+      <button
+        className="btn btn-ghost btn-sm"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        style={{ display: 'flex', alignItems: 'center', gap: 7 }}
+      >
+        <span style={{ fontSize: 18, lineHeight: 1 }}>{current?.flag}</span>
+        <span>{current?.native}</span>
+        <span style={{ fontSize: 10, opacity: 0.7 }}>▾</span>
       </button>
+
       {open && (
-        <div style={{
-          position: 'absolute', insetInlineEnd: 0, top: 46, width: 210, zIndex: 50,
-          background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 14,
-          padding: 7, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4,
-          boxShadow: 'var(--shadow)'
-        }}>
-          {languages.map((l) => (
-            <button key={l.code}
-              onClick={() => { setLang(l.code); setOpen(false); }}
-              className={l.code === lang ? 'chip active' : 'chip'}
-              style={{ borderRadius: 9, padding: '9px 11px', fontSize: 13.5 }}>
-              {l.native}
-            </button>
-          ))}
-        </div>
+        <>
+          {/* backdrop */}
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 49 }}
+            onClick={() => setOpen(false)}
+          />
+          <div style={{
+            position: 'absolute', insetInlineEnd: 0, top: 46, width: 230, zIndex: 50,
+            background: 'oklch(0.14 0.014 265)', border: '1px solid var(--line)',
+            borderRadius: 14, padding: 8,
+            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 5,
+            boxShadow: '0 20px 50px oklch(0 0 0 / 0.6)',
+          }}>
+            {languages.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => { setLang(l.code); setOpen(false); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '10px 12px', borderRadius: 9, cursor: 'pointer',
+                  fontFamily: 'inherit', fontSize: 13.5, fontWeight: 600,
+                  border: l.code === lang ? '1.5px solid transparent' : '1.5px solid var(--line)',
+                  background: l.code === lang
+                    ? 'linear-gradient(oklch(0.18 0.02 265),oklch(0.18 0.02 265)) padding-box, linear-gradient(135deg,var(--accent),var(--accent-2)) border-box'
+                    : 'oklch(0.11 0.012 265)',
+                  color: 'var(--text)',
+                  transition: 'all 0.15s',
+                  textAlign: l.dir === 'rtl' ? 'right' : 'left',
+                  direction: l.dir,
+                }}
+              >
+                <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>{l.flag}</span>
+                <span>{l.native}</span>
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
