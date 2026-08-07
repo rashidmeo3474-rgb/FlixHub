@@ -99,7 +99,7 @@ export default function ProductCard({ product, index = 0 }) {
       <div className="pcard-hero" style={logo ? {
         backgroundImage: `url(${logo})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'top center',
+        backgroundPosition: 'center center',
         backgroundRepeat: 'no-repeat',
       } : {}}>
         {!logo && null}
