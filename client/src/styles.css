@@ -482,89 +482,77 @@ textarea { min-height: 120px; resize: vertical; font-family: ui-monospace, monos
   .cinema-grid { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 140px; }
 }
 
-/* ── Navbar glow pulse animations ── */
-@keyframes nav-glow-pulse {
-  0%, 100% { box-shadow: 0 0 6px 1px oklch(0.85 0.13 195 / 0.5), 0 0 0px 0px oklch(0.85 0.13 195 / 0); }
-  50%       { box-shadow: 0 0 18px 5px oklch(0.85 0.13 195 / 0.8), 0 0 32px 8px oklch(0.72 0.15 300 / 0.4); }
+/* ── Navbar — clean effects, NO glow ── */
+
+/* Active nav link — shimmer slide effect */
+@keyframes nav-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
 
-@keyframes nav-ring-expand {
-  0%   { transform: scale(1);   opacity: 0.9; }
-  100% { transform: scale(2.0); opacity: 0; }
+@keyframes nav-underline-grow {
+  0%, 100% { transform: scaleX(0.6); opacity: 0.7; }
+  50%       { transform: scaleX(1);   opacity: 1; }
 }
 
-@keyframes ghost-glow-pulse {
-  0%, 100% { box-shadow: 0 0 5px 1px oklch(0.85 0.13 195 / 0.25), 0 0 0px 0px transparent; }
-  50%       { box-shadow: 0 0 14px 4px oklch(0.85 0.13 195 / 0.55), 0 0 24px 6px oklch(0.72 0.15 300 / 0.25); }
+@keyframes btn-shine {
+  0%   { left: -75%; }
+  100% { left: 125%; }
 }
 
-@keyframes ghost-ring-expand {
-  0%   { transform: scale(1);   opacity: 0.6; }
-  100% { transform: scale(1.8); opacity: 0; }
-}
-
-/* Active nav link — cyan glow */
+/* Active nav link */
 .nav a.active {
   position: relative;
-  animation: nav-glow-pulse 2s ease-in-out infinite;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important;
   color: var(--bg) !important;
-  z-index: 0;
+  box-shadow: none !important;
+  animation: none !important;
 }
-
-/* Ring circle expanding behind active link */
 .nav a.active::before {
   content: '';
   position: absolute;
-  inset: -2px;
-  border-radius: 11px;
-  border: 2px solid oklch(0.85 0.13 195 / 0.9);
-  animation: nav-ring-expand 2s ease-out infinite;
-  pointer-events: none;
-  z-index: -1;
+  bottom: -2px; left: 10%; right: 10%;
+  height: 2px;
+  border-radius: 99px;
+  background: var(--bg);
+  animation: nav-underline-grow 2s ease-in-out infinite;
 }
 
-/* Hover glow on all nav links */
+/* Hover — slide background */
 .nav a:hover {
-  box-shadow: 0 0 12px 3px oklch(0.85 0.13 195 / 0.4);
+  background: oklch(1 0 0 / 0.09);
+  box-shadow: none;
+  transition: background 0.2s ease;
 }
 
-/* Cart button — bright glow + expanding ring */
+/* Cart button — shine sweep */
 .app-header .btn:not(.btn-ghost) {
-  animation: nav-glow-pulse 2.2s ease-in-out infinite;
+  animation: none;
   position: relative;
-  z-index: 0;
+  overflow: hidden;
+  box-shadow: none !important;
 }
 .app-header .btn:not(.btn-ghost)::before {
   content: '';
   position: absolute;
-  inset: -3px;
-  border-radius: 15px;
-  border: 2px solid oklch(0.85 0.13 195 / 0.85);
-  animation: nav-ring-expand 2.2s ease-out infinite 0.3s;
+  top: 0; left: -75%;
+  width: 50%; height: 100%;
+  background: linear-gradient(105deg, transparent 30%, oklch(1 0 0 / 0.35) 50%, transparent 70%);
+  animation: btn-shine 2.5s ease-in-out infinite;
   pointer-events: none;
-  z-index: -1;
+  z-index: 1;
 }
 
-/* Log in / Log out button — glow + ring */
+/* Ghost buttons — border pulse only */
+@keyframes border-pulse {
+  0%, 100% { border-color: oklch(1 0 0 / 0.15); }
+  50%       { border-color: oklch(0.85 0.13 195 / 0.6); }
+}
 .app-header .btn-ghost {
-  animation: ghost-glow-pulse 2.6s ease-in-out infinite;
-  position: relative;
-  z-index: 0;
+  animation: border-pulse 3s ease-in-out infinite;
+  box-shadow: none !important;
 }
-.app-header .btn-ghost::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 13px;
-  border: 1.5px solid oklch(0.85 0.13 195 / 0.6);
-  animation: ghost-ring-expand 2.6s ease-out infinite 0.5s;
-  pointer-events: none;
-  z-index: -1;
-}
-/* stagger second ghost button */
+.app-header .btn-ghost::before { display: none; }
 .app-header .header-actions .btn-ghost:last-of-type {
-  animation-delay: 1.3s;
-}
-.app-header .header-actions .btn-ghost:last-of-type::before {
-  animation-delay: 1.8s;
+  animation-delay: 1.5s;
 }
