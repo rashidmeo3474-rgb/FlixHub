@@ -7,6 +7,6 @@ export const monthsLabel = (months, t) =>
 export const formatDate = (value) =>
   new Date(value).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
 
-export const DURATIONS = [1, 3, 6, 12];
-export const MULTIPLIERS = { 1: 1, 3: 2.7, 6: 5, 12: 9 };
+export const DURATIONS = [1, 2, 3, 4, 5, 6];
+export const MULTIPLIERS = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6 };
 export const priceFor = (monthly, months) => Math.round(monthly * (MULTIPLIERS[months] ?? months));

@@ -1,49 +1,213 @@
 import { useMemo, useState } from 'react';
 import useApi from '../hooks/useApi.js';
 import { useI18n } from '../context/I18nContext.jsx';
+import { money, priceFor } from '../utils/format.js';
 import ProductCard from '../components/ProductCard.jsx';
 
-const FILTERS = [
-  { key: 'all', label: 'All' },
-  { key: 'hd1080', label: '1080p HD' },
-  { key: 'uhd', label: '4K UHD' },
-  { key: 'hd', label: '8K UHD' },
-  { key: 'bundle', label: 'Bundles' }
+const RESOLUTION_TABS = [
+  { key: 'all',    label: 'All' },
+  { key: '480p',   label: '480p SD' },
+  { key: '720p',   label: '720p HD' },
+  { key: '1080p',  label: '1080p HD' },
+  { key: '4k',     label: '4K UHD' },
+  { key: '8k',     label: '8K UHD' },
+  { key: 'bundle', label: 'Bundles' },
 ];
+
+const DURATIONS = [1, 2, 3, 4, 5, 6];
+
+const matchRes = (quality, key) => {
+  if (key === '480p')  return /480p/i.test(quality);
+  if (key === '720p')  return /720p/i.test(quality);
+  if (key === '1080p') return /1080p/i.test(quality);
+  if (key === '4k')    return /4K/i.test(quality);
+  if (key === '8k')    return /8K/i.test(quality);
+  return false;
+};
+
+/* small inline card for the shop grid — shows live price for selected months */
+function ShopCard({ product, months }) {
+  const { t } = useI18n();
+  const out   = product.inStock === 0;
+  const price = product.prices?.[months] ?? priceFor(product.monthlyPrice, months);
+  const accent = product.accent || '#54d6e8';
+
+  return (
+    <article style={{
+      position: 'relative',
+      background: 'oklch(0.13 0.014 265 / 0.97)',
+      border: `1.5px solid ${accent}33`,
+      borderRadius: 16,
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      transition: 'transform 0.22s ease, box-shadow 0.22s ease',
+      boxShadow: '0 4px 20px oklch(0 0 0 / 0.4)',
+    }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = `0 12px 32px ${accent}44`; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)';    e.currentTarget.style.boxShadow = '0 4px 20px oklch(0 0 0 / 0.4)'; }}
+    >
+      {/* colour strip top */}
+      <div style={{ height: 4, background: `linear-gradient(90deg, ${accent}, ${accent}66)` }} />
+
+      {/* logo area */}
+      <div style={{
+        height: 110, display: 'grid', placeItems: 'center',
+        background: `linear-gradient(135deg, ${accent}18, oklch(0.1 0.012 265))`,
+      }}>
+        {product.logo
+          ? <img src={product.logo} alt={product.name}
+              style={{ maxHeight: 64, maxWidth: '80%', objectFit: 'contain',
+                filter: 'drop-shadow(0 4px 10px oklch(0 0 0 / 0.5))' }} />
+          : <span style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 800,
+              fontSize: 18, color: accent }}>{product.name}</span>
+        }
+      </div>
+
+      {/* body */}
+      <div style={{ padding: '12px 14px 14px', display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+        {/* name + quality + stock */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 6 }}>
+          <div>
+            <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: 14 }}>{product.name}</div>
+            <div style={{ fontSize: 11, color: accent, fontWeight: 700, marginTop: 2 }}>{product.quality}</div>
+          </div>
+          <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 7px', borderRadius: 5, flexShrink: 0,
+            background: out ? 'oklch(0.65 0.22 25 / 0.18)' : 'oklch(0.72 0.16 150 / 0.18)',
+            color: out ? 'var(--bad)' : 'var(--good)' }}>
+            {out ? t('outOfStock') : `${product.inStock} ${t('inStock')}`}
+          </span>
+        </div>
+
+        {/* price */}
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+          <span style={{
+            fontFamily: "'Space Grotesk',sans-serif", fontSize: 22, fontWeight: 700,
+            color: accent,
+          }}>{money(price)}</span>
+          <span style={{ fontSize: 11, color: 'var(--muted)' }}>
+            {months === 1 ? `/ ${t('month')}` : `/ ${months} ${t('months')}`}
+          </span>
+        </div>
+
+        {/* per-month breakdown if multi-month */}
+        {months > 1 && (
+          <div style={{ fontSize: 11, color: 'var(--muted)' }}>
+            {money(product.monthlyPrice)} × {months} = {money(price)}
+          </div>
+        )}
+
+        {/* compare-at */}
+        {product.compareAt > 0 && (
+          <div style={{ fontSize: 11, color: 'var(--muted)', textDecoration: 'line-through' }}>
+            Market rate: {money(product.compareAt * months)}
+          </div>
+        )}
+
+        {/* cta */}
+        <a href={`/product/${product.slug}`} style={{
+          display: 'block', textAlign: 'center', marginTop: 'auto',
+          padding: '10px 14px', borderRadius: 10, fontWeight: 800,
+          fontSize: 13.5, textDecoration: 'none',
+          background: `linear-gradient(135deg, ${accent}, ${accent}99)`,
+          color: '#000',
+          transition: 'filter 0.2s ease',
+        }}
+          onMouseEnter={e => e.currentTarget.style.filter = 'brightness(1.15)'}
+          onMouseLeave={e => e.currentTarget.style.filter = 'brightness(1)'}
+        >
+          {t('viewPlan')}
+        </a>
+      </div>
+    </article>
+  );
+}
 
 export default function Shop() {
   const { t } = useI18n();
   const { data, loading, error } = useApi('/products');
-  const [filter, setFilter] = useState('all');
+  const [tab, setTab]         = useState('all');
+  const [months, setMonths]   = useState(1);
 
   const products = useMemo(() => {
     const list = data?.products || [];
-    if (filter === 'uhd') return list.filter((p) => /4K/i.test(p.quality));
-    if (filter === 'hd') return list.filter((p) => /8K/i.test(p.quality));
-    if (filter === 'hd1080') return list.filter((p) => /1080/.test(p.quality));
-    if (filter === 'bundle') return list.filter((p) => p.category === 'bundle');
-    return list;
-  }, [data, filter]);
+    if (tab === 'bundle') return list.filter((p) => p.category === 'bundle');
+    if (tab === 'all')    return list;
+    return list.filter((p) => matchRes(p.quality, tab));
+  }, [data, tab]);
 
   return (
     <section className="wrap section">
       <h1 style={{ fontSize: 'clamp(28px, 3.4vw, 40px)' }}>{t('shop')}</h1>
-      <p className="muted" style={{ marginTop: 10, fontSize: 16 }}>{t('shopSub')}</p>
+      <p className="muted" style={{ marginTop: 8, fontSize: 15 }}>{t('shopSub')}</p>
 
-      <div className="row" style={{ margin: '24px 0 22px' }}>
-        {FILTERS.map((f) => (
-          <button key={f.key} className={filter === f.key ? 'chip active' : 'chip'} onClick={() => setFilter(f.key)}>
+      {/* ── Resolution filter tabs ── */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', margin: '22px 0 0' }}>
+        {RESOLUTION_TABS.map((f) => (
+          <button key={f.key}
+            className={tab === f.key ? 'chip active' : 'chip'}
+            onClick={() => setTab(f.key)}>
             {f.label}
           </button>
         ))}
       </div>
 
-      {loading && <p className="muted">{t('loading')}</p>}
-      {error && <div className="alert alert-error">{error}</div>}
-
-      <div className="grid grid-4">
-        {products.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
+      {/* ── Duration selector ── */}
+      <div style={{
+        margin: '18px 0 26px',
+        background: 'oklch(0.13 0.013 265)',
+        border: '1px solid var(--line)',
+        borderRadius: 14, padding: '16px 20px',
+        display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
+      }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+          Duration
+        </span>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {DURATIONS.map((m) => (
+            <button key={m} onClick={() => setMonths(m)} style={{
+              padding: '8px 16px', borderRadius: 9, cursor: 'pointer',
+              fontFamily: 'inherit', fontWeight: 700, fontSize: 13.5,
+              border: months === m ? '1.5px solid transparent' : '1.5px solid var(--line)',
+              background: months === m
+                ? 'linear-gradient(oklch(0.18 0.02 265),oklch(0.18 0.02 265)) padding-box, linear-gradient(135deg,var(--accent),var(--accent-2)) border-box'
+                : 'oklch(0.11 0.012 265)',
+              color: months === m ? 'var(--accent)' : 'var(--muted)',
+              transition: 'all 0.15s',
+            }}>
+              {m} {m === 1 ? t('month') : t('months')}
+            </button>
+          ))}
+        </div>
+        {months > 1 && (
+          <span style={{ fontSize: 12, color: 'var(--good)', fontWeight: 700, marginLeft: 'auto' }}>
+            Total = Monthly Rate × {months}
+          </span>
+        )}
       </div>
+
+      {loading && <p className="muted">{t('loading')}</p>}
+      {error   && <div className="alert alert-error">{error}</div>}
+
+      {/* ── Product grid ── */}
+      {!loading && !error && (
+        <>
+          {products.length === 0 && (
+            <p className="muted" style={{ textAlign: 'center', padding: 40 }}>
+              No products found for this filter.
+            </p>
+          )}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+            gap: 16,
+          }}>
+            {products.map((p) => (
+              <ShopCard key={p._id} product={p} months={months} />
+            ))}
+          </div>
+        </>
+      )}
     </section>
   );
 }

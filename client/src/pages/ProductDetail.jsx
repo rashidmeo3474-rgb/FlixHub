@@ -14,11 +14,11 @@ export default function ProductDetail() {
   const [months, setMonths] = useState(1);
 
   if (loading) return <div className="wrap section muted">{t('loading')}</div>;
-  if (error) return <div className="wrap section"><div className="alert alert-error">{error}</div></div>;
+  if (error)   return <div className="wrap section"><div className="alert alert-error">{error}</div></div>;
 
   const product = data.product;
-  const total = product.prices?.[months] ?? priceFor(product.monthlyPrice, months);
-  const out = product.inStock === 0;
+  const total   = product.prices?.[months] ?? priceFor(product.monthlyPrice, months);
+  const out     = product.inStock === 0;
 
   const item = {
     productId: product._id, slug: product.slug, name: product.name,
@@ -33,7 +33,9 @@ export default function ProductDetail() {
       <div className="grid grid-2" style={{ marginTop: 22, alignItems: 'start' }}>
         <div className="card">
           <div className="logo-tile" style={{ height: 300, background: `linear-gradient(135deg, ${product.accent}33, oklch(0.22 0.02 265))` }}>
-            {product.logo ? <img src={product.logo} alt={product.name} /> : <span className="fallback" style={{ fontSize: 28 }}>{product.name}</span>}
+            {product.logo
+              ? <img src={product.logo} alt={product.name} />
+              : <span className="fallback" style={{ fontSize: 28 }}>{product.name}</span>}
           </div>
         </div>
 
@@ -49,11 +51,17 @@ export default function ProductDetail() {
 
           <div className="field">
             <span className="label">{t('duration')}</span>
-            <div className="duration-grid">
+            {/* 1–6 month selector */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
               {DURATIONS.map((m) => (
-                <button key={m} className={months === m ? 'duration active' : 'duration'} onClick={() => setMonths(m)}>
-                  <strong>{monthsLabel(m, t)}</strong>
-                  <span>{money(product.prices?.[m] ?? priceFor(product.monthlyPrice, m))}</span>
+                <button key={m}
+                  className={months === m ? 'duration active' : 'duration'}
+                  onClick={() => setMonths(m)}>
+                  <strong>{m}</strong>
+                  <span>{m === 1 ? t('month') : t('months')}</span>
+                  <span style={{ fontSize: 11, marginTop: 2 }}>
+                    {money(product.prices?.[m] ?? priceFor(product.monthlyPrice, m))}
+                  </span>
                 </button>
               ))}
             </div>
@@ -63,6 +71,11 @@ export default function ProductDetail() {
             <div>
               <span className="label">{t('total')}</span>
               <div className="price price-lg" style={{ color: product.accent }}>{money(total)}</div>
+              {months > 1 && (
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+                  {money(product.monthlyPrice)} × {months} months
+                </div>
+              )}
             </div>
             <span className="muted" style={{ fontSize: 13, maxWidth: 190, textAlign: 'end' }}>{t('heroSub')}</span>
           </div>

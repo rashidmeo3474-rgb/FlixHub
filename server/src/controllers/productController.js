@@ -2,14 +2,48 @@ import Product from '../models/Product.js';
 import Account from '../models/Account.js';
 import { asyncHandler } from '../middleware/error.js';
 
+/* ─────────────────────────────────────────────
+   Full resolution-tiered catalog
+   ───────────────────────────────────────────── */
 const FALLBACK_PRODUCTS = [
-  { name: 'Netflix',         quality: '1080p HD', monthlyPrice: 350,  compareAt: 450,  accent: '#e50914', category: 'movies', slug: 'netflix',       warrantyMonths: 1 },
-  { name: 'Prime Video',     quality: '4K UHD',   monthlyPrice: 250,  compareAt: 300,  accent: '#00a8e1', category: 'movies', slug: 'prime-video',    warrantyMonths: 1 },
-  { name: 'Disney+',         quality: '4K UHD',   monthlyPrice: 300,  compareAt: 450,  accent: '#4b6cf7', category: 'movies', slug: 'disney',         warrantyMonths: 1 },
-  { name: 'Apple TV+',       quality: '8K UHD',   monthlyPrice: 2600, compareAt: 5500, accent: '#d8d8d8', category: 'movies', slug: 'apple-tv',       warrantyMonths: 1 },
-  { name: 'Netflix + Prime', quality: '4K UHD',   monthlyPrice: 500,  compareAt: 1900, accent: '#e50914', category: 'bundle', slug: 'netflix-prime',  warrantyMonths: 1 },
-  { name: 'HBO Max',         quality: '4K UHD',   monthlyPrice: 350,  compareAt: 1200, accent: '#7b2ff7', category: 'movies', slug: 'hbo-max',        warrantyMonths: 1 },
+  /* ── 480p SD ── */
+  { name: 'Netflix',       quality: '480p SD',  monthlyPrice: 300,  compareAt: 400,  accent: '#e50914', category: 'movies', slug: 'netflix-480p',       warrantyMonths: 1 },
+  { name: 'Prime Video',   quality: '480p SD',  monthlyPrice: 250,  compareAt: 350,  accent: '#00a8e1', category: 'movies', slug: 'prime-480p',          warrantyMonths: 1 },
+  { name: 'Disney+',       quality: '480p SD',  monthlyPrice: 280,  compareAt: 380,  accent: '#4b6cf7', category: 'movies', slug: 'disney-480p',         warrantyMonths: 1 },
+  { name: 'HBO Max',       quality: '480p SD',  monthlyPrice: 300,  compareAt: 400,  accent: '#9b30ff', category: 'movies', slug: 'hbo-480p',            warrantyMonths: 1 },
+
+  /* ── 720p HD ── */
+  { name: 'Netflix',       quality: '720p HD',  monthlyPrice: 380,  compareAt: 500,  accent: '#e50914', category: 'movies', slug: 'netflix-720p',        warrantyMonths: 1 },
+  { name: 'Prime Video',   quality: '720p HD',  monthlyPrice: 300,  compareAt: 420,  accent: '#00a8e1', category: 'movies', slug: 'prime-720p',          warrantyMonths: 1 },
+  { name: 'Disney+',       quality: '720p HD',  monthlyPrice: 340,  compareAt: 460,  accent: '#4b6cf7', category: 'movies', slug: 'disney-720p',         warrantyMonths: 1 },
+  { name: 'HBO Max',       quality: '720p HD',  monthlyPrice: 380,  compareAt: 500,  accent: '#9b30ff', category: 'movies', slug: 'hbo-720p',            warrantyMonths: 1 },
+
+  /* ── 1080p HD ── */
+  { name: 'Netflix',       quality: '1080p HD', monthlyPrice: 450,  compareAt: 600,  accent: '#e50914', category: 'movies', slug: 'netflix',             warrantyMonths: 1 },
+  { name: 'Prime Video',   quality: '1080p HD', monthlyPrice: 350,  compareAt: 500,  accent: '#00a8e1', category: 'movies', slug: 'prime-video',         warrantyMonths: 1 },
+  { name: 'Disney+',       quality: '1080p HD', monthlyPrice: 400,  compareAt: 550,  accent: '#4b6cf7', category: 'movies', slug: 'disney',              warrantyMonths: 1 },
+  { name: 'HBO Max',       quality: '1080p HD', monthlyPrice: 450,  compareAt: 600,  accent: '#9b30ff', category: 'movies', slug: 'hbo-max',             warrantyMonths: 1 },
+  { name: 'Apple TV+',     quality: '1080p HD', monthlyPrice: 1800, compareAt: 2500, accent: '#d8d8d8', category: 'movies', slug: 'apple-tv-1080p',      warrantyMonths: 1 },
+
+  /* ── 4K UHD ── */
+  { name: 'Netflix',       quality: '4K UHD',   monthlyPrice: 550,  compareAt: 750,  accent: '#e50914', category: 'movies', slug: 'netflix-4k',          warrantyMonths: 1 },
+  { name: 'Prime Video',   quality: '4K UHD',   monthlyPrice: 450,  compareAt: 650,  accent: '#00a8e1', category: 'movies', slug: 'prime-4k',            warrantyMonths: 1 },
+  { name: 'Disney+',       quality: '4K UHD',   monthlyPrice: 500,  compareAt: 700,  accent: '#4b6cf7', category: 'movies', slug: 'disney-4k',           warrantyMonths: 1 },
+  { name: 'HBO Max',       quality: '4K UHD',   monthlyPrice: 550,  compareAt: 750,  accent: '#9b30ff', category: 'movies', slug: 'hbo-4k',              warrantyMonths: 1 },
+  { name: 'Apple TV+',     quality: '4K UHD',   monthlyPrice: 2200, compareAt: 3000, accent: '#d8d8d8', category: 'movies', slug: 'apple-tv',            warrantyMonths: 1 },
+
+  /* ── 8K UHD ── */
+  { name: 'Apple TV+',     quality: '8K UHD',   monthlyPrice: 2700, compareAt: 4000, accent: '#d8d8d8', category: 'movies', slug: 'apple-tv-8k',         warrantyMonths: 1 },
+  { name: 'Netflix',       quality: '8K UHD',   monthlyPrice: 650,  compareAt: 900,  accent: '#e50914', category: 'movies', slug: 'netflix-8k',          warrantyMonths: 1 },
+  { name: 'HBO Max',       quality: '8K UHD',   monthlyPrice: 650,  compareAt: 900,  accent: '#9b30ff', category: 'movies', slug: 'hbo-8k',              warrantyMonths: 1 },
+
+  /* ── Bundles ── */
+  { name: 'Netflix + Prime Video', quality: '4K UHD', monthlyPrice: 600, compareAt: 1000, accent: '#e50914', category: 'bundle', slug: 'netflix-prime', warrantyMonths: 1 },
 ];
+
+/* linear pricing: total = monthly × months */
+const calcPrices = (monthly) =>
+  Object.fromEntries([1, 2, 3, 4, 5, 6].map((m) => [m, monthly * m]));
 
 const withStock = async (products) => {
   const counts = await Account.aggregate([
@@ -20,56 +54,49 @@ const withStock = async (products) => {
   return products.map((p) => ({
     ...p.toObject(),
     inStock: map.get(String(p._id)) || 8,
-    prices: Object.fromEntries([1, 3, 6, 12].map((m) => [
-      m,
-      p.priceFor ? p.priceFor(m) : Math.round(p.monthlyPrice * (m === 3 ? 2.7 : m === 6 ? 5 : m === 12 ? 9 : 1))
-    ]))
+    prices: calcPrices(p.monthlyPrice),
   }));
 };
 
-const buildFallbackProducts = () => FALLBACK_PRODUCTS.map((product) => ({
-  _id: product.slug,
-  ...product,
-  active: true,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  inStock: 8,
-  prices: Object.fromEntries([1, 3, 6, 12].map((m) => [
-    m,
-    Math.round(product.monthlyPrice * (m === 3 ? 2.7 : m === 6 ? 5 : m === 12 ? 9 : 1))
-  ]))
-}));
+const buildFallback = () =>
+  FALLBACK_PRODUCTS.map((p) => ({
+    _id: p.slug,
+    ...p,
+    active: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    inStock: 8,
+    prices: calcPrices(p.monthlyPrice),
+  }));
 
 export const listProducts = asyncHandler(async (req, res) => {
   const filter = { active: true };
   if (req.query.category) filter.category = req.query.category;
-  if (req.query.quality) filter.quality = new RegExp(req.query.quality, 'i');
+  if (req.query.quality)  filter.quality  = new RegExp(req.query.quality, 'i');
 
   try {
     const products = await Product.find(filter).sort({ createdAt: 1 });
-    if (products.length) {
-      return res.json({ products: await withStock(products) });
-    }
-  } catch (error) {
-    console.warn('Product DB lookup failed, using fallback catalog:', error.message);
+    if (products.length) return res.json({ products: await withStock(products) });
+  } catch (err) {
+    console.warn('Product DB lookup failed, using fallback:', err.message);
   }
 
-  return res.json({ products: buildFallbackProducts() });
+  return res.json({ products: buildFallback() });
 });
 
 export const getProduct = asyncHandler(async (req, res) => {
-  const requestedSlug = req.params.slug;
+  const slug = req.params.slug;
   try {
-    const product = await Product.findOne({ slug: requestedSlug, active: true });
+    const product = await Product.findOne({ slug, active: true });
     if (product) {
       const [item] = await withStock([product]);
       return res.json({ product: item });
     }
-  } catch (error) {
-    console.warn('Product detail lookup failed, using fallback catalog:', error.message);
+  } catch (err) {
+    console.warn('Product detail lookup failed, using fallback:', err.message);
   }
 
-  const fallback = buildFallbackProducts().find((p) => p.slug === requestedSlug);
+  const fallback = buildFallback().find((p) => p.slug === slug);
   if (!fallback) return res.status(404).json({ message: 'Product not found' });
   return res.json({ product: fallback });
 });
