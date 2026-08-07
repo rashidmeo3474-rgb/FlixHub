@@ -3,12 +3,12 @@ import Account from '../models/Account.js';
 import { asyncHandler } from '../middleware/error.js';
 
 const FALLBACK_PRODUCTS = [
-  { name: 'Netflix', quality: '1080p HD', monthlyPrice: 350, compareAt: 450, accent: '#e50914', category: 'movies', slug: 'netflix', warrantyMonths: 1 },
-  { name: 'Prime Video', quality: '4K UHD', monthlyPrice: 250, compareAt: 300, accent: '#00a8e1', category: 'movies', slug: 'prime-video', warrantyMonths: 1 },
-  { name: 'Disney+', quality: '4K UHD', monthlyPrice: 300, compareAt: 450, accent: '#4b6cf7', category: 'movies', slug: 'disney', warrantyMonths: 1 },
-  { name: 'Apple TV+', quality: '8K UHD', monthlyPrice: 2600, compareAt: 5500, accent: '#d8d8d8', category: 'movies', slug: 'apple-tv', warrantyMonths: 1 },
-  { name: 'Netflix + Prime', quality: '4K UHD', monthlyPrice: 500, compareAt: 1900, accent: '#e50914', category: 'bundle', slug: 'netflix-prime', warrantyMonths: 1 },
-  { name: 'HBO Max', quality: '4K UHD', monthlyPrice: 350, compareAt: 1200, accent: '#7b2ff7', category: 'movies', slug: 'hbo-max', warrantyMonths: 1 },
+  { name: 'Netflix',         quality: '1080p HD', monthlyPrice: 350,  compareAt: 450,  accent: '#e50914', category: 'movies', slug: 'netflix',       warrantyMonths: 1 },
+  { name: 'Prime Video',     quality: '4K UHD',   monthlyPrice: 250,  compareAt: 300,  accent: '#00a8e1', category: 'movies', slug: 'prime-video',    warrantyMonths: 1 },
+  { name: 'Disney+',         quality: '4K UHD',   monthlyPrice: 300,  compareAt: 450,  accent: '#4b6cf7', category: 'movies', slug: 'disney',         warrantyMonths: 1 },
+  { name: 'Apple TV+',       quality: '8K UHD',   monthlyPrice: 2600, compareAt: 5500, accent: '#d8d8d8', category: 'movies', slug: 'apple-tv',       warrantyMonths: 1 },
+  { name: 'Netflix + Prime', quality: '4K UHD',   monthlyPrice: 500,  compareAt: 1900, accent: '#e50914', category: 'bundle', slug: 'netflix-prime',  warrantyMonths: 1 },
+  { name: 'HBO Max',         quality: '4K UHD',   monthlyPrice: 350,  compareAt: 1200, accent: '#7b2ff7', category: 'movies', slug: 'hbo-max',        warrantyMonths: 1 },
 ];
 
 const withStock = async (products) => {

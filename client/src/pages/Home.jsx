@@ -6,7 +6,7 @@ import ProductCard from '../components/ProductCard.jsx';
 export default function Home() {
   const { t } = useI18n();
   const { data } = useApi('/products');
-  const products = (data?.products || []).slice(0, 5);
+  const products = (data?.products || []).slice(0, 6);
 
   const steps = [
     { n: '1', title: t('viewPlan'), body: t('duration') },
@@ -51,12 +51,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="wrap section" style={{ paddingTop: 0 }}>
+      <section style={{ paddingTop: 0, padding: '0 16px 64px', maxWidth: 1400, margin: '0 auto' }}>
         <div className="spread" style={{ marginBottom: 22 }}>
           <h2 style={{ fontSize: 'clamp(24px, 3vw, 34px)' }}>{t('shop')}</h2>
           <Link to="/shop">{t('browse')} →</Link>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 18 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gap: 12 }}>
           {products.map((p) => <ProductCard key={p._id} product={p} />)}
         </div>
       </section>
