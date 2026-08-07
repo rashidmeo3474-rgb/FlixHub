@@ -326,7 +326,7 @@ textarea { min-height: 120px; resize: vertical; font-family: ui-monospace, monos
 /* ── HERO IMAGE AREA ── */
 .pcard-hero {
   position: relative;
-  height: 200px;
+  height: 220px;
   overflow: hidden;
   border-radius: 14px 14px 0 0;
   z-index: 2;
