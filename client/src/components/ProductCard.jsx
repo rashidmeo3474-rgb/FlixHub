@@ -3,6 +3,15 @@ import { useI18n } from '../context/I18nContext.jsx';
 import { money } from '../utils/format.js';
 import { useRef, useEffect, useState } from 'react';
 
+/* ── Per-product logo map (local public/logos/) ── */
+const LOGOS = {
+  'netflix':       '/logos/netflix.png',
+  'netflix-480p':  '/logos/netflix.png',
+  'netflix-720p':  '/logos/netflix.png',
+  'netflix-4k':    '/logos/netflix.png',
+  'netflix-8k':    '/logos/netflix.png',
+};
+
 /* ── Per-product theme: color, particle style, animation speed ── */
 const THEMES = {
   'netflix':      { accent: '#e50914', particle: '★', label: 'Action · Drama',    speed: 3.2, shimmerColor: 'rgba(229,9,20,0.25)' },
@@ -22,6 +31,7 @@ export default function ProductCard({ product, index = 0 }) {
   const [ripples, setRipples] = useState([]);
   const theme = getTheme(product.slug);
   const accent = product.accent || theme.accent;
+  const logo = LOGOS[product.slug] || product.logo || null;
 
   useEffect(() => {
     const card = cardRef.current;
@@ -87,8 +97,8 @@ export default function ProductCard({ product, index = 0 }) {
 
       {/* ── HERO IMAGE AREA ── */}
       <div className="pcard-hero">
-        {product.logo
-          ? <img src={product.logo} alt={product.name} className="pcard-hero-img" />
+        {logo
+          ? <img src={logo} alt={product.name} className="pcard-hero-img" />
           : null}
 
         {/* genre label bottom-left */}
