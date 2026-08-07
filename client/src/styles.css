@@ -484,73 +484,87 @@ textarea { min-height: 120px; resize: vertical; font-family: ui-monospace, monos
 
 /* ── Navbar glow pulse animations ── */
 @keyframes nav-glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 currentColor, 0 0 8px 2px currentColor;
-    opacity: 1;
-  }
-  50% {
-    box-shadow: 0 0 0 6px transparent, 0 0 18px 6px currentColor;
-    opacity: 0.85;
-  }
+  0%, 100% { box-shadow: 0 0 6px 1px oklch(0.85 0.13 195 / 0.5), 0 0 0px 0px oklch(0.85 0.13 195 / 0); }
+  50%       { box-shadow: 0 0 18px 5px oklch(0.85 0.13 195 / 0.8), 0 0 32px 8px oklch(0.72 0.15 300 / 0.4); }
 }
 
 @keyframes nav-ring-expand {
-  0%   { transform: scale(1);   opacity: 0.7; }
-  100% { transform: scale(2.2); opacity: 0; }
+  0%   { transform: scale(1);   opacity: 0.9; }
+  100% { transform: scale(2.0); opacity: 0; }
 }
 
-/* Active nav link — continuous glow */
+@keyframes ghost-glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px 1px oklch(0.85 0.13 195 / 0.25), 0 0 0px 0px transparent; }
+  50%       { box-shadow: 0 0 14px 4px oklch(0.85 0.13 195 / 0.55), 0 0 24px 6px oklch(0.72 0.15 300 / 0.25); }
+}
+
+@keyframes ghost-ring-expand {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* Active nav link — cyan glow */
 .nav a.active {
   position: relative;
   animation: nav-glow-pulse 2s ease-in-out infinite;
   color: var(--bg) !important;
+  z-index: 0;
 }
 
-/* Ring burst behind active link */
+/* Ring circle expanding behind active link */
 .nav a.active::before {
   content: '';
   position: absolute;
-  inset: -3px;
+  inset: -2px;
   border-radius: 11px;
-  background: transparent;
-  border: 2px solid var(--accent);
+  border: 2px solid oklch(0.85 0.13 195 / 0.9);
   animation: nav-ring-expand 2s ease-out infinite;
   pointer-events: none;
+  z-index: -1;
 }
 
-/* All nav links — subtle glow on hover */
+/* Hover glow on all nav links */
 .nav a:hover {
-  box-shadow: 0 0 14px 3px oklch(0.85 0.13 195 / 0.45);
-  transition: box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 0 12px 3px oklch(0.85 0.13 195 / 0.4);
 }
 
-/* Cart button glow */
+/* Cart button — bright glow + expanding ring */
 .app-header .btn:not(.btn-ghost) {
-  animation: nav-glow-pulse 2.4s ease-in-out infinite;
+  animation: nav-glow-pulse 2.2s ease-in-out infinite;
   position: relative;
-  overflow: visible;
+  z-index: 0;
 }
-
-.app-header .btn:not(.btn-ghost)::after {
+.app-header .btn:not(.btn-ghost)::before {
   content: '';
   position: absolute;
-  inset: -4px;
-  border-radius: 16px;
-  border: 2px solid var(--accent);
-  animation: nav-ring-expand 2.4s ease-out infinite 0.4s;
+  inset: -3px;
+  border-radius: 15px;
+  border: 2px solid oklch(0.85 0.13 195 / 0.85);
+  animation: nav-ring-expand 2.2s ease-out infinite 0.3s;
   pointer-events: none;
+  z-index: -1;
 }
 
-/* Ghost buttons (Log out, English) — softer pulse */
-@keyframes ghost-glow {
-  0%, 100% { box-shadow: 0 0 0 0 oklch(0.85 0.13 195 / 0); }
-  50%       { box-shadow: 0 0 12px 4px oklch(0.85 0.13 195 / 0.3); }
-}
-
+/* Log in / Log out button — glow + ring */
 .app-header .btn-ghost {
-  animation: ghost-glow 3s ease-in-out infinite;
+  animation: ghost-glow-pulse 2.6s ease-in-out infinite;
+  position: relative;
+  z-index: 0;
 }
-
-.app-header .btn-ghost:nth-child(2) {
-  animation-delay: 1s;
+.app-header .btn-ghost::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 13px;
+  border: 1.5px solid oklch(0.85 0.13 195 / 0.6);
+  animation: ghost-ring-expand 2.6s ease-out infinite 0.5s;
+  pointer-events: none;
+  z-index: -1;
+}
+/* stagger second ghost button */
+.app-header .header-actions .btn-ghost:last-of-type {
+  animation-delay: 1.3s;
+}
+.app-header .header-actions .btn-ghost:last-of-type::before {
+  animation-delay: 1.8s;
 }
