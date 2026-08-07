@@ -7,9 +7,12 @@ import { useI18n } from '../context/I18nContext.jsx';
 import { money, monthsLabel } from '../utils/format.js';
 
 const METHODS = [
-  { key: 'jazzcash', label: 'JazzCash', note: 'Mobile wallet · instant approval' },
-  { key: 'easypaisa', label: 'EasyPaisa', note: 'Mobile wallet · instant approval' },
-  { key: 'card', label: 'Visa / Mastercard', note: 'Any bank debit or credit card' }
+  { key: 'jazzcash',  label: 'JazzCash',         note: 'Mobile wallet · instant approval', logo: '/logos/jazzcash.png' },
+  { key: 'easypaisa', label: 'EasyPaisa',         note: 'Mobile wallet · instant approval', logo: '/logos/easypaisa.png' },
+  { key: 'nayapay',   label: 'NayaPay',           note: 'Mobile wallet · instant approval', logo: '/logos/nayapay.png' },
+  { key: 'ubl',       label: 'UBL Bank',          note: 'Bank transfer',                    logo: '/logos/ubl.jpg' },
+  { key: 'mcb',       label: 'MCB Bank',          note: 'Bank transfer',                    logo: '/logos/mcb.png' },
+  { key: 'card',      label: 'Visa / Mastercard', note: 'Any bank debit or credit card',    logo: '/logos/visa.jpg' },
 ];
 
 export default function Checkout() {
@@ -69,11 +72,21 @@ export default function Checkout() {
                 <button type="button" key={m.key} onClick={() => setMethod(m.key)}
                   className={method === m.key ? 'duration active' : 'duration'}
                   style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px' }}>
-                  <span style={{ textAlign: 'start' }}>
-                    <strong style={{ display: 'block' }}>{m.label}</strong>
-                    <span className="muted" style={{ fontSize: 12.5 }}>{m.note}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    {m.logo
+                      ? <img src={m.logo} alt={m.label}
+                          style={{ height: 28, maxWidth: 80, objectFit: 'contain', borderRadius: 4,
+                            background: '#fff', padding: '2px 6px' }} />
+                      : <span style={{ width: 80, height: 28, borderRadius: 4, background: 'oklch(1 0 0 / 0.08)',
+                          display: 'grid', placeItems: 'center', fontSize: 11, fontWeight: 700,
+                          color: 'var(--muted)', flexShrink: 0 }}>{m.label.slice(0, 3).toUpperCase()}</span>
+                    }
+                    <span style={{ textAlign: 'start' }}>
+                      <strong style={{ display: 'block', fontSize: 14 }}>{m.label}</strong>
+                      <span className="muted" style={{ fontSize: 12 }}>{m.note}</span>
+                    </span>
                   </span>
-                  <span>{method === m.key ? '●' : '○'}</span>
+                  <span style={{ fontSize: 18 }}>{method === m.key ? '●' : '○'}</span>
                 </button>
               ))}
             </div>
