@@ -5,7 +5,46 @@ import Account from '../models/Account.js';
 import { asyncHandler } from '../middleware/error.js';
 import { createIntent, verifyPayment, isSupported } from '../services/payments.js';
 
-const MULT = Product.MULTIPLIERS;
+const MULT = { 1: 1, 3: 2.7, 6: 5, 12: 9 };
+
+const FALLBACK_CATALOG = [
+  { name: 'Netflix',         quality: '1080p HD', monthlyPrice: 350,  compareAt: 450,  accent: '#e50914', category: 'movies', slug: 'netflix' },
+  { name: 'Prime Video',     quality: '4K UHD',   monthlyPrice: 250,  compareAt: 300,  accent: '#00a8e1', category: 'movies', slug: 'prime-video' },
+  { name: 'Disney+',         quality: '4K UHD',   monthlyPrice: 300,  compareAt: 450,  accent: '#4b6cf7', category: 'movies', slug: 'disney' },
+  { name: 'Apple TV+',       quality: '8K UHD',   monthlyPrice: 2600, compareAt: 5500, accent: '#d8d8d8', category: 'movies', slug: 'apple-tv' },
+  { name: 'HBO Max',         quality: '4K UHD',   monthlyPrice: 350,  compareAt: 1200, accent: '#7b2ff7', category: 'movies', slug: 'hbo-max' },
+  { name: 'Netflix + Prime', quality: '4K UHD',   monthlyPrice: 500,  compareAt: 1900, accent: '#e50914', category: 'bundle', slug: 'netflix-prime' },
+];
+
+/** 
+ * Resolve productId to a real Product document.
+ * productId can be a MongoDB ObjectId string OR a slug (from fallback catalog).
+ * If product doesn't exist in DB yet, auto-create it from the fallback catalog.
+ */
+const resolveProduct = async (productId) => {
+  // 1. Try by ObjectId
+  if (mongoose.Types.ObjectId.isValid(productId)) {
+    const byId = await Product.findOne({ _id: productId, active: true });
+    if (byId) return byId;
+  }
+
+  // 2. Try by slug
+  const bySlug = await Product.findOne({ slug: productId, active: true });
+  if (bySlug) return bySlug;
+
+  // 3. Auto-seed from fallback catalog so future orders work too
+  const template = FALLBACK_CATALOG.find((p) => p.slug === productId);
+  if (template) {
+    const created = await Product.findOneAndUpdate(
+      { slug: template.slug },
+      { ...template, active: true },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    return created;
+  }
+
+  return null;
+};
 
 /** Build a validated order from the client cart — prices are recomputed server-side. */
 export const createOrder = asyncHandler(async (req, res) => {
@@ -14,33 +53,26 @@ export const createOrder = asyncHandler(async (req, res) => {
   if (!isSupported(paymentMethod)) return res.status(422).json({ message: 'Choose a payment method' });
   if (!req.user && !email) return res.status(422).json({ message: 'Email is required for guest checkout' });
 
-  const ids = items.map((i) => i.productId);
-  
-  // Fallback catalog uses slug as _id (string), real DB uses ObjectId — filter valid ObjectIds only
-  const validIds = ids.filter((id) => mongoose.Types.ObjectId.isValid(id));
-  
-  // Fetch from DB first
-  const products = validIds.length ? await Product.find({ _id: { $in: validIds }, active: true }) : [];
-  const byId = new Map(products.map((p) => [String(p._id), p]));
-  
-  // If any IDs weren't found in DB, try fallback by slug
-  const missingIds = ids.filter((id) => !byId.has(String(id)));
-  if (missingIds.length) {
-    const fallbackProducts = await Product.find({ slug: { $in: missingIds }, active: true });
-    fallbackProducts.forEach((p) => byId.set(String(p._id), p));
-    fallbackProducts.forEach((p) => byId.set(p.slug, p)); // also index by slug
-  }
-
-  const orderItems = items.map((i) => {
-    const product = byId.get(String(i.productId));
+  const orderItems = [];
+  for (const i of items) {
+    const product = await resolveProduct(String(i.productId));
     if (!product) throw Object.assign(new Error('A product in your cart is unavailable'), { status: 404 });
+
     const months = Number(i.months);
-    if (!MULT[months]) throw Object.assign(new Error('Invalid duration'), { status: 422 });
-    return {
-      product: product._id, name: product.name, quality: product.quality,
-      months, price: product.priceFor(months)
-    };
-  });
+    if (!MULT[months]) throw Object.assign(new Error('Invalid duration selected'), { status: 422 });
+
+    const price = product.priceFor
+      ? product.priceFor(months)
+      : Math.round(product.monthlyPrice * MULT[months]);
+
+    orderItems.push({
+      product: product._id,
+      name: product.name,
+      quality: product.quality,
+      months,
+      price
+    });
+  }
 
   const total = orderItems.reduce((sum, i) => sum + i.price, 0);
   const order = await Order.create({
@@ -55,8 +87,8 @@ export const createOrder = asyncHandler(async (req, res) => {
 });
 
 /**
- * Mark paid and deliver automatically: pull available credentials out of the stock pool
- * inside a transaction so two buyers can never receive the same account.
+ * Mark paid and deliver automatically — pull available credentials out of stock
+ * inside a transaction so two buyers never get the same account.
  */
 export const payOrder = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
@@ -82,13 +114,18 @@ export const payOrder = asyncHandler(async (req, res) => {
           { new: true, session, sort: { createdAt: 1 } }
         );
         if (!account) {
-          throw Object.assign(new Error(item.name + ' is out of stock — our team will restock shortly'), { status: 409 });
+          throw Object.assign(
+            new Error(item.name + ' is out of stock — our team will restock shortly'),
+            { status: 409 }
+          );
         }
         const expiresAt = new Date();
         expiresAt.setMonth(expiresAt.getMonth() + item.months);
         item.credentials = {
-          login: account.login, password: account.password,
-          profile: account.profile, expiresAt
+          login: account.login,
+          password: account.password,
+          profile: account.profile,
+          expiresAt
         };
       }
       order.status = 'delivered';
@@ -100,7 +137,6 @@ export const payOrder = asyncHandler(async (req, res) => {
     await session.endSession();
   }
 
-  // TODO: queue the same credentials to email / WhatsApp here.
   res.json({ order });
 });
 
