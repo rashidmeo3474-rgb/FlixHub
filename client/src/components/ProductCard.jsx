@@ -131,14 +131,21 @@ export default function ProductCard({ product, index = 0 }) {
         </div>
 
         <div className="pcard-price">
-          <span className="pcard-amount" style={{ color: accent }}>
+          <span className="pcard-amount" style={product.slug === 'netflix-prime' ? {
+              background: 'linear-gradient(90deg, #e50914, #00a8e1)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            } : { color: accent }}>
             {money(product.monthlyPrice)}
           </span>
           {product.compareAt > 0 && <span className="strike">{money(product.compareAt)}</span>}
         </div>
 
         <Link className="pcard-btn" to={`/product/${product.slug}`}
-          style={{
+          style={product.slug === 'netflix-prime' ? {
+            background: 'linear-gradient(135deg, #e50914 0%, #6b0ac9 50%, #00a8e1 100%)',
+          } : {
             background: `linear-gradient(135deg, ${accent}, ${accent}99)`,
           }}>
           {t('viewPlan')}
