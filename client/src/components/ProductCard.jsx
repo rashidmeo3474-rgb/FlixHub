@@ -15,6 +15,9 @@ const LOGOS = {
   'hbo-720p':       '/logos/hbo-max.png',
   'hbo-4k':         '/logos/hbo-max.png',
   'hbo-8k':         '/logos/hbo-max.png',
+  'apple-tv':       '/logos/apple-tv.png',
+  'apple-tv-1080p': '/logos/apple-tv.png',
+  'apple-tv-8k':    '/logos/apple-tv.png',
 };
 
 /* ── Per-product theme: color, particle style, animation speed ── */
