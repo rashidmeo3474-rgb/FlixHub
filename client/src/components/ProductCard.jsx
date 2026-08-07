@@ -18,6 +18,7 @@ const LOGOS = {
   'apple-tv':       '/logos/apple-tv.png',
   'apple-tv-1080p': '/logos/apple-tv.png',
   'apple-tv-8k':    '/logos/apple-tv.png',
+  'netflix-prime':  '/logos/netflix-prime.jpg',
 };
 
 /* ── Per-product theme: color, particle style, animation speed ── */
