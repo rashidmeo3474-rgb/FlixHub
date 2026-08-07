@@ -10,6 +10,11 @@ const LOGOS = {
   'netflix-720p':   '/logos/netflix.png',
   'netflix-4k':     '/logos/netflix.png',
   'netflix-8k':     '/logos/netflix.png',
+  'hbo-max':        '/logos/hbo-max.png',
+  'hbo-480p':       '/logos/hbo-max.png',
+  'hbo-720p':       '/logos/hbo-max.png',
+  'hbo-4k':         '/logos/hbo-max.png',
+  'hbo-8k':         '/logos/hbo-max.png',
 };
 
 /* ── Per-product theme: color, particle style, animation speed ── */
