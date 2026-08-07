@@ -6,15 +6,22 @@ import LanguageSwitcher from './LanguageSwitcher.jsx';
 
 const SITE = import.meta.env.VITE_SITE_NAME || 'FlixHub';
 
-// Local scene images from /public/scenes/
+// Local scene images from /public/scenes/ — 40 tiles fill the 8×5 grid
 const POSTERS = [
   '/scenes/tile-01.png', '/scenes/tile-02.png', '/scenes/tile-03.png',
   '/scenes/tile-04.png', '/scenes/tile-05.png', '/scenes/tile-06.png',
   '/scenes/tile-07.png', '/scenes/tile-08.png', '/scenes/tile-09.png',
-  '/scenes/n01.jpg', '/scenes/n02.jpg', '/scenes/n03.jpg',
-  '/scenes/n04.jpg', '/scenes/n07.jpg', '/scenes/n08.jpg',
-  '/scenes/p01.jpg', '/scenes/p02.jpg', '/scenes/p03.jpg',
-  '/scenes/f01.jpg', '/scenes/f02.jpg',
+  '/scenes/n01.jpg',  '/scenes/n02.jpg',  '/scenes/n03.jpg',
+  '/scenes/n04.jpg',  '/scenes/n07.jpg',  '/scenes/n08.jpg',
+  '/scenes/n09.jpg',  '/scenes/n10.jpg',  '/scenes/n11.jpg',
+  '/scenes/p01.jpg',  '/scenes/p02.jpg',  '/scenes/p03.jpg',
+  '/scenes/p04.jpg',  '/scenes/p07.jpg',  '/scenes/p08.jpg',
+  '/scenes/p09.jpg',  '/scenes/p10.jpg',  '/scenes/p11.jpg',
+  '/scenes/f01.jpg',  '/scenes/f02.jpg',  '/scenes/f03.jpg',
+  '/scenes/f04.jpg',  '/scenes/f05.jpg',  '/scenes/f06.jpg',
+  '/scenes/src-05.jpg', '/scenes/src-06.jpg', '/scenes/src-07.jpg',
+  '/scenes/src-08.jpg', '/scenes/src-09.jpg', '/scenes/src-10.jpg',
+  '/scenes/src-11.jpg', '/scenes/src-12.jpg',
 ];
 
 export default function StoreLayout() {
