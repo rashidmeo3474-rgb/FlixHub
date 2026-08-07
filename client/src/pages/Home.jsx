@@ -6,7 +6,7 @@ import ProductCard from '../components/ProductCard.jsx';
 export default function Home() {
   const { t } = useI18n();
   const { data } = useApi('/products');
-  const products = (data?.products || []).slice(0, 4);
+  const products = (data?.products || []).slice(0, 5);
 
   const steps = [
     { n: '1', title: t('viewPlan'), body: t('duration') },
@@ -56,7 +56,7 @@ export default function Home() {
           <h2 style={{ fontSize: 'clamp(24px, 3vw, 34px)' }}>{t('shop')}</h2>
           <Link to="/shop">{t('browse')} →</Link>
         </div>
-        <div className="grid grid-4">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 18 }}>
           {products.map((p) => <ProductCard key={p._id} product={p} />)}
         </div>
       </section>
