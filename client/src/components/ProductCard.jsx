@@ -73,13 +73,10 @@ export default function ProductCard({ product, index = 0 }) {
       <div className="pcard-hero">
         {product.logo
           ? <img src={product.logo} alt={product.name} className="pcard-hero-img" />
-          : <span className="pcard-fallback">{product.name}</span>}
+          : null}
 
         {/* dark gradient over image so text readable */}
         <div className="pcard-hero-overlay" />
-
-        {/* quality badge top-right */}
-        <span className="pcard-quality">1080p · 4K · 8K</span>
 
         {/* floating particles */}
         <div className="pcard-particles" aria-hidden="true">
