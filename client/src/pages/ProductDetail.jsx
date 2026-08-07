@@ -5,6 +5,23 @@ import { useCart } from '../context/CartContext.jsx';
 import { useI18n } from '../context/I18nContext.jsx';
 import { money, monthsLabel, DURATIONS, priceFor } from '../utils/format.js';
 
+const DETAIL_LOGOS = {
+  'netflix':        '/logos/netflix.jpg',
+  'netflix-480p':   '/logos/netflix.jpg',
+  'netflix-720p':   '/logos/netflix.jpg',
+  'netflix-4k':     '/logos/netflix.jpg',
+  'netflix-8k':     '/logos/netflix.jpg',
+  'apple-tv':       '/logos/apple-tv.png',
+  'apple-tv-1080p': '/logos/apple-tv.png',
+  'apple-tv-8k':    '/logos/apple-tv.png',
+  'hbo-max':        '/logos/hbo-max.png',
+  'hbo-480p':       '/logos/hbo-max.png',
+  'hbo-720p':       '/logos/hbo-max.png',
+  'hbo-4k':         '/logos/hbo-max.png',
+  'hbo-8k':         '/logos/hbo-max.png',
+  'netflix-prime':  '/logos/netflix-prime.jpg',
+};
+
 export default function ProductDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -19,6 +36,7 @@ export default function ProductDetail() {
   const product = data.product;
   const total   = product.prices?.[months] ?? priceFor(product.monthlyPrice, months);
   const out     = product.inStock === 0;
+  const logo    = DETAIL_LOGOS[product.slug] || product.logo || null;
 
   const item = {
     productId: product._id, slug: product.slug, name: product.name,
@@ -33,8 +51,8 @@ export default function ProductDetail() {
       <div className="grid grid-2" style={{ marginTop: 22, alignItems: 'start' }}>
         <div className="card">
           <div className="logo-tile" style={{ height: 300, background: `linear-gradient(135deg, ${product.accent}33, oklch(0.22 0.02 265))` }}>
-            {product.logo
-              ? <img src={product.logo} alt={product.name} />
+            {logo
+              ? <img src={logo} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 12 }} />
               : <span className="fallback" style={{ fontSize: 28 }}>{product.name}</span>}
           </div>
         </div>
