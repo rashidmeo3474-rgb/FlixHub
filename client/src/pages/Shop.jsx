@@ -27,11 +27,14 @@ const matchRes = (quality, key) => {
 
 /* small inline card for the shop grid — shows live price for selected months */
 const SHOP_LOGOS = {
-  'netflix':      '/logos/netflix.jpg',
-  'netflix-480p': '/logos/netflix.jpg',
-  'netflix-720p': '/logos/netflix.jpg',
-  'netflix-4k':   '/logos/netflix.jpg',
-  'netflix-8k':   '/logos/netflix.jpg',
+  'netflix':        '/logos/netflix.jpg',
+  'netflix-480p':   '/logos/netflix.jpg',
+  'netflix-720p':   '/logos/netflix.jpg',
+  'netflix-4k':     '/logos/netflix.jpg',
+  'netflix-8k':     '/logos/netflix.jpg',
+  'apple-tv':       '/logos/apple-tv.png',
+  'apple-tv-1080p': '/logos/apple-tv.png',
+  'apple-tv-8k':    '/logos/apple-tv.png',
 };
 
 function ShopCard({ product, months }) {
