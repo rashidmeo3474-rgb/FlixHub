@@ -1,83 +1,118 @@
 import { useState } from 'react';
 import api from '../api/client.js';
 import useApi from '../hooks/useApi.js';
-import { useI18n } from '../context/I18nContext.jsx';
 import { money } from '../utils/format.js';
 
-const EMPTY = { name: '', quality: '4K UHD', monthlyPrice: '', compareAt: '', accent: '#54d6e8', category: 'movies', logo: '' };
+const EMPTY = { name: '', quality: '4K UHD', monthlyPrice: '', compareAt: '', accent: '#54d6e8', category: 'movies', logo: '', warrantyMonths: 1 };
 
 export default function ProductsManager() {
-  const { t } = useI18n();
   const { data, loading, error, reload } = useApi('/products');
   const [form, setForm] = useState(EMPTY);
+  const [editId, setEditId] = useState(null);
   const [status, setStatus] = useState(null);
   const [busy, setBusy] = useState(false);
 
   const change = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
-  const submit = async (event) => {
-    event.preventDefault();
+  const startEdit = (p) => {
+    setEditId(p._id);
+    setForm({ name: p.name, quality: p.quality, monthlyPrice: p.monthlyPrice, compareAt: p.compareAt || '', accent: p.accent || '#54d6e8', category: p.category, logo: p.logo || '', warrantyMonths: p.warrantyMonths || 1 });
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  };
+
+  const reset = () => { setEditId(null); setForm(EMPTY); setStatus(null); };
+
+  const submit = async (e) => {
+    e.preventDefault();
     setBusy(true); setStatus(null);
     try {
       await api.post('/admin/products', {
+        id: editId || undefined,
         ...form,
         monthlyPrice: Number(form.monthlyPrice),
-        compareAt: Number(form.compareAt || 0)
+        compareAt: Number(form.compareAt || 0),
+        warrantyMonths: Number(form.warrantyMonths || 1)
       });
-      setStatus({ type: 'ok', message: 'Product saved.' });
-      setForm(EMPTY);
+      setStatus({ type: 'ok', message: editId ? 'Product updated.' : 'Product created.' });
+      reset();
       reload();
     } catch (err) {
       setStatus({ type: 'error', message: err.message });
-    } finally {
-      setBusy(false);
-    }
+    } finally { setBusy(false); }
   };
 
-  const archive = async (id) => { await api.delete(`/admin/products/${id}`); reload(); };
+  const archive = async (id) => {
+    if (!confirm('Archive this product?')) return;
+    await api.delete(`/admin/products/${id}`);
+    reload();
+  };
 
-  if (loading) return <p className="muted">{t('loading')}</p>;
-  if (error) return <div className="alert alert-error">{error}</div>;
+  if (loading) return <p style={{ color: 'var(--muted)' }}>Loading…</p>;
+  if (error)   return <div className="alert alert-error">{error}</div>;
 
   return (
     <>
-      <h1 style={{ fontSize: 30 }}>{t('products')}</h1>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 28, fontWeight: 700 }}>Products</h1>
+        <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 4 }}>{data?.products?.length || 0} products</p>
+      </div>
 
-      <div className="card" style={{ padding: 8, margin: '22px 0 26px' }}>
+      <div style={{ background: 'oklch(0.13 0.013 265)', border: '1px solid var(--line)', borderRadius: 14, overflow: 'hidden', marginBottom: 32 }}>
         <table className="table">
-          <thead><tr><th>Name</th><th>Quality</th><th>Monthly</th><th>Compare at</th><th>Stock</th><th /></tr></thead>
+          <thead>
+            <tr><th>Name</th><th>Quality</th><th>Monthly</th><th>Compare At</th><th>Category</th><th>Stock</th><th>Active</th><th></th></tr>
+          </thead>
           <tbody>
-            {(data.products || []).map((p) => (
+            {(data?.products || []).map((p) => (
               <tr key={p._id}>
-                <td><strong>{p.name}</strong></td>
-                <td className="muted">{p.quality}</td>
-                <td>{money(p.monthlyPrice)}</td>
-                <td className="muted">{p.compareAt ? money(p.compareAt) : '—'}</td>
-                <td>{p.inStock}</td>
-                <td><button className="btn btn-danger btn-sm" onClick={() => archive(p._id)}>Archive</button></td>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    {p.accent && <span style={{ width: 10, height: 10, borderRadius: '50%', background: p.accent, flexShrink: 0 }} />}
+                    <strong style={{ fontSize: 14 }}>{p.name}</strong>
+                  </div>
+                </td>
+                <td style={{ color: 'var(--muted)', fontSize: 13 }}>{p.quality}</td>
+                <td style={{ fontWeight: 700 }}>{money(p.monthlyPrice)}</td>
+                <td style={{ color: 'var(--muted)' }}>{p.compareAt ? money(p.compareAt) : '—'}</td>
+                <td style={{ fontSize: 12 }}><span className="badge badge-good">{p.category}</span></td>
+                <td style={{ fontWeight: 700, color: p.inStock < 5 ? 'var(--warn)' : 'var(--good)' }}>{p.inStock ?? '—'}</td>
+                <td>
+                  <span style={{ fontSize: 11, fontWeight: 800, padding: '3px 8px', borderRadius: 6,
+                    background: p.active !== false ? 'oklch(0.72 0.16 150 / 0.18)' : 'oklch(0.65 0.22 25 / 0.18)',
+                    color: p.active !== false ? 'var(--good)' : 'var(--bad)' }}>
+                    {p.active !== false ? 'Active' : 'Archived'}
+                  </span>
+                </td>
+                <td style={{ display: 'flex', gap: 6 }}>
+                  <button className="btn btn-ghost btn-sm" onClick={() => startEdit(p)}>Edit</button>
+                  <button className="btn btn-danger btn-sm" onClick={() => archive(p._id)}>Archive</button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <h2 style={{ fontSize: 20, marginBottom: 14 }}>Add / update product</h2>
-      <form className="card grid grid-2" onSubmit={submit} style={{ maxWidth: 720, gap: 14 }}>
-        <div className="field"><label className="label">Name</label><input required value={form.name} onChange={change('name')} /></div>
-        <div className="field"><label className="label">Quality</label><input value={form.quality} onChange={change('quality')} /></div>
-        <div className="field"><label className="label">Monthly price (Rs)</label><input required type="number" min="1" value={form.monthlyPrice} onChange={change('monthlyPrice')} /></div>
-        <div className="field"><label className="label">Compare at (Rs)</label><input type="number" min="0" value={form.compareAt} onChange={change('compareAt')} /></div>
-        <div className="field"><label className="label">Accent colour</label><input type="color" value={form.accent} onChange={change('accent')} style={{ padding: 6, height: 46 }} /></div>
-        <div className="field">
-          <label className="label">Category</label>
+      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>
+        {editId ? '✏️ Edit Product' : '➕ Add Product'}
+        {editId && <button onClick={reset} style={{ marginLeft: 12, fontSize: 12, background: 'none', border: '1px solid var(--line)', borderRadius: 6, padding: '4px 10px', color: 'var(--muted)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>}
+      </h2>
+      <form onSubmit={submit} style={{ background: 'oklch(0.13 0.013 265)', border: '1px solid var(--line)', borderRadius: 14, padding: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, maxWidth: 760 }}>
+        <div className="field"><label className="label">Name *</label><input required value={form.name} onChange={change('name')} placeholder="Netflix" /></div>
+        <div className="field"><label className="label">Quality</label><input value={form.quality} onChange={change('quality')} placeholder="4K UHD" /></div>
+        <div className="field"><label className="label">Monthly Price (Rs) *</label><input required type="number" min="1" value={form.monthlyPrice} onChange={change('monthlyPrice')} /></div>
+        <div className="field"><label className="label">Compare At (Rs)</label><input type="number" min="0" value={form.compareAt} onChange={change('compareAt')} /></div>
+        <div className="field"><label className="label">Category</label>
           <select value={form.category} onChange={change('category')}>
             <option value="movies">movies</option>
             <option value="bundle">bundle</option>
           </select>
         </div>
-        <div className="field" style={{ gridColumn: '1 / -1' }}><label className="label">Logo URL</label><input value={form.logo} onChange={change('logo')} placeholder="https://…" /></div>
+        <div className="field"><label className="label">Warranty (months)</label><input type="number" min="1" value={form.warrantyMonths} onChange={change('warrantyMonths')} /></div>
+        <div className="field"><label className="label">Accent Colour</label><input type="color" value={form.accent} onChange={change('accent')} style={{ padding: 4, height: 44 }} /></div>
+        <div className="field"><label className="label">Logo URL</label><input value={form.logo} onChange={change('logo')} placeholder="https://…" /></div>
         {status && <div className={status.type === 'ok' ? 'alert alert-ok' : 'alert alert-error'} style={{ gridColumn: '1 / -1' }}>{status.message}</div>}
-        <button className="btn" type="submit" disabled={busy} style={{ gridColumn: '1 / -1' }}>{busy ? t('loading') : t('save')}</button>
+        <button className="btn" type="submit" disabled={busy} style={{ gridColumn: '1 / -1' }}>{busy ? 'Saving…' : editId ? 'Update Product' : 'Create Product'}</button>
       </form>
     </>
   );
