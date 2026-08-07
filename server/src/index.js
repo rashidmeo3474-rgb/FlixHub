@@ -29,6 +29,7 @@ const allowedOrigins = new Set([
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'https://flix-hub-phi.vercel.app',
+  'https://flixhub-0len.onrender.com',
   ...(process.env.CLIENT_URL
     ? process.env.CLIENT_URL.split(',').map((o) => o.trim()).filter(Boolean)
     : [])
