@@ -139,8 +139,10 @@ export default function PaymentProofs() {
                   <td style={{ fontFamily: 'ui-monospace,monospace', fontSize: 12, color: 'var(--muted)' }}>{p.transactionId || '—'}</td>
                   <td>
                     <span style={{ fontSize: 11, fontWeight: 800, padding: '3px 8px', borderRadius: 6,
-                      background: p.status === 'approved' ? 'oklch(0.72 0.16 150 / 0.18)' : p.status === 'pending' ? 'oklch(0.7 0.19 60 / 0.18)' : 'oklch(0.65 0.22 25 / 0.18)',
-                      color: p.status === 'approved' ? 'var(--good)' : p.status === 'pending' ? 'var(--warn)' : 'var(--bad)' }}>
+                      background: p.status === 'approved' ? 'rgba(0,255,135,0.14)'  : p.status === 'pending' ? 'rgba(255,214,0,0.14)'  : 'rgba(255,46,147,0.14)',
+                      color:      p.status === 'approved' ? '#00FF87'               : p.status === 'pending' ? '#FFD600'                : '#FF2E93',
+                      border:     p.status === 'approved' ? '1px solid rgba(0,255,135,0.25)' : p.status === 'pending' ? '1px solid rgba(255,214,0,0.25)' : '1px solid rgba(255,46,147,0.25)',
+                      boxShadow:  p.status === 'approved' ? '0 0 8px rgba(0,255,135,0.28)' : p.status === 'pending' ? '0 0 8px rgba(255,214,0,0.25)' : '0 0 8px rgba(255,46,147,0.25)' }}>
                       {p.status}
                     </span>
                   </td>

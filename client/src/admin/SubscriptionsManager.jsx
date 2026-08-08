@@ -3,13 +3,13 @@ import api from '../api/client.js';
 import useApi from '../hooks/useApi.js';
 
 const STATUS_COLORS = {
-  pending_assignment: { bg: 'oklch(0.7 0.19 60 / 0.18)',   color: 'var(--warn)' },
-  active:             { bg: 'oklch(0.72 0.16 150 / 0.18)',  color: 'var(--good)' },
-  expiring_soon:      { bg: 'oklch(0.7 0.19 60 / 0.18)',   color: 'var(--warn)' },
-  expiring_today:     { bg: 'oklch(0.65 0.22 25 / 0.18)',  color: 'var(--bad)'  },
-  urgent:             { bg: 'oklch(0.65 0.22 25 / 0.18)',  color: 'var(--bad)'  },
-  expired:            { bg: 'oklch(0.65 0.22 25 / 0.18)',  color: 'var(--bad)'  },
-  cancelled:          { bg: 'oklch(0.5 0.01 265 / 0.18)',  color: 'var(--muted)'},
+  pending_assignment: { background: 'rgba(255,214,0,0.14)',  color: '#FFD600', border: '1px solid rgba(255,214,0,0.25)',  boxShadow: '0 0 8px rgba(255,214,0,0.28)'  },
+  active:             { background: 'rgba(0,255,135,0.14)',  color: '#00FF87', border: '1px solid rgba(0,255,135,0.25)',  boxShadow: '0 0 8px rgba(0,255,135,0.30)'  },
+  expiring_soon:      { background: 'rgba(255,214,0,0.14)',  color: '#FFD600', border: '1px solid rgba(255,214,0,0.25)',  boxShadow: '0 0 8px rgba(255,214,0,0.28)'  },
+  expiring_today:     { background: 'rgba(255,46,147,0.14)', color: '#FF2E93', border: '1px solid rgba(255,46,147,0.25)', boxShadow: '0 0 8px rgba(255,46,147,0.28)' },
+  urgent:             { background: 'rgba(255,46,147,0.14)', color: '#FF2E93', border: '1px solid rgba(255,46,147,0.25)', boxShadow: '0 0 8px rgba(255,46,147,0.28)' },
+  expired:            { background: 'rgba(255,46,147,0.14)', color: '#FF2E93', border: '1px solid rgba(255,46,147,0.25)', boxShadow: '0 0 8px rgba(255,46,147,0.28)' },
+  cancelled:          { background: 'rgba(160,185,230,0.08)', color: 'rgba(160,185,230,0.55)', border: '1px solid rgba(160,185,230,0.12)' },
 };
 
 const fmtDate = (d) => d ? new Date(d).toLocaleDateString() : '—';

@@ -6,10 +6,10 @@ import { money, formatDate } from '../utils/format.js';
 const STATUSES = ['', 'pending', 'paid', 'delivered', 'failed', 'refunded'];
 
 const statusStyle = (s) => {
-  if (s === 'delivered') return { background: 'oklch(0.72 0.16 150 / 0.18)', color: 'var(--good)' };
-  if (s === 'pending')   return { background: 'oklch(0.7 0.19 60 / 0.18)',   color: 'var(--warn)' };
-  if (s === 'paid')      return { background: 'oklch(0.6 0.18 250 / 0.18)',   color: 'var(--accent)' };
-  return { background: 'oklch(0.65 0.22 25 / 0.18)', color: 'var(--bad)' };
+  if (s === 'delivered') return { background: 'rgba(0,255,135,0.14)',  color: '#00FF87', border: '1px solid rgba(0,255,135,0.25)',  boxShadow: '0 0 8px rgba(0,255,135,0.30)'  };
+  if (s === 'pending')   return { background: 'rgba(255,214,0,0.14)',  color: '#FFD600', border: '1px solid rgba(255,214,0,0.25)',  boxShadow: '0 0 8px rgba(255,214,0,0.28)'  };
+  if (s === 'paid')      return { background: 'rgba(0,240,255,0.14)',  color: '#00F0FF', border: '1px solid rgba(0,240,255,0.25)',  boxShadow: '0 0 8px rgba(0,240,255,0.28)'  };
+  return                        { background: 'rgba(255,46,147,0.14)', color: '#FF2E93', border: '1px solid rgba(255,46,147,0.25)', boxShadow: '0 0 8px rgba(255,46,147,0.28)' };
 };
 
 function OrderModal({ order, onClose, onSave }) {

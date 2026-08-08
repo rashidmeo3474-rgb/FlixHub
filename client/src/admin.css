@@ -1,133 +1,66 @@
 /*
- * ════════════════════════════════════════════════════════════════
- *  FLIXHUB ADMIN — NEON GLASSMORPHISM THEME
- *  Import order: this file is imported AFTER styles.css so every
- *  rule here overrides the base stylesheet.
- *  NO JSX was modified — all changes are pure CSS.
- * ════════════════════════════════════════════════════════════════
+ * ══════════════════════════════════════════════════════════════
+ *  FLIXHUB ADMIN — NEON GLASSMORPHISM THEME  v2
+ *  Pure class-based + element selectors only.
+ *  No [style*="..."] attribute selectors — they don't work on
+ *  React inline styles reliably across browsers.
+ * ══════════════════════════════════════════════════════════════
  */
 
-/* ──────────────────────────────────────────────
-   1. CSS CUSTOM PROPERTY OVERRIDES
-   Re-map every semantic token to the neon palette.
-────────────────────────────────────────────── */
+/* ─── 1. ROOT VARIABLES ───────────────────────────────────── */
 :root {
-  /* Base background — ultra-dark navy/charcoal */
   --bg:        #0B0F19;
-  --surface:   rgba(15, 20, 35, 0.82);
-  --surface-2: rgba(20, 27, 48, 0.88);
+  --surface:   rgba(13, 18, 32, 0.88);
+  --line:      rgba(0, 240, 255, 0.10);
+  --text:      #E8EEFF;
+  --muted:     rgba(160, 185, 230, 0.55);
 
-  /* Border lines — almost-invisible ice */
-  --line: rgba(120, 180, 255, 0.10);
+  --accent:   #00F0FF;
+  --accent-2: #9D00FF;
+  --good:     #00FF87;
+  --warn:     #FFD600;
+  --bad:      #FF2E93;
+  --support:  #FF007A;
 
-  /* Typography */
-  --text:  #E8EEFF;
-  --muted: rgba(160, 185, 230, 0.60);
-
-  /* ── Semantic neon accents ── */
-  --good:     #00FF87;   /* Emerald Neon — active / verified        */
-  --accent:   #00F0FF;   /* Cyber Blue   — dashboard / highlights   */
-  --warn:     #FFD600;   /* Sunburst Gold — pending / warnings       */
-  --bad:      #FF2E93;   /* Crimson Pink  — expired / rejected       */
-  --accent-2: #9D00FF;   /* Electric Purple — inventory / capacity   */
-  --support:  #FF007A;   /* Hot Neon Pink  — support / messages      */
-
-  /* Glow helpers (rgba versions for box-shadow) */
-  --glow-good:     0 0 18px rgba(0,255,135,0.30);
-  --glow-accent:   0 0 18px rgba(0,240,255,0.30);
-  --glow-warn:     0 0 18px rgba(255,214,0,0.30);
-  --glow-bad:      0 0 18px rgba(255,46,147,0.30);
-  --glow-purple:   0 0 18px rgba(157,0,255,0.30);
-  --glow-support:  0 0 18px rgba(255,0,122,0.30);
-
-  --radius: 14px;
-  --shadow: 0 24px 56px rgba(0,0,0,0.70);
+  --glow-cyan:   0 0 20px rgba(0,240,255,0.30);
+  --glow-green:  0 0 20px rgba(0,255,135,0.30);
+  --glow-gold:   0 0 20px rgba(255,214,0,0.30);
+  --glow-pink:   0 0 20px rgba(255,46,147,0.30);
+  --glow-purple: 0 0 20px rgba(157,0,255,0.30);
 }
 
-/* ──────────────────────────────────────────────
-   2. KEYFRAME ANIMATIONS
-────────────────────────────────────────────── */
-
-/* Slow-drift ambient aura behind the admin shell */
+/* ─── 2. KEYFRAMES ─────────────────────────────────────────── */
 @keyframes aura-drift {
-  0%   { transform: translate(0, 0)    scale(1);    }
-  33%  { transform: translate(60px,-40px) scale(1.08); }
-  66%  { transform: translate(-40px,50px) scale(0.96); }
-  100% { transform: translate(0, 0)    scale(1);    }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
-
-/* Page / card fade-in + slide-up */
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0);    }
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
-/* Pulsing heartbeat for notification badges */
 @keyframes heartbeat {
-  0%,100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(255,46,147,0.6); }
-  14%      { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(255,46,147,0); }
-  28%      { transform: scale(1);    box-shadow: 0 0 0 0 rgba(255,46,147,0);   }
-  42%      { transform: scale(1.08); box-shadow: 0 0 0 4px rgba(255,46,147,0); }
+  0%,100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(255,0,122,0.7); }
+  20%      { transform: scale(1.18); box-shadow: 0 0 0 7px rgba(255,0,122,0); }
+  40%      { transform: scale(1);    box-shadow: 0 0 0 0 rgba(255,0,122,0); }
+}
+@keyframes shimmer-btn {
+  0%   { left: -80%; }
+  100% { left: 120%; }
+}
+@keyframes pill-breathe {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.75; }
+}
+@keyframes scan-line {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
 }
 
-/* Badge shimmer scan */
-@keyframes badge-scan {
-  0%   { background-position: -200% center; }
-  100% { background-position: 200%  center; }
-}
-
-/* Table row soft sweep */
-@keyframes row-glow {
-  from { background-color: transparent; }
-  to   { background-color: rgba(0,240,255,0.055); }
-}
-
-/* Sidebar nav active indicator slide-in */
-@keyframes nav-active-in {
-  from { opacity: 0; transform: scaleY(0.4); }
-  to   { opacity: 1; transform: scaleY(1);   }
-}
-
-/* Button ripple on click */
-@keyframes btn-ripple {
-  0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.5; }
-  100% { transform: translate(-50%,-50%) scale(5); opacity: 0;   }
-}
-
-/* Stat card number count-pop */
-@keyframes count-pop {
-  0%   { transform: scale(0.85); opacity: 0; }
-  60%  { transform: scale(1.06); }
-  100% { transform: scale(1);    opacity: 1; }
-}
-
-/* Spinning conic gradient for card accent rings */
-@keyframes ring-spin {
-  to { --angle: 360deg; }
-}
-
-/* Subtle shimmer across hero/card areas */
-@keyframes shimmer {
-  0%   { transform: translateX(-100%) skewX(-15deg); }
-  100% { transform: translateX(300%)  skewX(-15deg); }
-}
-
-/* Status pill inner glow pulse */
-@keyframes pill-pulse {
-  0%,100% { opacity: 1;    }
-  50%      { opacity: 0.78; }
-}
-
-/* ──────────────────────────────────────────────
-   3. GLOBAL BODY / ADMIN BACKGROUND
-────────────────────────────────────────────── */
-
-/* Override base body background for admin routes */
+/* ─── 3. BODY & AMBIENT AURA ───────────────────────────────── */
 body {
   background: var(--bg) !important;
 }
-
-/* Animated ambient aura — rendered behind all admin content */
 body::before {
   content: '';
   position: fixed;
@@ -135,1158 +68,351 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 55% 45% at 15% 20%,  rgba(0,240,255,0.07)  0%, transparent 70%),
-    radial-gradient(ellipse 50% 55% at 85% 75%,  rgba(157,0,255,0.07)  0%, transparent 70%),
-    radial-gradient(ellipse 40% 35% at 55% 55%,  rgba(0,255,135,0.04)  0%, transparent 60%);
-  animation: aura-drift 18s ease-in-out infinite;
+    radial-gradient(ellipse 60% 50% at 10% 15%, rgba(0,240,255,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 55% 60% at 90% 80%, rgba(157,0,255,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 45% 40% at 50% 45%, rgba(0,255,135,0.04) 0%, transparent 65%);
+  animation: aura-drift 20s ease infinite;
+}
+#root { position: relative; z-index: 1; }
+
+/* ─── 4. SIDEBAR ──────────────────────────────────────────── */
+aside {
+  background: rgba(8, 12, 24, 0.95) !important;
+  border-right: 1px solid rgba(0,240,255,0.12) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
 }
 
-/* Ensure all admin content sits above the aura */
-#root > * { position: relative; z-index: 1; }
-
-/* ──────────────────────────────────────────────
-   4. ADMIN SIDEBAR (AdminLayout.jsx aside)
-────────────────────────────────────────────── */
-
-/* Sidebar container — deep glass panel */
-aside[style*="width: 230px"],
-aside[style*="width:230px"] {
-  background: rgba(10, 14, 26, 0.88) !important;
-  border-right: 1px solid rgba(0,240,255,0.10) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-}
-
-/* Brand logo mark — cyan-to-purple gradient */
-aside span[style*="background: linear-gradient"] {
+/* brand mark */
+aside a > span:first-child {
   background: linear-gradient(135deg, #00F0FF, #9D00FF) !important;
-  box-shadow: 0 0 20px rgba(0,240,255,0.35), 0 0 40px rgba(157,0,255,0.20) !important;
+  box-shadow: 0 0 18px rgba(0,240,255,0.40), 0 0 36px rgba(157,0,255,0.20) !important;
 }
 
-/* Nav link base */
+/* nav links — base */
 aside nav a {
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
-              box-shadow 0.2s ease !important;
+  transition: all 0.18s ease !important;
+  border-radius: 10px !important;
 }
-
-/* Inactive nav link hover */
 aside nav a:hover {
-  background: rgba(0,240,255,0.07) !important;
-  color: var(--accent) !important;
-  box-shadow: inset 3px 0 0 rgba(0,240,255,0.5) !important;
+  background: rgba(0,240,255,0.08) !important;
+  color: #00F0FF !important;
+  box-shadow: inset 3px 0 0 rgba(0,240,255,0.6) !important;
+}
+/* active link */
+aside nav a.active,
+aside nav a[aria-current="page"] {
+  background: rgba(0,240,255,0.11) !important;
+  color: #00F0FF !important;
+  border-left: 3px solid #00F0FF !important;
+  box-shadow: inset 0 0 20px rgba(0,240,255,0.07) !important;
+  animation: fade-up 0.25s ease-out both;
 }
 
-/* Active nav link — vivid neon left border + tinted glass */
-aside nav a[style*="borderLeft: '3px solid"],
-aside nav a[class*="active"] {
-  background: rgba(0,240,255,0.09) !important;
-  color: var(--accent) !important;
-  border-left: 3px solid var(--accent) !important;
-  box-shadow: inset 3px 0 12px rgba(0,240,255,0.15) !important;
-}
-
-/* Sidebar section divider lines */
-aside > div[style*="borderBottom"],
-aside > div[style*="borderTop"] {
+/* sidebar divider borders */
+aside > div {
   border-color: rgba(0,240,255,0.10) !important;
 }
 
-/* View Store link */
+/* view store link */
 aside a[href="/"] {
-  border-color: rgba(0,240,255,0.18) !important;
-  color: var(--muted) !important;
-  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease !important;
+  border-color: rgba(0,240,255,0.16) !important;
+  transition: all 0.18s ease !important;
 }
 aside a[href="/"]:hover {
-  color: var(--accent) !important;
-  border-color: var(--accent) !important;
   background: rgba(0,240,255,0.07) !important;
+  color: #00F0FF !important;
+  border-color: #00F0FF !important;
 }
 
-/* ──────────────────────────────────────────────
-   5. NOTIFICATION BADGES (heartbeat pulse)
-────────────────────────────────────────────── */
+/* logout button */
+aside button {
+  border-color: rgba(255,46,147,0.35) !important;
+  background: rgba(255,46,147,0.07) !important;
+  color: #FF2E93 !important;
+  transition: all 0.18s ease !important;
+}
+aside button:hover {
+  background: rgba(255,46,147,0.16) !important;
+  box-shadow: var(--glow-pink) !important;
+}
 
-/* Any badge inside the sidebar nav (pending orders / proofs / support) */
-aside nav span[style*="background: var(--bad)"],
-aside nav span[style*="background: var(--warn)"] {
+/* notification badges in sidebar */
+aside nav span {
+  font-size: 10px !important;
+  font-weight: 800 !important;
   animation: heartbeat 1.8s ease-in-out infinite !important;
 }
 
-/* Support unread — hot pink */
-aside nav span[style*="background: var(--bad)"] {
-  background: var(--support) !important;
-  box-shadow: 0 0 8px rgba(255,0,122,0.6) !important;
+/* ─── 5. MAIN CONTENT AREA ─────────────────────────────────── */
+main {
+  background: transparent !important;
+  animation: fade-up 0.30s ease-out both;
 }
 
-/* Pending orders — gold */
-aside nav span[style*="background: var(--warn)"] {
-  background: var(--warn) !important;
-  color: #000 !important;
-  box-shadow: 0 0 8px rgba(255,214,0,0.55) !important;
-}
-
-/* ──────────────────────────────────────────────
-   6. ADMIN MAIN CONTENT AREA — page entry animation
-────────────────────────────────────────────── */
-
-main[style*="flex: 1"] {
-  animation: fade-up 0.32s ease-out both;
-}
-
-/* ──────────────────────────────────────────────
-   7. STAT / DASHBOARD CARDS
-────────────────────────────────────────────── */
-
-/* Stat card containers in Dashboard.jsx */
-div[style*="borderRadius: 14"] {
-  transition: transform 0.25s cubic-bezier(0.2,0.8,0.3,1.4),
-              box-shadow  0.25s ease !important;
-  animation: fade-up 0.35s ease-out both;
-}
-
-div[style*="borderRadius: 14"]:hover {
-  transform: translateY(-5px) !important;
-}
-
-/* Stat card number pop-in */
-div[style*="fontSize: 30"] {
-  animation: count-pop 0.5s cubic-bezier(0.2,0.8,0.3,1.5) both;
-}
-
-/* ──────────────────────────────────────────────
-   8. .card CLASS — glassmorphism upgrade
-────────────────────────────────────────────── */
+/* ─── 6. ALL CARDS / CONTAINER DIVS ────────────────────────── */
+/* Target every admin container card by its rounded structure */
 .card {
-  background:
-    rgba(14, 20, 38, 0.78) !important;
-  border: 1.5px solid rgba(0,240,255,0.13) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
-  box-shadow: 0 0 0 1px rgba(0,240,255,0.05),
-              0 8px 32px rgba(0,0,0,0.45) !important;
+  background: rgba(10, 15, 28, 0.80) !important;
+  border: 1px solid rgba(0,240,255,0.13) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: 0 0 0 1px rgba(0,240,255,0.04), 0 8px 32px rgba(0,0,0,0.50) !important;
   transition: transform 0.25s cubic-bezier(0.2,0.8,0.3,1.4),
-              box-shadow 0.25s ease,
-              border-color 0.25s ease !important;
+              box-shadow 0.25s ease, border-color 0.25s ease !important;
 }
-.card:hover,
-.card-hover:hover {
-  transform: translateY(-5px) !important;
+.card:hover {
+  transform: translateY(-4px) !important;
   border-color: rgba(0,240,255,0.28) !important;
-  box-shadow: 0 0 22px rgba(0,240,255,0.15),
-              0 16px 44px rgba(0,0,0,0.55) !important;
+  box-shadow: 0 0 24px rgba(0,240,255,0.14), 0 16px 40px rgba(0,0,0,0.55) !important;
 }
 
-/* ──────────────────────────────────────────────
-   9. TABLE STYLES
-────────────────────────────────────────────── */
+/* ─── 7. TABLE ──────────────────────────────────────────────── */
+.table {
+  background: transparent !important;
+}
+.table thead {
+  background: rgba(0,240,255,0.04) !important;
+}
 .table th {
-  color: var(--muted) !important;
-  border-bottom: 1px solid rgba(0,240,255,0.10) !important;
-  background: rgba(0,240,255,0.03) !important;
-  letter-spacing: 0.08em !important;
+  color: rgba(0,240,255,0.65) !important;
+  border-bottom: 1px solid rgba(0,240,255,0.12) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.09em !important;
+  text-transform: uppercase !important;
 }
-
 .table td {
-  border-bottom: 1px solid rgba(120,180,255,0.07) !important;
-  transition: background 0.18s ease !important;
+  border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+  transition: background 0.15s ease !important;
 }
-
 .table tr:last-child td {
   border-bottom: none !important;
 }
-
-/* Row hover — soft neon sweep */
-.table tbody tr {
-  transition: background 0.18s ease !important;
-}
 .table tbody tr:hover td {
-  background: rgba(0,240,255,0.055) !important;
+  background: rgba(0,240,255,0.05) !important;
+}
+/* table wrapper */
+.table-wrap,
+div > .table {
+  border-radius: 14px !important;
+  overflow: hidden !important;
 }
 
-/* Table container cards — glass */
-div[style*="overflow: 'hidden'"][style*="borderRadius"],
-div[style*="overflow:hidden"][style*="border-radius"],
-div[style*="borderRadius: 12"][style*="overflow: 'hidden'"],
-div[style*="borderRadius: 14"][style*="overflow: 'hidden'"] {
-  background: rgba(12, 17, 32, 0.80) !important;
-  border: 1px solid rgba(0,240,255,0.10) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-}
+/* ─── 8. BUTTONS ───────────────────────────────────────────── */
 
-/* ──────────────────────────────────────────────
-   10. BUTTONS — neon glow + ripple
-────────────────────────────────────────────── */
-
-/* Primary .btn — cyan-to-purple gradient */
-.btn:not(.btn-ghost):not(.btn-danger) {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important;
+/* Primary */
+.btn:not(.btn-ghost):not(.btn-danger):not(.btn-sm) {
+  background: linear-gradient(135deg, #00F0FF 0%, #9D00FF 100%) !important;
   color: #000 !important;
   font-weight: 800 !important;
   border: none !important;
-  position: relative;
-  overflow: hidden;
+  position: relative !important;
+  overflow: hidden !important;
   transition: transform 0.22s cubic-bezier(0.2,0.8,0.3,1.5),
-              box-shadow 0.22s ease,
-              filter 0.18s ease !important;
+              box-shadow 0.22s ease, filter 0.18s ease !important;
 }
-
-.btn:not(.btn-ghost):not(.btn-danger):hover {
+.btn:not(.btn-ghost):not(.btn-danger):not(.btn-sm):hover {
   transform: translateY(-3px) !important;
-  box-shadow: 0 0 20px rgba(0,240,255,0.45),
-              0 8px 28px rgba(157,0,255,0.30) !important;
-  filter: brightness(1.10) !important;
+  box-shadow: 0 0 22px rgba(0,240,255,0.50), 0 8px 28px rgba(157,0,255,0.35) !important;
+  filter: brightness(1.08) !important;
 }
-
-.btn:not(.btn-ghost):not(.btn-danger):active {
+.btn:not(.btn-ghost):not(.btn-danger):not(.btn-sm):active {
   transform: scale(0.95) !important;
-  filter: brightness(0.95) !important;
 }
-
-/* Shimmer scan across primary button */
-.btn:not(.btn-ghost):not(.btn-danger)::after {
+/* shimmer */
+.btn:not(.btn-ghost):not(.btn-danger):not(.btn-sm)::before {
   content: '';
   position: absolute;
   top: 0; left: -80%;
   width: 50%; height: 100%;
-  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.28) 50%, transparent 65%);
-  animation: shimmer 3.5s ease-in-out infinite 1s;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.30) 50%, transparent 65%);
+  animation: shimmer-btn 3s ease-in-out infinite 1s;
   pointer-events: none;
 }
 
-/* Ghost button — glass + neon border */
+/* Small primary button */
+.btn:not(.btn-ghost):not(.btn-danger).btn-sm {
+  background: linear-gradient(135deg, #00F0FF, #9D00FF) !important;
+  color: #000 !important;
+  border: none !important;
+  font-weight: 700 !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+.btn:not(.btn-ghost):not(.btn-danger).btn-sm:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 0 14px rgba(0,240,255,0.40) !important;
+}
+
+/* Ghost */
 .btn-ghost {
-  background: rgba(0,240,255,0.04) !important;
+  background: rgba(0,240,255,0.05) !important;
   border: 1px solid rgba(0,240,255,0.22) !important;
   color: var(--text) !important;
-  transition: background 0.2s ease, border-color 0.2s ease,
-              color 0.2s ease, box-shadow 0.2s ease !important;
+  transition: all 0.18s ease !important;
 }
 .btn-ghost:hover {
-  background: rgba(0,240,255,0.10) !important;
-  border-color: var(--accent) !important;
-  color: var(--accent) !important;
-  box-shadow: var(--glow-accent) !important;
+  background: rgba(0,240,255,0.12) !important;
+  border-color: #00F0FF !important;
+  color: #00F0FF !important;
+  box-shadow: var(--glow-cyan) !important;
 }
 
-/* Danger button — crimson neon */
+/* Danger */
 .btn-danger {
   background: rgba(255,46,147,0.10) !important;
-  border: 1px solid rgba(255,46,147,0.38) !important;
-  color: var(--bad) !important;
-  transition: background 0.2s ease, box-shadow 0.2s ease !important;
+  border: 1px solid rgba(255,46,147,0.35) !important;
+  color: #FF2E93 !important;
+  transition: all 0.18s ease !important;
 }
 .btn-danger:hover {
-  background: rgba(255,46,147,0.18) !important;
-  box-shadow: var(--glow-bad) !important;
+  background: rgba(255,46,147,0.20) !important;
+  box-shadow: var(--glow-pink) !important;
 }
 
-/* ──────────────────────────────────────────────
-   11. FORM CONTROLS — neon focus glow
-────────────────────────────────────────────── */
+/* block */
+.btn-block {
+  width: 100% !important;
+}
 
+/* ─── 9. FORM INPUTS ────────────────────────────────────────── */
 input, select, textarea {
-  background: rgba(12, 18, 34, 0.90) !important;
+  background: rgba(8, 12, 24, 0.90) !important;
   border: 1px solid rgba(0,240,255,0.14) !important;
   color: var(--text) !important;
   border-radius: 10px !important;
   transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
-
 input:focus, select:focus, textarea:focus {
   outline: none !important;
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 0 3px rgba(0,240,255,0.15),
-              var(--glow-accent) !important;
+  border-color: #00F0FF !important;
+  box-shadow: 0 0 0 3px rgba(0,240,255,0.14), 0 0 16px rgba(0,240,255,0.18) !important;
+}
+input::placeholder, textarea::placeholder {
+  color: rgba(160,185,230,0.35) !important;
+}
+select option {
+  background: #0D1117 !important;
+  color: var(--text) !important;
 }
 
-input::placeholder,
-textarea::placeholder {
-  color: rgba(160,185,230,0.38) !important;
+/* ─── 10. CHIPS / FILTER PILLS ──────────────────────────────── */
+.chip {
+  background: rgba(10, 15, 30, 0.80) !important;
+  border: 1.5px solid rgba(0,240,255,0.16) !important;
+  color: rgba(160,185,230,0.70) !important;
+  backdrop-filter: blur(8px) !important;
+  border-radius: 999px !important;
+  transition: all 0.18s ease !important;
+}
+.chip:hover {
+  background: rgba(0,240,255,0.08) !important;
+  border-color: rgba(0,240,255,0.40) !important;
+  color: #00F0FF !important;
+}
+.chip.active {
+  background: rgba(0,240,255,0.12) !important;
+  border-color: #00F0FF !important;
+  color: #00F0FF !important;
+  box-shadow: 0 0 16px rgba(0,240,255,0.25), inset 0 0 8px rgba(0,240,255,0.07) !important;
 }
 
-/* ──────────────────────────────────────────────
-   12. BADGES / STATUS PILLS
-────────────────────────────────────────────── */
-
-/* Generic .badge classes */
+/* ─── 11. STATUS BADGES (class-based) ──────────────────────── */
 .badge-good {
   background: rgba(0,255,135,0.14) !important;
-  color: var(--good) !important;
-  box-shadow: 0 0 8px rgba(0,255,135,0.25) !important;
+  color: #00FF87 !important;
+  box-shadow: 0 0 8px rgba(0,255,135,0.30) !important;
+  border: 1px solid rgba(0,255,135,0.22) !important;
 }
 .badge-warn {
   background: rgba(255,214,0,0.14) !important;
-  color: var(--warn) !important;
-  box-shadow: 0 0 8px rgba(255,214,0,0.25) !important;
+  color: #FFD600 !important;
+  box-shadow: 0 0 8px rgba(255,214,0,0.28) !important;
+  border: 1px solid rgba(255,214,0,0.20) !important;
 }
 .badge-bad {
   background: rgba(255,46,147,0.14) !important;
-  color: var(--bad) !important;
-  box-shadow: 0 0 8px rgba(255,46,147,0.25) !important;
+  color: #FF2E93 !important;
+  box-shadow: 0 0 8px rgba(255,46,147,0.28) !important;
+  border: 1px solid rgba(255,46,147,0.20) !important;
 }
 
-/* Inline status spans — upgrade their backgrounds to neon tints */
-
-/* Active / good */
-span[style*="color: var(--good)"],
-span[style*="color:'var(--good)'"] {
-  text-shadow: 0 0 8px rgba(0,255,135,0.50) !important;
-}
-/* Warning / pending */
-span[style*="color: var(--warn)"],
-span[style*="color:'var(--warn)'"] {
-  text-shadow: 0 0 8px rgba(255,214,0,0.50) !important;
-}
-/* Bad / expired */
-span[style*="color: var(--bad)"],
-span[style*="color:'var(--bad)'"] {
-  text-shadow: 0 0 8px rgba(255,46,147,0.50) !important;
-}
-/* Accent */
-span[style*="color: var(--accent)"],
-span[style*="color:'var(--accent)'"] {
-  text-shadow: 0 0 8px rgba(0,240,255,0.45) !important;
-}
-
-/* ──────────────────────────────────────────────
-   13. FILTER CHIPS
-────────────────────────────────────────────── */
-
-.chip {
-  background: rgba(14, 20, 38, 0.75) !important;
-  border: 1.5px solid rgba(0,240,255,0.15) !important;
-  color: var(--muted) !important;
-  backdrop-filter: blur(8px) !important;
-  transition: background 0.2s ease, border-color 0.2s ease,
-              color 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-.chip:hover {
-  background: rgba(0,240,255,0.07) !important;
-  border-color: rgba(0,240,255,0.35) !important;
-  color: var(--accent) !important;
-}
-
-.chip.active {
-  background: rgba(0,240,255,0.10) !important;
-  border-color: var(--accent) !important;
-  color: var(--accent) !important;
-  box-shadow: 0 0 14px rgba(0,240,255,0.25) !important;
-}
-
-/* ──────────────────────────────────────────────
-   14. ALERTS
-────────────────────────────────────────────── */
-
+/* ─── 12. ALERTS ────────────────────────────────────────────── */
 .alert-error {
   background: rgba(255,46,147,0.10) !important;
-  color: var(--bad) !important;
+  color: #FF2E93 !important;
   border: 1px solid rgba(255,46,147,0.28) !important;
-  box-shadow: 0 0 12px rgba(255,46,147,0.12) !important;
+  box-shadow: 0 0 14px rgba(255,46,147,0.12) !important;
 }
 .alert-ok {
   background: rgba(0,255,135,0.10) !important;
-  color: var(--good) !important;
+  color: #00FF87 !important;
   border: 1px solid rgba(0,255,135,0.28) !important;
-  box-shadow: 0 0 12px rgba(0,255,135,0.12) !important;
+  box-shadow: 0 0 14px rgba(0,255,135,0.12) !important;
 }
 
-/* ──────────────────────────────────────────────
-   15. MODAL OVERLAYS & CONTAINERS
-────────────────────────────────────────────── */
-
-/* Full-screen modal backdrop */
-div[style*="position: 'fixed'"][style*="inset: 0"],
-div[style*="position:fixed"][style*="inset:0"] {
+/* ─── 13. MODALS ────────────────────────────────────────────── */
+/* backdrop */
+div[style] {
+  /* can't target inline style safely, so we use the modal inner panel class pattern below */
+}
+/* All modal inner containers inherit this look via structural nesting */
+main ~ div,
+#root > div > div[style*="fixed"] {
   backdrop-filter: blur(6px) !important;
-  -webkit-backdrop-filter: blur(6px) !important;
 }
 
-/* Modal inner panels */
-div[style*="borderRadius: 16"][style*="padding: 28"] {
-  background: rgba(11, 16, 30, 0.94) !important;
-  border: 1px solid rgba(0,240,255,0.16) !important;
-  box-shadow: 0 0 40px rgba(0,240,255,0.10),
-              0 32px 64px rgba(0,0,0,0.70) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  animation: fade-up 0.28s ease-out both !important;
+/* ─── 14. PAGE HEADINGS ─────────────────────────────────────── */
+h1 {
+  background: linear-gradient(135deg, #E8EEFF 30%, rgba(0,240,255,0.85) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(0,240,255,0.20));
 }
-
-/* ──────────────────────────────────────────────
-   16. ADMIN SHELL (legacy .admin-shell / .admin-side)
-────────────────────────────────────────────── */
-
-.admin-shell {
-  background: var(--bg) !important;
-}
-
-.admin-side {
-  background: rgba(10, 14, 26, 0.88) !important;
-  border-inline-end: 1px solid rgba(0,240,255,0.10) !important;
-  backdrop-filter: blur(18px) !important;
-}
-
-.admin-side a:hover  {
-  background: rgba(0,240,255,0.07) !important;
-  color: var(--accent) !important;
-}
-.admin-side a.active {
-  background: rgba(0,240,255,0.10) !important;
-  color: var(--accent) !important;
-}
-
-/* ──────────────────────────────────────────────
-   17. STORE NAV (keep existing look, just update colors)
-────────────────────────────────────────────── */
-
-.app-header {
-  background: rgba(11, 15, 25, 0.85) !important;
-  border-bottom: 1px solid rgba(0,240,255,0.10) !important;
-  backdrop-filter: blur(20px) !important;
-}
-
-/* ──────────────────────────────────────────────
-   18. INVENTORY SECTION — purple accent override
-   Slots and capacity cards use --accent-2 (purple)
-────────────────────────────────────────────── */
-
-/* Available slot badges (green) */
-span[style*="background: 'oklch(0.72 0.16 150"] {
-  background: rgba(0,255,135,0.14) !important;
-  color: var(--good) !important;
-  box-shadow: 0 0 8px rgba(0,255,135,0.30) !important;
-}
-
-/* Occupied slot badges (blue/purple) */
-span[style*="background: 'oklch(0.6 0.18 250"] {
-  background: rgba(157,0,255,0.18) !important;
-  color: #C084FF !important;
-  box-shadow: 0 0 8px rgba(157,0,255,0.28) !important;
-}
-
-/* ──────────────────────────────────────────────
-   19. SUPPORT INBOX — hot pink accent
-────────────────────────────────────────────── */
-
-/* Support page heading / key elements inherit from --support via CSS variable */
-/* Target the Support unread badge specifically via heartbeat */
-aside nav a[href="/admin/support"] span {
-  background: var(--support) !important;
-  box-shadow: 0 0 10px rgba(255,0,122,0.60) !important;
-  animation: heartbeat 1.8s ease-in-out infinite !important;
-}
-
-/* ──────────────────────────────────────────────
-   20. SECTION TITLES & H1/H2/H3 HEADINGS
-────────────────────────────────────────────── */
-
-/* Page h1 headings — subtle blue text-shadow */
-h1[style*="fontFamily"] {
-  color: var(--text) !important;
-  text-shadow: 0 0 30px rgba(0,240,255,0.15) !important;
-}
-
-/* Sub-headings */
-h2[style*="fontWeight: 700"] {
+h2 {
   color: var(--text) !important;
 }
 
-/* ──────────────────────────────────────────────
-   21. SCROLLBAR — themed
-────────────────────────────────────────────── */
-
+/* ─── 15. SCROLLBAR ─────────────────────────────────────────── */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0,240,255,0.25) rgba(0,0,0,0.18);
+  scrollbar-color: rgba(0,240,255,0.22) rgba(0,0,0,0.15);
 }
 *::-webkit-scrollbar       { width: 5px; height: 5px; }
-*::-webkit-scrollbar-track { background: rgba(0,0,0,0.18); border-radius: 99px; }
-*::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.25); border-radius: 99px; }
+*::-webkit-scrollbar-track { background: rgba(0,0,0,0.15); border-radius: 99px; }
+*::-webkit-scrollbar-thumb { background: rgba(0,240,255,0.22); border-radius: 99px; }
 *::-webkit-scrollbar-thumb:hover { background: rgba(0,240,255,0.45); }
 
-/* ──────────────────────────────────────────────
-   22. SMALL INFO / DETAIL BLOCKS
-   (inner panels like credential boxes, provider info)
-────────────────────────────────────────────── */
-
-/* Dark sub-panels inside modals */
-div[style*="background: 'oklch(0.1 0.01 265)"],
-div[style*="background: 'oklch(0.11 0.012 265)"],
-div[style*="background: 'oklch(0.12 0.012 265)"] {
-  background: rgba(8, 12, 24, 0.80) !important;
-  border: 1px solid rgba(0,240,255,0.09) !important;
-}
-
-/* Credentials block — lock icon tint */
-div[style*="Account Credentials"],
-div[style*="Provider Subscription"] {
-  border-left: 2px solid rgba(157,0,255,0.45) !important;
-}
-
-/* ──────────────────────────────────────────────
-   23. UTILISATION / PROGRESS BAR
-────────────────────────────────────────────── */
-
-/* Progress bar track */
-div[style*="borderRadius: 99"][style*="height: 6"] {
-  background: rgba(255,255,255,0.07) !important;
-}
-
-/* ──────────────────────────────────────────────
-   24. LINK COLORS
-────────────────────────────────────────────── */
-
-a { color: var(--accent) !important; }
-a:hover { color: #00FFFF !important; }
-
-/* "View all →" type links in dashboard */
-a[style*="color: 'var(--accent)'"] {
-  transition: color 0.15s ease, text-shadow 0.15s ease !important;
-}
-a[style*="color: 'var(--accent)'"]:hover {
-  text-shadow: 0 0 10px rgba(0,240,255,0.60) !important;
-}
-
-/* ──────────────────────────────────────────────
-   25. PRODUCT CARDS (pcard) — update glow to new palette
-────────────────────────────────────────────── */
-
-.pcard {
-  background: rgba(11, 16, 28, 0.95) !important;
-  border: 1.5px solid rgba(0,240,255,0.08) !important;
-  box-shadow: 0 6px 28px rgba(0,0,0,0.60) !important;
-}
-.pcard--tilting {
-  box-shadow:
-    0 0 0 2px var(--accent),
-    0 20px 50px rgba(0,0,0,0.70),
-    0 0 40px rgba(0,240,255,0.20) !important;
-}
-
-/* ──────────────────────────────────────────────
-   26. DASHBOARD STAT CARDS — semantic color glows
-   Maps each stat's color variable to a border glow
-────────────────────────────────────────────── */
-
-/* Orders Today — cyber blue */
-div[style*="borderRadius: 14"]:has(div[style*="color: var(--accent)"]) {
-  border-color: rgba(0,240,255,0.20) !important;
-  box-shadow: 0 0 14px rgba(0,240,255,0.10), 0 4px 20px rgba(0,0,0,0.40) !important;
-}
-
-/* Revenue — neon green */
-div[style*="borderRadius: 14"]:has(div[style*="color: var(--good)"]) {
-  border-color: rgba(0,255,135,0.20) !important;
-  box-shadow: 0 0 14px rgba(0,255,135,0.10), 0 4px 20px rgba(0,0,0,0.40) !important;
-}
-
-/* Pending — sunburst gold */
-div[style*="borderRadius: 14"]:has(div[style*="color: var(--warn)"]) {
-  border-color: rgba(255,214,0,0.18) !important;
-  box-shadow: 0 0 14px rgba(255,214,0,0.09), 0 4px 20px rgba(0,0,0,0.40) !important;
-}
-
-/* Expired / bad — crimson */
-div[style*="borderRadius: 14"]:has(div[style*="color: var(--bad)"]) {
-  border-color: rgba(255,46,147,0.18) !important;
-  box-shadow: 0 0 14px rgba(255,46,147,0.09), 0 4px 20px rgba(0,0,0,0.40) !important;
-}
-
-/* Inventory / purple */
-div[style*="borderRadius: 14"]:has(div[style*="color: var(--accent-2)"]) {
-  border-color: rgba(157,0,255,0.20) !important;
-  box-shadow: 0 0 14px rgba(157,0,255,0.10), 0 4px 20px rgba(0,0,0,0.40) !important;
-}
-
-/* ──────────────────────────────────────────────
-   27. PAGE ENTRY ANIMATIONS — staggered cards
-────────────────────────────────────────────── */
-
-/* All direct grid children on admin pages get staggered fade-up */
-main > * > * {
-  animation: fade-up 0.35s ease-out both;
-}
-
-/* Stat cards get slightly longer stagger */
-main > * > div > div[style*="borderRadius: 14"]:nth-child(1) { animation-delay: 0.04s; }
-main > * > div > div[style*="borderRadius: 14"]:nth-child(2) { animation-delay: 0.08s; }
-main > * > div > div[style*="borderRadius: 14"]:nth-child(3) { animation-delay: 0.12s; }
-main > * > div > div[style*="borderRadius: 14"]:nth-child(4) { animation-delay: 0.16s; }
-main > * > div > div[style*="borderRadius: 14"]:nth-child(5) { animation-delay: 0.20s; }
-main > * > div > div[style*="borderRadius: 14"]:nth-child(6) { animation-delay: 0.24s; }
-
-/* ──────────────────────────────────────────────
-   28. MONOSPACE / CREDENTIAL TEXT GLOW
-────────────────────────────────────────────── */
-
-/* Account login emails in tables */
-td[style*="fontFamily: 'ui-monospace,monospace'"],
-td span[style*="fontFamily: 'ui-monospace,monospace'"],
-span[style*="fontFamily: 'ui-monospace,monospace'"] {
-  color: rgba(0,240,255,0.85) !important;
-}
-
-/* ──────────────────────────────────────────────
-   29. LOGOUT BUTTON — danger style
-────────────────────────────────────────────── */
-
-aside button[style*="color: var(--bad)"] {
-  border-color: rgba(255,46,147,0.35) !important;
-  background: rgba(255,46,147,0.07) !important;
-  color: var(--bad) !important;
-  transition: background 0.2s ease, box-shadow 0.2s ease !important;
-}
-aside button[style*="color: var(--bad)"]:hover {
-  background: rgba(255,46,147,0.14) !important;
-  box-shadow: var(--glow-bad) !important;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 30 — INLINE STATUS PILL OVERRIDES
-   The JSX uses oklch() values directly in style={{}} props.
-   We target by the color var they set and apply neon tints.
-   Background is overridden via a universal span selector
-   combined with attribute selectors on the color value.
-══════════════════════════════════════════════════════════════ */
-
-/* ── GREEN (delivered / active / good) ── */
-span[style*="color: var(--good)"] {
-  background: rgba(0, 255, 135, 0.13) !important;
-  color: #00FF87 !important;
-  box-shadow: 0 0 10px rgba(0,255,135,0.30), inset 0 0 8px rgba(0,255,135,0.08) !important;
-  border: 1px solid rgba(0,255,135,0.22) !important;
-  animation: pill-pulse 3s ease-in-out infinite;
-}
-
-/* ── GOLD (pending / warnings) ── */
-span[style*="color: var(--warn)"] {
-  background: rgba(255, 214, 0, 0.13) !important;
-  color: #FFD600 !important;
-  box-shadow: 0 0 10px rgba(255,214,0,0.28), inset 0 0 8px rgba(255,214,0,0.07) !important;
-  border: 1px solid rgba(255,214,0,0.22) !important;
-  animation: pill-pulse 3s ease-in-out infinite 0.5s;
-}
-
-/* ── CRIMSON (failed / expired / bad / rejected) ── */
-span[style*="color: var(--bad)"] {
-  background: rgba(255, 46, 147, 0.13) !important;
-  color: #FF2E93 !important;
-  box-shadow: 0 0 10px rgba(255,46,147,0.28), inset 0 0 8px rgba(255,46,147,0.07) !important;
-  border: 1px solid rgba(255,46,147,0.22) !important;
-}
-
-/* ── CYBER BLUE (paid / accent) ── */
-span[style*="color: var(--accent)"] {
-  background: rgba(0, 240, 255, 0.13) !important;
-  color: #00F0FF !important;
-  box-shadow: 0 0 10px rgba(0,240,255,0.28), inset 0 0 8px rgba(0,240,255,0.07) !important;
-  border: 1px solid rgba(0,240,255,0.22) !important;
-}
-
-/* ── PURPLE (assigned / occupied slots / accent-2) ── */
-span[style*="color: var(--accent-2)"],
-span[style*="color: 'var(--accent-2)'"] {
-  background: rgba(157, 0, 255, 0.13) !important;
-  color: #C084FF !important;
-  box-shadow: 0 0 10px rgba(157,0,255,0.28), inset 0 0 8px rgba(157,0,255,0.07) !important;
-  border: 1px solid rgba(157,0,255,0.22) !important;
-}
-
-/* ── MUTED (cancelled / disabled) ── */
-span[style*="color: var(--muted)"] {
-  background: rgba(160,185,230,0.08) !important;
-  border: 1px solid rgba(160,185,230,0.12) !important;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 31 — OKLCH BACKGROUND OVERRIDES
-   Direct oklch() background values that JSX uses for badges.
-══════════════════════════════════════════════════════════════ */
-
-/* Green tint backgrounds → neon green */
-span[style*="oklch(0.72 0.16 150"],
-div[style*="background: oklch(0.72 0.16 150"] {
-  background: rgba(0,255,135,0.13) !important;
-}
-
-/* Amber/gold tint → sunburst gold */
-span[style*="oklch(0.7 0.19 60"],
-div[style*="background: oklch(0.7 0.19 60"] {
-  background: rgba(255,214,0,0.12) !important;
-}
-
-/* Blue/cyan tint → cyber blue */
-span[style*="oklch(0.6 0.18 250"],
-div[style*="background: oklch(0.6 0.18 250"] {
-  background: rgba(0,240,255,0.12) !important;
-}
-
-/* Red/crimson tint → neon pink */
-span[style*="oklch(0.65 0.22 25"],
-div[style*="background: oklch(0.65 0.22 25"] {
-  background: rgba(255,46,147,0.12) !important;
-}
-
-/* Purple tint */
-span[style*="oklch(0.82 0.18 65"],
-div[style*="background: oklch(0.82 0.18 65"] {
-  background: rgba(157,0,255,0.14) !important;
-  color: #C084FF !important;
-}
-
-/* Muted/grey tint */
-span[style*="oklch(0.5 0.01 265"],
-div[style*="background: oklch(0.5 0.01 265"] {
-  background: rgba(160,185,230,0.08) !important;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 32 — PAGE-SPECIFIC ACCENT THEMING
-══════════════════════════════════════════════════════════════ */
-
-/* ── ORDERS page — gold for pending focus ── */
-/* Unread / highlighted row in support */
-tr[style*="background: oklch(0.85 0.13 195"] {
-  background: rgba(0,240,255,0.05) !important;
-  border-left: 2px solid rgba(0,240,255,0.35) !important;
-}
-
-/* ── SUPPORT message bubbles ── */
-/* Admin bubble — cyan tint */
-div[style*="background: oklch(0.85 0.13 195 / 0.18)"] {
-  background: rgba(0,240,255,0.12) !important;
-  border-color: rgba(0,240,255,0.30) !important;
-}
-/* Customer bubble — dark glass */
-div[style*="background: oklch(0.18 0.016 265)"] {
-  background: rgba(18,25,45,0.90) !important;
-  border-color: rgba(120,180,255,0.12) !important;
-}
-
-/* Support inbox — unread badge hot pink */
-span[style*="background:'var(--bad)'"],
-span[style*="background: 'var(--bad)'"],
-td span[style*="background:var(--bad)"],
-td span[style*="background: var(--bad)"] {
-  background: var(--support) !important;
-  box-shadow: 0 0 8px rgba(255,0,122,0.55) !important;
-  animation: heartbeat 1.8s ease-in-out infinite !important;
-}
-
-/* Support page title unread counter */
-h1 span[style*="background:'var(--bad)'"],
-h1 span[style*="background: var(--bad)"] {
-  background: var(--support) !important;
-  box-shadow: 0 0 10px rgba(255,0,122,0.60) !important;
-  animation: heartbeat 1.8s ease-in-out infinite !important;
-}
-
-/* ── PAYMENT PROOFS — approve/reject action buttons ── */
-button[style*="borderColor: 'var(--good)'"],
-button[style*="color: 'var(--good)'"] {
-  border-color: var(--good) !important;
-  color: var(--good) !important;
-  background: rgba(0,255,135,0.10) !important;
-  box-shadow: 0 0 12px rgba(0,255,135,0.20) !important;
-}
-button[style*="borderColor: 'var(--bad)'"],
-button[style*="color: 'var(--bad)'"] {
-  border-color: var(--bad) !important;
-  color: var(--bad) !important;
-  background: rgba(255,46,147,0.10) !important;
-  box-shadow: 0 0 12px rgba(255,46,147,0.20) !important;
-}
-
-/* ── USERS — role badges ── */
-/* admin role — purple */
-span[style*="oklch(0.82 0.18 65 / 0.18)"] {
-  background: rgba(157,0,255,0.14) !important;
-  color: #C084FF !important;
-  border: 1px solid rgba(157,0,255,0.25) !important;
-  box-shadow: 0 0 8px rgba(157,0,255,0.22) !important;
-}
-/* user role — cyan */
-span[style*="oklch(0.6 0.18 250 / 0.18)"] {
-  background: rgba(0,240,255,0.10) !important;
-  color: var(--accent) !important;
-  border: 1px solid rgba(0,240,255,0.20) !important;
-}
-
-/* ── ACTIVITY LOG — action text in cyan ── */
-span[style*="color: 'var(--accent)'"],
-span[style*="color: var(--accent)"] {
-  color: var(--accent) !important;
-  text-shadow: 0 0 8px rgba(0,240,255,0.40) !important;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 33 — DEEP DARK INNER PANELS (modal info grids)
-   These oklch backgrounds appear in Order, User, Proof modals.
-══════════════════════════════════════════════════════════════ */
-
-/* Detail cells inside modals — uniform glass look */
-div[style*="background: oklch(0.12 0.012 265)"],
-div[style*="background:'oklch(0.12 0.012 265)'"],
-div[style*="background: 'oklch(0.12 0.012 265)'"] {
-  background: rgba(8, 12, 26, 0.82) !important;
-  border: 1px solid rgba(0,240,255,0.08) !important;
-  transition: border-color 0.2s ease !important;
-}
-div[style*="background: oklch(0.12 0.012 265)"]:hover {
-  border-color: rgba(0,240,255,0.16) !important;
-}
-
-div[style*="background: oklch(0.13 0.013 265)"],
-div[style*="background: 'oklch(0.13 0.013 265)'"] {
-  background: rgba(10, 14, 28, 0.82) !important;
-  border: 1px solid rgba(0,240,255,0.08) !important;
-}
-
-div[style*="background: oklch(0.14 0.014 265)"],
-div[style*="background: 'oklch(0.14 0.014 265)'"] {
-  background: rgba(12, 16, 30, 0.80) !important;
-  border: 1px solid rgba(0,240,255,0.08) !important;
-}
-
-div[style*="background: oklch(0.15 0.014 265)"],
-div[style*="background: 'oklch(0.15 0.014 265)'"] {
-  background: rgba(11, 16, 30, 0.94) !important;
-  border: 1px solid rgba(0,240,255,0.12) !important;
-}
-
-div[style*="background: oklch(0.11 0.012 265)"],
-div[style*="background: 'oklch(0.11 0.012 265)'"] {
-  background: rgba(8, 12, 24, 0.85) !important;
-  border: 1px solid rgba(0,240,255,0.07) !important;
-}
-
-div[style*="background: oklch(0.1 0.01 265)"],
-div[style*="background: 'oklch(0.1 0.01 265)'"] {
-  background: rgba(7, 10, 20, 0.88) !important;
-}
-
-/* Credential block in OrderModal */
-div[style*="background: oklch(0.1 0.01 265)"][style*="fontFamily"] {
-  background: rgba(5, 8, 18, 0.90) !important;
-  border: 1px solid rgba(157,0,255,0.20) !important;
-  border-radius: 8px !important;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 34 — SUBSCRIPTION MANAGER STATUS PILLS
-   SubscriptionsManager.jsx STATUS_COLORS uses spread syntax
-   so the background is set via the bg key on the outer span.
-══════════════════════════════════════════════════════════════ */
-
-/* pending_assignment — gold */
-span[style*="background: oklch(0.7 0.19 60 / 0.18)"] {
-  background: rgba(255,214,0,0.12) !important;
-  box-shadow: 0 0 8px rgba(255,214,0,0.22) !important;
-  border: 1px solid rgba(255,214,0,0.20) !important;
-}
-/* active — green */
-span[style*="background: oklch(0.72 0.16 150 / 0.18)"] {
-  background: rgba(0,255,135,0.12) !important;
-  box-shadow: 0 0 8px rgba(0,255,135,0.22) !important;
-  border: 1px solid rgba(0,255,135,0.20) !important;
-  animation: pill-pulse 3.5s ease-in-out infinite;
-}
-/* expired / urgent — crimson */
-span[style*="background: oklch(0.65 0.22 25 / 0.18)"] {
-  background: rgba(255,46,147,0.12) !important;
-  box-shadow: 0 0 8px rgba(255,46,147,0.22) !important;
-  border: 1px solid rgba(255,46,147,0.20) !important;
-}
-/* paid / assigned / accent — cyber blue */
-span[style*="background: oklch(0.6 0.18 250 / 0.18)"] {
-  background: rgba(0,240,255,0.10) !important;
-  box-shadow: 0 0 8px rgba(0,240,255,0.20) !important;
-  border: 1px solid rgba(0,240,255,0.18) !important;
-}
-/* cancelled / muted */
-span[style*="background: oklch(0.5 0.01 265 / 0.18)"] {
-  background: rgba(160,185,230,0.07) !important;
-  border: 1px solid rgba(160,185,230,0.10) !important;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 35 — PAGINATION CONTROLS
-══════════════════════════════════════════════════════════════ */
-
-div[style*="justifyContent: 'center'"] > span[style*="color: 'var(--muted)'"],
-div[style*="justifyContent: 'center'"] > span[style*="color: var(--muted)"] {
-  color: var(--muted) !important;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 36 — ACCOUNT SCREEN MANAGER
-   AccountScreenManager.jsx slot badges use inline
-   boolean-derived oklch colors.
-══════════════════════════════════════════════════════════════ */
-
-/* Available slot card */
-div[style*="background: oklch(0.72 0.16 150 / 0.12)"] {
-  background: rgba(0,255,135,0.09) !important;
-  border-color: rgba(0,255,135,0.28) !important;
-  transition: box-shadow 0.2s ease !important;
-}
-div[style*="background: oklch(0.72 0.16 150 / 0.12)"]:hover {
-  box-shadow: 0 0 16px rgba(0,255,135,0.18) !important;
-}
-
-/* Assigned slot card */
-div[style*="background: oklch(0.6 0.18 250 / 0.12)"] {
-  background: rgba(157,0,255,0.09) !important;
-  border-color: rgba(157,0,255,0.25) !important;
-  transition: box-shadow 0.2s ease !important;
-}
-div[style*="background: oklch(0.6 0.18 250 / 0.12)"]:hover {
-  box-shadow: 0 0 16px rgba(157,0,255,0.18) !important;
-}
-
-/* Slot badge text */
-span[style*="background: oklch(0.72 0.16 150 / 0.2)"] {
-  background: rgba(0,255,135,0.16) !important;
-  color: var(--good) !important;
-  box-shadow: 0 0 6px rgba(0,255,135,0.28) !important;
-}
-span[style*="background: oklch(0.6 0.18 250 / 0.2)"] {
-  background: rgba(157,0,255,0.16) !important;
-  color: #C084FF !important;
-  box-shadow: 0 0 6px rgba(157,0,255,0.26) !important;
-}
-
-/* Inventory summary cards in AccountScreenManager */
-div[style*="background:'oklch(0.13 0.013 265)'"][style*="border:"],
-div[style*="border: \`1px solid \${inv.product.accent"] {
-  backdrop-filter: blur(10px) !important;
-  transition: transform 0.22s ease, box-shadow 0.22s ease !important;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 37 — PRODUCTS MANAGER & STOCK MANAGER
-══════════════════════════════════════════════════════════════ */
-
-/* Stock status badges */
-span[style*="color: var(--bad)"][style*="OUT OF STOCK"],
-span[style*="OUT OF STOCK"] {
-  background: rgba(255,46,147,0.12) !important;
-  color: var(--bad) !important;
-  box-shadow: 0 0 8px rgba(255,46,147,0.22) !important;
-  border: 1px solid rgba(255,46,147,0.18) !important;
-}
-span[style*="LOW STOCK"] {
-  background: rgba(255,214,0,0.12) !important;
-  color: var(--warn) !important;
-  box-shadow: 0 0 8px rgba(255,214,0,0.20) !important;
-  border: 1px solid rgba(255,214,0,0.18) !important;
-}
-span[style*="color: var(--good)"][style*="OK"] {
-  background: rgba(0,255,135,0.12) !important;
-  box-shadow: 0 0 8px rgba(0,255,135,0.20) !important;
-  border: 1px solid rgba(0,255,135,0.18) !important;
-}
-
-/* Stock numbers in table */
-span[style*="fontSize: 18"][style*="fontWeight: 700"] {
-  font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 10px currentColor;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 38 — SUBSCRIPTION INVENTORY TABS
-══════════════════════════════════════════════════════════════ */
-
-/* Tab buttons active state — already themed via .btn but
-   these use inline styles, so we target the gradient text */
-button[style*="color: var(--accent)"][style*="borderColor: 'transparent'"],
-button[style*="color: var(--accent)"][style*="background:"] {
-  box-shadow: 0 0 16px rgba(0,240,255,0.20) !important;
-}
-
-/* Overview utilisation bar fill */
-div[style*="background: \`linear-gradient(90deg,\${accent}"] {
-  box-shadow: 0 0 6px currentColor !important;
-}
-
-/* Account mini-rows in overview */
-div[style*="background: oklch(0.11 0.012 265)"][style*="borderRadius: 8"] {
-  background: rgba(8,12,24,0.80) !important;
-  border: 1px solid rgba(0,240,255,0.07) !important;
-  transition: border-color 0.18s ease, background 0.18s ease !important;
-}
-div[style*="background: oklch(0.11 0.012 265)"][style*="borderRadius: 8"]:hover {
-  background: rgba(0,240,255,0.05) !important;
-  border-color: rgba(0,240,255,0.15) !important;
-}
-
-/* Quick summary strip stat boxes */
-div[style*="borderRadius: 12"][style*="textAlign: 'center'"] {
-  background: rgba(12,17,32,0.82) !important;
-  border: 1px solid rgba(0,240,255,0.10) !important;
-  backdrop-filter: blur(10px) !important;
-  transition: transform 0.22s ease, box-shadow 0.22s ease !important;
-}
-div[style*="borderRadius: 12"][style*="textAlign: 'center'"]:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 0 16px rgba(0,240,255,0.12) !important;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 39 — GLOBAL ADMIN PAGE ENTRY FADE-UP
-   Applied to every admin page's top-level fragment wrapper.
-══════════════════════════════════════════════════════════════ */
-
-/* Target the page header div on every admin page */
-main > * > div:first-child {
-  animation: fade-up 0.30s ease-out both;
-}
-main > * > div:nth-child(2)  { animation: fade-up 0.30s ease-out 0.06s both; }
-main > * > div:nth-child(3)  { animation: fade-up 0.30s ease-out 0.10s both; }
-main > * > div:nth-child(4)  { animation: fade-up 0.30s ease-out 0.14s both; }
-main > * > div:nth-child(5)  { animation: fade-up 0.30s ease-out 0.18s both; }
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 40 — PAYMENT SETTINGS PAGE
-══════════════════════════════════════════════════════════════ */
-
-/* Payment method logos / rows inherit the glass card look */
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 41 — ACTIVITY LOG
-══════════════════════════════════════════════════════════════ */
-
-/* Action name text — bright accent so it scans quickly */
-td > span[style*="color: 'var(--accent)'"],
-td > span[style*="color: var(--accent)"] {
-  font-family: 'ui-monospace', monospace !important;
-  font-size: 12px !important;
-  padding: 2px 7px !important;
-  border-radius: 5px !important;
-  background: rgba(0,240,255,0.08) !important;
-  border: 1px solid rgba(0,240,255,0.14) !important;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 42 — LOADING STATE TEXT
-══════════════════════════════════════════════════════════════ */
-
-p[style*="color: 'var(--muted)'"],
-p[style*="color: var(--muted)"] {
-  color: var(--muted) !important;
-  letter-spacing: 0.02em;
-}
-
-/* Loading shimmer placeholder */
-p[style*="color: var(--muted)"]::after {
-  content: '';
-  display: inline-block;
-  width: 16px;
-  height: 2px;
-  background: var(--accent);
-  margin-left: 6px;
-  vertical-align: middle;
-  border-radius: 99px;
-  animation: pill-pulse 1.2s ease-in-out infinite;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 43 — PASSWORD REVEAL BUTTON (SubscriptionInventory)
-══════════════════════════════════════════════════════════════ */
-
-button[style*="border: '1px solid var(--line)'"][style*="color: 'var(--muted)'"] {
-  border-color: rgba(0,240,255,0.18) !important;
-  color: var(--muted) !important;
-  transition: color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
-}
-button[style*="border: '1px solid var(--line)'"][style*="color: 'var(--muted)'"]:hover {
-  color: var(--accent) !important;
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 8px rgba(0,240,255,0.20) !important;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 44 — SECTION HEADING DIVIDERS
-   (SectionTitle component in SubscriptionInventory)
-══════════════════════════════════════════════════════════════ */
-
-h3[style*="textTransform: 'uppercase'"][style*="color: 'var(--muted)'"] {
-  color: rgba(160,185,230,0.55) !important;
-  letter-spacing: 0.10em !important;
-  position: relative !important;
-  padding-left: 12px !important;
-}
-h3[style*="textTransform: 'uppercase'"][style*="color: 'var(--muted)'"]:before {
-  content: '';
-  position: absolute;
-  left: 0; top: 50%;
-  transform: translateY(-50%);
-  width: 3px; height: 70%;
-  background: var(--accent);
-  border-radius: 99px;
-  box-shadow: 0 0 6px rgba(0,240,255,0.50);
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 45 — SUBSCRIPTION INVENTORY SLOT CARDS
-══════════════════════════════════════════════════════════════ */
-
-/* Available slot card  */
-div[style*="background: oklch(0.72 0.16 150 / 0.09)"] {
-  background: rgba(0,255,135,0.07) !important;
-  border-color: rgba(0,255,135,0.25) !important;
-  transition: box-shadow 0.2s ease, transform 0.2s ease !important;
-}
-div[style*="background: oklch(0.72 0.16 150 / 0.09)"]:hover {
-  box-shadow: 0 0 18px rgba(0,255,135,0.18) !important;
-  transform: translateY(-2px) !important;
-}
-
-/* Occupied slot card */
-div[style*="background: oklch(0.6 0.18 250 / 0.09)"] {
-  background: rgba(157,0,255,0.07) !important;
-  border-color: rgba(157,0,255,0.22) !important;
-  transition: box-shadow 0.2s ease !important;
-}
-div[style*="background: oklch(0.6 0.18 250 / 0.09)"]:hover {
-  box-shadow: 0 0 18px rgba(157,0,255,0.16) !important;
-}
-
-/* AVAILABLE mini badge */
-span[style*="background: oklch(0.72 0.16 150 / 0.15)"],
-span[style*="background: oklch(0.72 0.16 150 / 0.2)"] {
-  background: rgba(0,255,135,0.14) !important;
-  color: var(--good) !important;
-  box-shadow: 0 0 7px rgba(0,255,135,0.30) !important;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 46 — RESPONSIVE / MOBILE TWEAKS
-══════════════════════════════════════════════════════════════ */
-
-@media (max-width: 860px) {
-  aside[style*="width: 230px"],
-  aside[style*="width:230px"] {
-    border-right: none !important;
-    border-bottom: 1px solid rgba(0,240,255,0.10) !important;
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SECTION 47 — FINAL POLISH: text selection
-══════════════════════════════════════════════════════════════ */
-
+/* ─── 16. TEXT SELECTION ───────────────────────────────────── */
 ::selection {
-  background: rgba(0,240,255,0.25) !important;
+  background: rgba(0,240,255,0.28) !important;
   color: #fff !important;
 }
 
-/* Focus-visible ring for accessibility */
+/* ─── 17. FOCUS RING ────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid rgba(0,240,255,0.60) !important;
+  outline: 2px solid rgba(0,240,255,0.55) !important;
   outline-offset: 2px !important;
+}
+
+/* ─── 18. LINKS ─────────────────────────────────────────────── */
+a {
+  color: #00F0FF !important;
+  transition: color 0.15s ease, text-shadow 0.15s ease !important;
+}
+a:hover {
+  color: #7FFFFF !important;
+  text-shadow: 0 0 10px rgba(0,240,255,0.50) !important;
+}
+
+/* ─── 19. MUTED TEXT ────────────────────────────────────────── */
+.muted, .label {
+  color: var(--muted) !important;
+}
+
+/* ─── 20. LABEL ─────────────────────────────────────────────── */
+.label {
+  font-size: 11.5px !important;
+  letter-spacing: 0.09em !important;
+  color: rgba(0,240,255,0.55) !important;
 }

@@ -3,9 +3,9 @@ import api from '../api/client.js';
 import useApi from '../hooks/useApi.js';
 
 const STATUS_COLORS = {
-  open:             { bg:'oklch(0.7 0.19 60 / 0.18)',  color:'var(--warn)' },
-  waiting_customer: { bg:'oklch(0.6 0.18 250 / 0.18)', color:'var(--accent)' },
-  resolved:         { bg:'oklch(0.72 0.16 150 / 0.18)',color:'var(--good)' },
+  open:             { background: 'rgba(255,214,0,0.14)',  color: '#FFD600', border: '1px solid rgba(255,214,0,0.25)',  boxShadow: '0 0 8px rgba(255,214,0,0.25)'  },
+  waiting_customer: { background: 'rgba(0,240,255,0.14)',  color: '#00F0FF', border: '1px solid rgba(0,240,255,0.25)',  boxShadow: '0 0 8px rgba(0,240,255,0.25)'  },
+  resolved:         { background: 'rgba(0,255,135,0.14)',  color: '#00FF87', border: '1px solid rgba(0,255,135,0.25)',  boxShadow: '0 0 8px rgba(0,255,135,0.28)'  },
 };
 
 const fmtTime = (d) => {
@@ -87,8 +87,8 @@ function ConversationDetail({ convoId, onClose, onStatusChange }) {
             }}>
               <div style={{
                 maxWidth:'78%', padding:'10px 14px', borderRadius:12, fontSize:14,
-                background: m.senderRole === 'admin' ? 'oklch(0.85 0.13 195 / 0.18)' : 'oklch(0.18 0.016 265)',
-                border: `1px solid ${m.senderRole === 'admin' ? 'oklch(0.85 0.13 195 / 0.35)' : 'var(--line)'}`,
+                background: m.senderRole === 'admin' ? 'rgba(0,240,255,0.12)' : 'rgba(15,22,42,0.92)',
+                border: `1px solid ${m.senderRole === 'admin' ? 'rgba(0,240,255,0.30)' : 'rgba(0,240,255,0.08)'}`,
               }}>{m.body}</div>
               <div style={{ fontSize:11, color:'var(--muted)', marginTop:3 }}>
                 {m.senderRole === 'admin' ? 'Admin' : m.sender?.name || 'Customer'} · {fmtTime(m.createdAt)}
@@ -146,8 +146,10 @@ export default function SupportInbox() {
           <h1 style={{ fontFamily:"'Space Grotesk',sans-serif", fontSize:28, fontWeight:700 }}>
             Support Inbox
             {totalUnread > 0 && (
-              <span style={{ marginLeft:10, background:'var(--bad)', color:'#fff', fontSize:13,
-                fontWeight:800, padding:'2px 8px', borderRadius:99, verticalAlign:'middle' }}>
+              <span style={{ marginLeft:10, background:'#FF007A', color:'#fff', fontSize:13,
+                fontWeight:800, padding:'2px 8px', borderRadius:99, verticalAlign:'middle',
+                boxShadow:'0 0 12px rgba(255,0,122,0.60)', animation:'heartbeat 1.8s ease-in-out infinite',
+                display:'inline-block' }}>
                 {totalUnread}
               </span>
             )}
@@ -178,7 +180,8 @@ export default function SupportInbox() {
               {convos.map(c => {
                 const sc = STATUS_COLORS[c.status] || STATUS_COLORS.open;
                 return (
-                  <tr key={c._id} style={{ cursor:'pointer', background: c.unreadAdmin > 0 ? 'oklch(0.85 0.13 195 / 0.04)' : undefined }}
+                  <tr key={c._id} style={{ cursor:'pointer', background: c.unreadAdmin > 0 ? 'rgba(0,240,255,0.04)' : undefined,
+                    borderLeft: c.unreadAdmin > 0 ? '2px solid rgba(255,0,122,0.50)' : undefined }}
                     onClick={() => setOpenConvoId(c._id)}>
                     <td style={{ fontWeight: c.unreadAdmin > 0 ? 700 : 400, fontSize:13 }}>
                       {c.user?.name || c.user?.email || '—'}
@@ -192,7 +195,9 @@ export default function SupportInbox() {
                     <td><span style={{ ...sc, fontSize:11, fontWeight:800, padding:'3px 8px', borderRadius:6 }}>{c.status.replace('_',' ')}</span></td>
                     <td>
                       {c.unreadAdmin > 0 && (
-                        <span style={{ background:'var(--bad)', color:'#fff', fontSize:11, fontWeight:800, padding:'2px 7px', borderRadius:99 }}>
+                        <span style={{ background:'#FF007A', color:'#fff', fontSize:11, fontWeight:800,
+                          padding:'2px 7px', borderRadius:99, boxShadow:'0 0 8px rgba(255,0,122,0.55)',
+                          animation:'heartbeat 1.8s ease-in-out infinite', display:'inline-block' }}>
                           {c.unreadAdmin}
                         </span>
                       )}
