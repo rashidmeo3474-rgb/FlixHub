@@ -29,20 +29,18 @@ export default function AdminLayout() {
       {/* ── Sidebar ── */}
       <aside style={{
         width: 230, flexShrink: 0,
-        background: 'rgba(8,12,24,0.95)',
-        borderRight: '1px solid rgba(0,240,255,0.12)',
+        background: 'oklch(0.11 0.013 265)',
+        borderRight: '1px solid var(--line)',
         display: 'flex', flexDirection: 'column',
-        position: 'sticky', top: 0, height: '100vh', overflowY: 'auto',
-        backdropFilter: 'blur(24px)',
+        position: 'sticky', top: 0, height: '100vh', overflowY: 'auto'
       }}>
         {/* Brand */}
         <div style={{ padding: '20px 16px 14px', borderBottom: '1px solid var(--line)' }}>
           <Link to="/admin" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
             <span style={{
-            width: 34, height: 34, borderRadius: 9, display: 'grid', placeItems: 'center',
-              background: 'linear-gradient(135deg, #00F0FF, #9D00FF)',
-              color: '#000', fontWeight: 800, fontSize: 16,
-              boxShadow: '0 0 16px rgba(0,240,255,0.38), 0 0 32px rgba(157,0,255,0.18)',
+              width: 34, height: 34, borderRadius: 9, display: 'grid', placeItems: 'center',
+              background: 'linear-gradient(135deg, oklch(0.82 0.18 65), oklch(0.65 0.22 25))',
+              color: '#000', fontWeight: 800, fontSize: 16
             }}>⚙</span>
             <div>
               <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: 15, color: 'var(--text)' }}>{SITE}</div>
@@ -58,10 +56,9 @@ export default function AdminLayout() {
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '10px 12px', borderRadius: 10, textDecoration: 'none',
               fontSize: 14, fontWeight: 600, transition: 'all 0.15s',
-            background: isActive ? 'rgba(0,240,255,0.11)' : 'transparent',
-              color: isActive ? '#00F0FF' : 'rgba(160,185,230,0.65)',
-              borderLeft: isActive ? '3px solid #00F0FF' : '3px solid transparent',
-              boxShadow: isActive ? 'inset 0 0 16px rgba(0,240,255,0.07)' : 'none',
+              background: isActive ? 'oklch(0.82 0.18 65 / 0.15)' : 'transparent',
+              color: isActive ? 'oklch(0.9 0.14 70)' : 'oklch(0.78 0.01 265)',
+              borderLeft: isActive ? '3px solid oklch(0.82 0.18 65)' : '3px solid transparent',
             })}>
               <span style={{ fontSize: 16, width: 20, textAlign: 'center' }}>{icon}</span>
               {label}
@@ -104,7 +101,7 @@ export default function AdminLayout() {
       </aside>
 
       {/* ── Main content ── */}
-      <main style={{ flex: 1, padding: '32px 36px 60px', overflowX: 'auto', minWidth: 0, background: 'transparent' }}>
+      <main style={{ flex: 1, padding: '32px 36px 60px', overflowX: 'auto', minWidth: 0 }}>
         <Outlet />
       </main>
     </div>

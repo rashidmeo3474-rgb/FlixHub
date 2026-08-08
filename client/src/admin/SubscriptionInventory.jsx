@@ -7,19 +7,19 @@ import { formatDate } from '../utils/format.js';
    CONSTANTS & TINY HELPERS
 ───────────────────────────────────────────────── */
 const ACCOUNT_STATUS_STYLE = {
-  active:        { background: 'rgba(0,255,135,0.14)',  color: '#00FF87', border: '1px solid rgba(0,255,135,0.25)',  boxShadow: '0 0 8px rgba(0,255,135,0.28)'  },
-  expiring_soon: { background: 'rgba(255,214,0,0.14)',  color: '#FFD600', border: '1px solid rgba(255,214,0,0.25)',  boxShadow: '0 0 8px rgba(255,214,0,0.25)'  },
-  expired:       { background: 'rgba(255,46,147,0.14)', color: '#FF2E93', border: '1px solid rgba(255,46,147,0.25)', boxShadow: '0 0 8px rgba(255,46,147,0.25)' },
-  disabled:      { background: 'rgba(160,185,230,0.08)', color: 'rgba(160,185,230,0.55)', border: '1px solid rgba(160,185,230,0.12)' },
+  active:        { bg: 'oklch(0.72 0.16 150 / 0.18)', color: 'var(--good)' },
+  expiring_soon: { bg: 'oklch(0.7 0.19 60 / 0.18)',  color: 'var(--warn)' },
+  expired:       { bg: 'oklch(0.65 0.22 25 / 0.18)', color: 'var(--bad)'  },
+  disabled:      { bg: 'oklch(0.5 0.01 265 / 0.18)', color: 'var(--muted)'},
 };
 
 const SUB_STATUS_STYLE = {
-  active:        { background: 'rgba(0,255,135,0.14)',  color: '#00FF87', border: '1px solid rgba(0,255,135,0.25)',  boxShadow: '0 0 8px rgba(0,255,135,0.28)'  },
-  expiring_soon: { background: 'rgba(255,214,0,0.14)',  color: '#FFD600', border: '1px solid rgba(255,214,0,0.25)',  boxShadow: '0 0 8px rgba(255,214,0,0.25)'  },
-  expiring_today:{ background: 'rgba(255,46,147,0.14)', color: '#FF2E93', border: '1px solid rgba(255,46,147,0.25)', boxShadow: '0 0 8px rgba(255,46,147,0.25)' },
-  urgent:        { background: 'rgba(255,46,147,0.14)', color: '#FF2E93', border: '1px solid rgba(255,46,147,0.25)', boxShadow: '0 0 8px rgba(255,46,147,0.25)' },
-  expired:       { background: 'rgba(255,46,147,0.14)', color: '#FF2E93', border: '1px solid rgba(255,46,147,0.25)', boxShadow: '0 0 8px rgba(255,46,147,0.25)' },
-  cancelled:     { background: 'rgba(160,185,230,0.08)', color: 'rgba(160,185,230,0.55)', border: '1px solid rgba(160,185,230,0.12)' },
+  active:        { bg: 'oklch(0.72 0.16 150 / 0.18)', color: 'var(--good)' },
+  expiring_soon: { bg: 'oklch(0.7 0.19 60 / 0.18)',  color: 'var(--warn)' },
+  expiring_today:{ bg: 'oklch(0.65 0.22 25 / 0.18)', color: 'var(--bad)'  },
+  urgent:        { bg: 'oklch(0.65 0.22 25 / 0.18)', color: 'var(--bad)'  },
+  expired:       { bg: 'oklch(0.65 0.22 25 / 0.18)', color: 'var(--bad)'  },
+  cancelled:     { bg: 'oklch(0.5 0.01 265 / 0.18)', color: 'var(--muted)'},
 };
 
 const fmtDate  = (d) => d ? formatDate(d) : '—';
@@ -28,8 +28,8 @@ const daysLeft = (d) => d ? Math.ceil((new Date(d) - Date.now()) / 86400000) : n
 const StatusBadge = ({ status, map }) => {
   const s = (map || ACCOUNT_STATUS_STYLE)[status] || ACCOUNT_STATUS_STYLE.active;
   return (
-    <span style={{ background: s.background, color: s.color, border: s.border, boxShadow: s.boxShadow,
-      fontSize: 11, fontWeight: 800, padding: '3px 9px', borderRadius: 6, whiteSpace: 'nowrap' }}>
+    <span style={{ ...s, fontSize: 11, fontWeight: 800, padding: '3px 9px',
+      borderRadius: 6, whiteSpace: 'nowrap' }}>
       {status?.replace(/_/g, ' ').toUpperCase()}
     </span>
   );
@@ -393,19 +393,16 @@ function AccountDetailModal({ accountId, onClose, onEdit, onReload }) {
           const sub  = sl.subscription;
           return (
             <div key={sl.index} style={{
-              background: free ? 'rgba(0,255,135,0.08)' : 'rgba(157,0,255,0.09)',
-              border: `1px solid ${free ? 'rgba(0,255,135,0.28)' : 'rgba(157,0,255,0.25)'}`,
+              background: free ? 'oklch(0.72 0.16 150 / 0.09)' : 'oklch(0.6 0.18 250 / 0.09)',
+              border: `1px solid ${free ? 'oklch(0.72 0.16 150 / 0.3)' : 'oklch(0.6 0.18 250 / 0.3)'}`,
               borderRadius: 10, padding: '12px 14px',
-              transition: 'box-shadow 0.2s ease, transform 0.2s ease',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: free ? 0 : 8 }}>
                 <strong style={{ fontSize: 13 }}>{sl.label || `Slot ${sl.index}`}</strong>
                 <span style={{
                   fontSize: 10, fontWeight: 800, padding: '2px 7px', borderRadius: 5,
-                  background: free ? 'rgba(0,255,135,0.18)' : 'rgba(157,0,255,0.18)',
-                  color: free ? '#00FF87' : '#C084FF',
-                  border: free ? '1px solid rgba(0,255,135,0.28)' : '1px solid rgba(157,0,255,0.28)',
-                  boxShadow: free ? '0 0 7px rgba(0,255,135,0.28)' : '0 0 7px rgba(157,0,255,0.25)',
+                  background: free ? 'oklch(0.72 0.16 150 / 0.2)' : 'oklch(0.6 0.18 250 / 0.2)',
+                  color: free ? 'var(--good)' : 'var(--accent)',
                 }}>{free ? 'AVAILABLE' : 'OCCUPIED'}</span>
               </div>
               {!free && sub && (
@@ -745,11 +742,9 @@ function AvailableSlotsTab({ products, onAssigned }) {
                       {s.accountLogin}
                     </td>
                     <td style={{ fontWeight: 600 }}>
-                      <span style={{ background: 'rgba(0,255,135,0.14)',
-                        color: '#00FF87', fontSize: 12, fontWeight: 800,
-                        padding: '3px 9px', borderRadius: 6,
-                        border: '1px solid rgba(0,255,135,0.26)',
-                        boxShadow: '0 0 8px rgba(0,255,135,0.28)' }}>
+                      <span style={{ background: 'oklch(0.72 0.16 150 / 0.15)',
+                        color: 'var(--good)', fontSize: 12, fontWeight: 800,
+                        padding: '3px 9px', borderRadius: 6 }}>
                         {s.slotLabel}
                       </span>
                     </td>

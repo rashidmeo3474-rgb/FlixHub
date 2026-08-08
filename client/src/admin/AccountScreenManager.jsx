@@ -8,19 +8,16 @@ function SlotBadge({ slot }) {
   const ok = slot.status === 'available';
   return (
     <div style={{
-      background: ok ? 'rgba(0,255,135,0.08)'  : 'rgba(157,0,255,0.09)',
-      border: `1px solid ${ok ? 'rgba(0,255,135,0.28)' : 'rgba(157,0,255,0.25)'}`,
+      background: ok ? 'oklch(0.72 0.16 150 / 0.12)' : 'oklch(0.6 0.18 250 / 0.12)',
+      border: `1px solid ${ok ? 'oklch(0.72 0.16 150 / 0.35)' : 'oklch(0.6 0.18 250 / 0.35)'}`,
       borderRadius: 10, padding: '10px 14px', fontSize: 13,
-      transition: 'box-shadow 0.2s ease',
     }}>
       <div style={{ display:'flex', justifyContent:'space-between', marginBottom: ok ? 0 : 6 }}>
         <strong>{slot.label || `Profile ${slot.index}`}</strong>
         <span style={{
           fontSize:10, fontWeight:800, padding:'2px 8px', borderRadius:5,
-          background: ok ? 'rgba(0,255,135,0.18)' : 'rgba(157,0,255,0.18)',
-          color: ok ? '#00FF87' : '#C084FF',
-          border: ok ? '1px solid rgba(0,255,135,0.28)' : '1px solid rgba(157,0,255,0.28)',
-          boxShadow: ok ? '0 0 7px rgba(0,255,135,0.28)' : '0 0 7px rgba(157,0,255,0.24)',
+          background: ok ? 'oklch(0.72 0.16 150 / 0.2)' : 'oklch(0.6 0.18 250 / 0.2)',
+          color: ok ? 'var(--good)' : 'var(--accent)',
         }}>{ok ? 'AVAILABLE' : 'ASSIGNED'}</span>
       </div>
       {!ok && slot.assignedTo && (

@@ -4,10 +4,9 @@ import useApi from '../hooks/useApi.js';
 import { money, formatDate } from '../utils/format.js';
 
 const statusStyle = (s) => {
-  if (s === 'delivered') return { background: 'rgba(0,255,135,0.14)',  color: '#00FF87', border: '1px solid rgba(0,255,135,0.25)',  boxShadow: '0 0 8px rgba(0,255,135,0.30)'  };
-  if (s === 'pending')   return { background: 'rgba(255,214,0,0.14)',  color: '#FFD600', border: '1px solid rgba(255,214,0,0.25)',  boxShadow: '0 0 8px rgba(255,214,0,0.28)'  };
-  if (s === 'paid')      return { background: 'rgba(0,240,255,0.14)',  color: '#00F0FF', border: '1px solid rgba(0,240,255,0.25)',  boxShadow: '0 0 8px rgba(0,240,255,0.28)'  };
-  return                        { background: 'rgba(255,46,147,0.14)', color: '#FF2E93', border: '1px solid rgba(255,46,147,0.25)', boxShadow: '0 0 8px rgba(255,46,147,0.28)' };
+  if (s === 'delivered') return { background: 'oklch(0.72 0.16 150 / 0.18)', color: 'var(--good)' };
+  if (s === 'pending')   return { background: 'oklch(0.7 0.19 60 / 0.18)',   color: 'var(--warn)' };
+  return { background: 'oklch(0.65 0.22 25 / 0.18)', color: 'var(--bad)' };
 };
 
 function UserModal({ userId, onClose, onSave }) {
@@ -142,10 +141,8 @@ export default function UsersManager() {
                   <td style={{ color: 'var(--muted)', fontSize: 13 }}>{u.phone || '—'}</td>
                   <td>
                     <span style={{ fontSize: 11, fontWeight: 800, padding: '3px 8px', borderRadius: 6,
-                      background: u.role === 'admin' ? 'rgba(157,0,255,0.18)' : 'rgba(0,240,255,0.13)',
-                      color:      u.role === 'admin' ? '#C084FF'               : '#00F0FF',
-                      border:     u.role === 'admin' ? '1px solid rgba(157,0,255,0.30)' : '1px solid rgba(0,240,255,0.25)',
-                      boxShadow:  u.role === 'admin' ? '0 0 8px rgba(157,0,255,0.28)' : '0 0 8px rgba(0,240,255,0.22)' }}>
+                      background: u.role === 'admin' ? 'oklch(0.82 0.18 65 / 0.18)' : 'oklch(0.6 0.18 250 / 0.18)',
+                      color: u.role === 'admin' ? 'oklch(0.9 0.14 70)' : 'var(--accent)' }}>
                       {u.role}
                     </span>
                   </td>
