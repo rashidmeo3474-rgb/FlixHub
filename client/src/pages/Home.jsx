@@ -236,10 +236,23 @@ export default function Home() {
   const HOME_SLUGS = ['netflix', 'prime-video', 'disney', 'apple-tv-1080p', 'netflix-prime', 'hbo-max'];
   const all = data?.products || [];
 
-  // Try to match by slug first. If fewer than 6 match (slug mismatch),
-  // fall back to showing the first 6 products from whatever the API returned.
-  const bySlug = HOME_SLUGS.map(slug => all.find(p => p.slug === slug)).filter(Boolean);
-  const products = bySlug.length >= 4 ? bySlug : all.slice(0, 6);
+  // Build the 6 home cards:
+  // 1. Try exact slug match from API data first
+  // 2. For any slug that has no match, inject a hardcoded placeholder
+  //    so all 6 slots are always filled regardless of DB state.
+  const FALLBACK_CARDS = {
+    'netflix':        { _id: 'netflix',        slug: 'netflix',        name: 'Netflix',              accent: '#e50914', monthlyPrice: 450, compareAt: 600, inStock: 8, quality: '1080p HD', logo: '/logos/netflix.png'       },
+    'prime-video':    { _id: 'prime-video',    slug: 'prime-video',    name: 'Prime Video',          accent: '#00a8e1', monthlyPrice: 350, compareAt: 500, inStock: 8, quality: '1080p HD', logo: '/logos/prime-video.png'   },
+    'disney':         { _id: 'disney',         slug: 'disney',         name: 'Disney+',              accent: '#4b6cf7', monthlyPrice: 400, compareAt: 550, inStock: 8, quality: '1080p HD', logo: null                       },
+    'apple-tv-1080p': { _id: 'apple-tv-1080p', slug: 'apple-tv-1080p', name: 'Apple TV+',            accent: '#d8d8d8', monthlyPrice: 1800,compareAt: 2500,inStock: 8, quality: '1080p HD', logo: '/logos/apple-tv.png'      },
+    'netflix-prime':  { _id: 'netflix-prime',  slug: 'netflix-prime',  name: 'Netflix + Prime Video',accent: '#ff6b00', monthlyPrice: 600, compareAt: 1000,inStock: 8, quality: '4K UHD',  logo: '/logos/netflix-prime.jpg' },
+    'hbo-max':        { _id: 'hbo-max',        slug: 'hbo-max',        name: 'HBO Max',              accent: '#9b30ff', monthlyPrice: 450, compareAt: 600, inStock: 8, quality: '1080p HD', logo: '/logos/hbo-max.png'       },
+  };
+
+  const products = HOME_SLUGS.map(slug => {
+    const fromApi = all.find(p => p.slug === slug);
+    return fromApi || FALLBACK_CARDS[slug];
+  });
 
   const [gateProduct, setGateProduct] = useState(null);
 
