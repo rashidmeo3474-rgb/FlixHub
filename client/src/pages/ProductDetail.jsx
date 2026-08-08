@@ -154,13 +154,20 @@ export default function ProductDetail() {
 
           {/* ── QUALITY / RESOLUTION SELECTOR ── */}
           {hasVariants && (
-            <div className="field">
-              <span className="label" style={{ marginBottom: 10, display: 'block' }}>
-                Choose Quality
-              </span>
+            <div style={{
+              background: 'oklch(0.13 0.013 265)',
+              border: '1px solid oklch(1 0 0 / 0.10)',
+              borderRadius: 14,
+              padding: '16px 18px',
+            }}>
               <div style={{
-                display: 'flex', flexWrap: 'wrap', gap: 10,
+                fontSize: 11, fontWeight: 800, color: 'var(--muted)',
+                textTransform: 'uppercase', letterSpacing: '0.09em',
+                marginBottom: 14,
               }}>
+                Choose Quality
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {variants.map(v => {
                   const isActive = v.slug === product.slug;
                   const qs = QUALITY_COLORS[v.quality] || QUALITY_COLORS['1080p HD'];
@@ -169,46 +176,52 @@ export default function ProductDetail() {
                       key={v._id}
                       onClick={() => setSelectedVariant(v)}
                       style={{
-                        padding: '10px 18px',
-                        borderRadius: 11,
+                        padding: '12px 20px',
+                        borderRadius: 12,
                         cursor: 'pointer',
                         fontFamily: 'inherit',
-                        fontWeight: 700,
-                        fontSize: 13,
                         border: isActive
                           ? `2px solid ${qs.color}`
-                          : '2px solid rgba(255,255,255,0.10)',
+                          : '2px solid oklch(1 0 0 / 0.12)',
                         background: isActive
-                          ? qs.bg
-                          : 'rgba(255,255,255,0.04)',
-                        color: isActive ? qs.color : 'var(--muted)',
+                          ? `oklch(0.10 0.013 265)`
+                          : 'oklch(0.10 0.01 265)',
+                        color: isActive ? qs.color : 'oklch(0.72 0.01 265)',
                         boxShadow: isActive
-                          ? `0 0 14px ${qs.border}, inset 0 0 10px ${qs.bg}`
+                          ? `0 0 16px ${qs.color}55, inset 0 0 20px ${qs.color}0a`
                           : 'none',
                         transition: 'all 0.18s ease',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        gap: 3,
-                        minWidth: 80,
+                        gap: 5,
+                        minWidth: 90,
                       }}
                       onMouseEnter={e => {
                         if (!isActive) {
                           e.currentTarget.style.border = `2px solid ${qs.color}88`;
-                          e.currentTarget.style.color = qs.color;
-                          e.currentTarget.style.background = `${qs.bg}`;
+                          e.currentTarget.style.color  = qs.color;
+                          e.currentTarget.style.background = 'oklch(0.12 0.012 265)';
                         }
                       }}
                       onMouseLeave={e => {
                         if (!isActive) {
-                          e.currentTarget.style.border = '2px solid rgba(255,255,255,0.10)';
-                          e.currentTarget.style.color = 'var(--muted)';
-                          e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                          e.currentTarget.style.border = '2px solid oklch(1 0 0 / 0.12)';
+                          e.currentTarget.style.color  = 'oklch(0.72 0.01 265)';
+                          e.currentTarget.style.background = 'oklch(0.10 0.01 265)';
                         }
                       }}
                     >
-                      <span style={{ fontSize: 14, fontWeight: 800 }}>{v.quality}</span>
-                      <span style={{ fontSize: 11, opacity: 0.8 }}>
+                      <span style={{
+                        fontSize: 13, fontWeight: 800,
+                        color: 'inherit',
+                      }}>
+                        {v.quality}
+                      </span>
+                      <span style={{
+                        fontSize: 12, fontWeight: 700,
+                        color: isActive ? qs.color : 'oklch(0.60 0.01 265)',
+                      }}>
                         {money(v.monthlyPrice)}/mo
                       </span>
                     </button>
@@ -217,7 +230,6 @@ export default function ProductDetail() {
               </div>
             </div>
           )}
-
           {/* ── Duration selector ── */}
           <div className="field">
             <span className="label">{t('duration')}</span>
