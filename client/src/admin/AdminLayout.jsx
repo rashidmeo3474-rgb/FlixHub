@@ -5,14 +5,17 @@ import useApi from '../hooks/useApi.js';
 const SITE = import.meta.env.VITE_SITE_NAME || 'FlixHub';
 
 const NAV = [
-  { to: '/admin',               end: true,  icon: '⊞', label: 'Dashboard' },
-  { to: '/admin/orders',        icon: '📋', label: 'Orders' },
-  { to: '/admin/payment-proofs',icon: '💳', label: 'Payment Proofs' },
-  { to: '/admin/products',      icon: '📦', label: 'Products' },
-  { to: '/admin/stock',         icon: '🗄️', label: 'Stock' },
-  { to: '/admin/users',         icon: '👥', label: 'Users' },
-  { to: '/admin/activity',      icon: '📊', label: 'Activity Log' },
-  { to: '/admin/settings',      icon: '⚙️', label: 'Payment Settings' },
+  { to: '/admin',                end: true,  icon: '⊞', label: 'Dashboard' },
+  { to: '/admin/orders',         icon: '📋', label: 'Orders' },
+  { to: '/admin/payment-proofs', icon: '💳', label: 'Payment Proofs' },
+  { to: '/admin/subscriptions',  icon: '🎬', label: 'Subscriptions' },
+  { to: '/admin/accounts',       icon: '🖥️', label: 'Screen Manager' },
+  { to: '/admin/support',        icon: '💬', label: 'Support' },
+  { to: '/admin/products',       icon: '📦', label: 'Products' },
+  { to: '/admin/stock',          icon: '🗄️', label: 'Stock' },
+  { to: '/admin/users',          icon: '👥', label: 'Users' },
+  { to: '/admin/activity',       icon: '📊', label: 'Activity Log' },
+  { to: '/admin/settings',       icon: '⚙️', label: 'Payment Settings' },
 ];
 
 export default function AdminLayout() {
@@ -58,6 +61,11 @@ export default function AdminLayout() {
             })}>
               <span style={{ fontSize: 16, width: 20, textAlign: 'center' }}>{icon}</span>
               {label}
+              {label === 'Support' && statsData?.supportUnread > 0 && (
+                <span style={{ marginLeft: 'auto', background: 'var(--bad)', color: '#fff', fontSize: 10, fontWeight: 800, padding: '2px 6px', borderRadius: 99 }}>
+                  {statsData.supportUnread}
+                </span>
+              )}
               {label === 'Payment Proofs' && statsData?.pendingProofs > 0 && (
                 <span style={{ marginLeft: 'auto', background: 'var(--bad)', color: '#fff', fontSize: 10, fontWeight: 800, padding: '2px 6px', borderRadius: 99 }}>
                   {statsData.pendingProofs}

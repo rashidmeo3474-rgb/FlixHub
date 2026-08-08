@@ -26,6 +26,10 @@ import UsersManager from './admin/UsersManager.jsx';
 import PaymentProofs from './admin/PaymentProofs.jsx';
 import PaymentSettings from './admin/PaymentSettings.jsx';
 import ActivityLogPage from './admin/ActivityLogPage.jsx';
+import SubscriptionsManager from './admin/SubscriptionsManager.jsx';
+import AccountScreenManager from './admin/AccountScreenManager.jsx';
+import SupportInbox from './admin/SupportInbox.jsx';
+import MySubscriptions from './pages/MySubscriptions.jsx';
 
 export default function App() {
   return (
@@ -43,6 +47,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/orders" element={<ProtectedRoute role="user"><Orders /></ProtectedRoute>} />
+        <Route path="/subscriptions" element={<ProtectedRoute role="user"><MySubscriptions /></ProtectedRoute>} />
       </Route>
 
       {/* ── Admin portal ── */}
@@ -55,7 +60,10 @@ export default function App() {
         <Route path="users" element={<UsersManager />} />
         <Route path="payment-proofs" element={<PaymentProofs />} />
         <Route path="settings" element={<PaymentSettings />} />
-        <Route path="activity" element={<ActivityLogPage />} />
+        <Route path="activity"       element={<ActivityLogPage />} />
+        <Route path="subscriptions"  element={<SubscriptionsManager />} />
+        <Route path="accounts"       element={<AccountScreenManager />} />
+        <Route path="support"        element={<SupportInbox />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

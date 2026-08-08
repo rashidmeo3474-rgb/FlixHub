@@ -78,6 +78,7 @@ export default function StoreLayout() {
             <NavLink to="/" end>{t('home')}</NavLink>
             <NavLink to="/shop">{t('shop')}</NavLink>
             <NavLink to="/orders">{t('orders')}</NavLink>
+            <NavLink to="/subscriptions">My Subscriptions</NavLink>
             <NavLink to="/contact">{t('contact')}</NavLink>
           </nav>
           <div className="header-actions">
