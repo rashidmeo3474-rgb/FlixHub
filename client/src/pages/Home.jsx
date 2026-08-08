@@ -4,6 +4,7 @@ import useApi from '../hooks/useApi.js';
 import { useI18n } from '../context/I18nContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import ProductCard from '../components/ProductCard.jsx';
+import LoginGateModal from '../components/LoginGateModal.jsx';
 
 /* ─────────────────────────────────────────────────────────────
    LOGIN GATE MODAL
