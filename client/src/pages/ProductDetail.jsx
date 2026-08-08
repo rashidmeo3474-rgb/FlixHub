@@ -237,12 +237,17 @@ export default function ProductDetail() {
           </div>
 
           {/* ── Total price card ── */}
-          <div className="card spread">
+          <div className="card spread" style={{ transition: 'all 0.2s ease' }}>
             <div>
               <span className="label">{t('total')}</span>
-              <div className="price price-lg" style={{ color: accent }}>{money(total)}</div>
+              <div className="price price-lg" style={{
+                color: accent,
+                transition: 'color 0.25s ease',
+                animation: 'priceFlash 0.3s ease-out',
+              }}>{money(total)}</div>
               {months > 1 && (
-                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4,
+                  transition: 'opacity 0.2s ease' }}>
                   {money(product.monthlyPrice)} × {months} months
                 </div>
               )}
