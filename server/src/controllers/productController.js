@@ -75,8 +75,33 @@ export const listProducts = asyncHandler(async (req, res) => {
   if (req.query.quality)  filter.quality  = new RegExp(req.query.quality, 'i');
 
   try {
-    const products = await Product.find(filter).sort({ createdAt: 1 });
-    if (products.length) return res.json({ products: await withStock(products) });
+    const dbProducts = await Product.find(filter).sort({ createdAt: 1 });
+    const fallbackAll = buildFallback();
+
+    // If filters are active (category/quality), only use DB + exact fallback match
+    const hasFilter = req.query.category || req.query.quality;
+
+    if (hasFilter) {
+      // With filters: use DB results; if empty fall back to filtered fallbacks
+      if (dbProducts.length) return res.json({ products: await withStock(dbProducts) });
+      return res.json({ products: fallbackAll.filter(p => {
+        if (req.query.category && p.category !== req.query.category) return false;
+        if (req.query.quality  && !new RegExp(req.query.quality, 'i').test(p.quality)) return false;
+        return true;
+      })});
+    }
+
+    // No filters: merge DB products with fallback so all slugs are always present
+    const dbSlugs = new Set(dbProducts.map(p => p.slug));
+    const dbWithStock = dbProducts.length ? await withStock(dbProducts) : [];
+
+    // Fallback entries for slugs missing from DB
+    const missingFallbacks = fallbackAll.filter(p => !dbSlugs.has(p.slug));
+
+    // Combine: real DB products first, then missing fallbacks
+    const merged = [...dbWithStock, ...missingFallbacks];
+    return res.json({ products: merged });
+
   } catch (err) {
     console.warn('Product DB lookup failed, using fallback:', err.message);
   }
