@@ -231,11 +231,15 @@ function LoginGateModal({ product, onClose }) {
 export default function Home() {
   const { t } = useI18n();
   const { user } = useAuth();
-  const { data } = useApi('/products');
+  const { data, loading } = useApi('/products');
 
   const HOME_SLUGS = ['netflix', 'prime-video', 'disney', 'apple-tv-1080p', 'netflix-prime', 'hbo-max'];
   const all = data?.products || [];
-  const products = HOME_SLUGS.map(slug => all.find(p => p.slug === slug)).filter(Boolean);
+
+  // Try to match by slug first. If fewer than 6 match (slug mismatch),
+  // fall back to showing the first 6 products from whatever the API returned.
+  const bySlug = HOME_SLUGS.map(slug => all.find(p => p.slug === slug)).filter(Boolean);
+  const products = bySlug.length >= 4 ? bySlug : all.slice(0, 6);
 
   const [gateProduct, setGateProduct] = useState(null);
 
@@ -292,21 +296,37 @@ export default function Home() {
           <h2 style={{ fontSize: 'clamp(24px, 3vw, 34px)' }}>{t('shop')}</h2>
           <Link to="/shop">{t('browse')} →</Link>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 14 }}>
-          {products.map(p => (
-            /*
-              Capture-phase wrapper: intercept clicks before ProductCard's
-              <Link> navigates, so guests get the modal instead.
-            */
-            <div
-              key={p._id}
-              onClickCapture={e => handleCardAreaClick(e, p)}
-              style={{ cursor: user ? 'default' : 'pointer' }}
-            >
-              <ProductCard product={p} />
-            </div>
-          ))}
-        </div>
+
+        {/* Loading skeletons — taake layout na hilay */}
+        {loading && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 14 }}>
+            {[1,2,3,4,5,6].map(i => (
+              <div key={i} style={{
+                borderRadius: 18, overflow: 'hidden',
+                background: 'oklch(0.13 0.014 265 / 0.97)',
+                border: '1.5px solid oklch(1 0 0 / 0.07)',
+                height: 340,
+                animation: 'skeletonPulse 1.4s ease-in-out infinite',
+                animationDelay: `${i * 0.1}s`,
+              }} />
+            ))}
+          </div>
+        )}
+
+        {/* Actual cards */}
+        {!loading && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 14 }}>
+            {products.map(p => (
+              <div
+                key={p._id}
+                onClickCapture={e => handleCardAreaClick(e, p)}
+                style={{ cursor: user ? 'default' : 'pointer' }}
+              >
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* how it works */}
