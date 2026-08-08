@@ -6,8 +6,8 @@ import LanguageSwitcher from './LanguageSwitcher.jsx';
 
 const SITE = import.meta.env.VITE_SITE_NAME || 'FlixHub';
 
-// All scene images from /public/scenes/ — 152 posters
-const POSTERS = [
+// All scene images from /public/scenes/ — every available poster
+const SCENE_POOL = [
   '/scenes/tile-01.png','/scenes/tile-02.png','/scenes/tile-03.png',
   '/scenes/tile-04.png','/scenes/tile-05.png','/scenes/tile-06.png',
   '/scenes/tile-07.png','/scenes/tile-08.png','/scenes/tile-09.png',
@@ -52,6 +52,18 @@ const POSTERS = [
   '/scenes/src-23.jpg','/scenes/src-24.jpg','/scenes/src-25.jpg',
   '/scenes/src-26.jpg','/scenes/src-27.jpg',
 ];
+
+// 10 columns × ~22 rows = 220 tiles needed to fill 200% height.
+// Repeat the pool until we have 220 entries, shuffled for variety.
+const POSTERS = (() => {
+  const needed = 220;
+  const out = [];
+  for (let i = 0; i < needed; i++) {
+    // interleave different sections of the pool so repetition isn't obvious
+    out.push(SCENE_POOL[(i * 7) % SCENE_POOL.length]);
+  }
+  return out;
+})();
 
 export default function StoreLayout() {
   const { user, logout } = useAuth();
