@@ -235,14 +235,22 @@ export const adminListAccounts = asyncHandler(async (req, res) => {
   res.json({ accounts });
 });
 
-/** PATCH /api/subscriptions/admin/accounts/:id — update totalSlots / note */
+/** PATCH /api/subscriptions/admin/accounts/:id — update account fields */
 export const adminUpdateAccount = asyncHandler(async (req, res) => {
-  const { totalSlots, note } = req.body;
+  const { totalSlots, note, plan, purchaseDate, providerExpiryDate, accountStatus, login, password } = req.body;
   const account = await Account.findById(req.params.id);
   if (!account) return res.status(404).json({ message: 'Account not found' });
-  if (totalSlots != null) account.totalSlots = Number(totalSlots);
-  if (note       != null) account.note       = note;
-  await account.save(); // pre-save hook syncs slots[]
+
+  if (totalSlots          != null) account.totalSlots          = Number(totalSlots);
+  if (note                != null) account.note                = note;
+  if (plan                != null) account.plan                = plan;
+  if (purchaseDate        != null) account.purchaseDate        = purchaseDate ? new Date(purchaseDate) : null;
+  if (providerExpiryDate  != null) account.providerExpiryDate  = providerExpiryDate ? new Date(providerExpiryDate) : null;
+  if (accountStatus       != null) account.accountStatus       = accountStatus;
+  if (login               != null) account.login               = login.trim();
+  if (password            != null) account.password            = password;
+
+  await account.save(); // pre-save hook syncs slots[] and refreshes accountStatus
   await ActivityLog.create({ actor: req.user._id, action: 'account_updated',
     details: { accountId: account._id, totalSlots: account.totalSlots } });
   res.json({ account });
@@ -268,6 +276,382 @@ export const availableSlots = asyncHandler(async (req, res) => {
     }
   }
   res.json({ slots: result, total: result.length });
+});
+
+/* ══════════════════ SUBSCRIPTION INVENTORY ══════════════════ */
+
+/**
+ * POST /api/subscriptions/admin/inventory/accounts
+ * Add a full purchased account to the inventory.
+ * This is distinct from StockManager's bulk credential upload —
+ * here the admin adds ONE full purchased account with all its metadata.
+ */
+export const inventoryAddAccount = asyncHandler(async (req, res) => {
+  const {
+    productId, plan = '', login, password,
+    purchaseDate, providerExpiryDate, totalSlots = 1, note = ''
+  } = req.body;
+
+  if (!productId) return res.status(422).json({ message: 'productId is required' });
+  if (!login)     return res.status(422).json({ message: 'Account email / login is required' });
+  if (!password)  return res.status(422).json({ message: 'Account password is required' });
+
+  const product = await Product.findById(productId);
+  if (!product) return res.status(404).json({ message: 'Product not found' });
+
+  const account = new Account({
+    product:           productId,
+    login:             login.trim(),
+    password,
+    plan,
+    purchaseDate:      purchaseDate      ? new Date(purchaseDate)      : null,
+    providerExpiryDate: providerExpiryDate ? new Date(providerExpiryDate) : null,
+    totalSlots:        Number(totalSlots),
+    note,
+    status:            'available',
+  });
+
+  await account.save();
+
+  await ActivityLog.create({
+    actor:   req.user._id,
+    action:  'inventory_account_added',
+    details: { accountId: account._id, productId, login: account.login },
+  });
+
+  res.status(201).json({ account });
+});
+
+/**
+ * DELETE /api/subscriptions/admin/inventory/accounts/:id
+ * Remove a full purchased account from inventory.
+ * Blocked if any slot is currently occupied.
+ */
+export const inventoryDeleteAccount = asyncHandler(async (req, res) => {
+  const account = await Account.findById(req.params.id);
+  if (!account) return res.status(404).json({ message: 'Account not found' });
+
+  const hasOccupied = (account.slots || []).some(s => s.status === 'assigned');
+  if (hasOccupied) {
+    return res.status(409).json({
+      message: 'Cannot delete account: one or more slots are currently occupied by customers. Unassign them first.',
+    });
+  }
+
+  await Account.findByIdAndDelete(req.params.id);
+
+  await ActivityLog.create({
+    actor:   req.user._id,
+    action:  'inventory_account_deleted',
+    details: { accountId: req.params.id },
+  });
+
+  res.json({ ok: true });
+});
+
+/**
+ * GET /api/subscriptions/admin/inventory/summary
+ * Service-wise summary: full accounts count, total slots, occupied, available.
+ * Includes provider expiry status per account.
+ */
+export const inventoryFullSummary = asyncHandler(async (req, res) => {
+  const products = await Product.find({ active: true }, 'name quality accent slug logo');
+  const result = [];
+
+  for (const p of products) {
+    const accounts = await Account.find({ product: p._id })
+      .populate('slots');
+
+    // Refresh accountStatus on each account (in memory only — no save overhead)
+    const enriched = accounts.map(a => {
+      const status = a.refreshAccountStatus();
+      return {
+        _id:                a._id,
+        login:              a.login,
+        plan:               a.plan,
+        purchaseDate:       a.purchaseDate,
+        providerExpiryDate: a.providerExpiryDate,
+        accountStatus:      status,
+        totalSlots:         a.totalSlots,
+        occupied:           (a.slots || []).filter(s => s.status === 'assigned').length,
+        available:          (a.slots || []).filter(s => s.status === 'available').length,
+        note:               a.note,
+        createdAt:          a.createdAt,
+      };
+    });
+
+    const totalAccounts = enriched.length;
+    const totalSlots    = enriched.reduce((s, a) => s + a.totalSlots, 0);
+    const occupied      = enriched.reduce((s, a) => s + a.occupied, 0);
+    const available     = enriched.reduce((s, a) => s + a.available, 0);
+
+    result.push({
+      product:      { _id: p._id, name: p.name, quality: p.quality, accent: p.accent, slug: p.slug, logo: p.logo },
+      totalAccounts,
+      totalSlots,
+      occupied,
+      available,
+      accounts:     enriched,
+    });
+  }
+
+  res.json({ inventory: result });
+});
+
+/**
+ * GET /api/subscriptions/admin/inventory/accounts
+ * Full list of all inventory accounts with slot details + subscription info per slot.
+ * Supports ?productId, ?accountStatus, ?search filters.
+ */
+export const inventoryListAccounts = asyncHandler(async (req, res) => {
+  const { productId, accountStatus, search } = req.query;
+  const filter = {};
+  if (productId)     filter.product       = productId;
+  if (accountStatus) filter.accountStatus = accountStatus;
+
+  let accounts = await Account.find(filter)
+    .populate('product', 'name quality accent slug logo')
+    .sort({ createdAt: -1 });
+
+  // Attach per-slot subscription + user info
+  const accountIds = accounts.map(a => a._id);
+  const subs = await Subscription.find({ account: { $in: accountIds }, status: { $ne: 'cancelled' } })
+    .populate('user', 'name email')
+    .populate('product', 'name');
+
+  // Build a lookup: accountId → slotIndex → subscription
+  const subMap = new Map();
+  for (const s of subs) {
+    const key = `${s.account}:${s.slotIndex}`;
+    subMap.set(key, s);
+  }
+
+  // Inline filter by search
+  if (search) {
+    const q = search.toLowerCase();
+    accounts = accounts.filter(a =>
+      a.login.toLowerCase().includes(q) ||
+      a.product?.name?.toLowerCase().includes(q) ||
+      a.plan?.toLowerCase().includes(q)
+    );
+  }
+
+  const result = accounts.map(a => {
+    const refreshed = a.refreshAccountStatus();
+    const slotsEnriched = (a.slots || []).map(sl => {
+      const sub = subMap.get(`${a._id}:${sl.index}`);
+      return {
+        index:          sl.index,
+        label:          sl.label,
+        pin:            sl.pin,
+        status:         sl.status,
+        assignedTo:     sl.assignedTo,
+        assignedAt:     sl.assignedAt,
+        // customer subscription detail
+        subscription:   sub ? {
+          _id:           sub._id,
+          customerName:  sub.user?.name || sub.user?.email || '—',
+          customerEmail: sub.user?.email || '—',
+          startDate:     sub.startDate,
+          expiryDate:    sub.expiryDate,
+          status:        sub.status,
+        } : null,
+      };
+    });
+
+    return {
+      _id:                a._id,
+      product:            a.product,
+      login:              a.login,
+      password:           a.password,   // included for admin only — never expose via public API
+      plan:               a.plan,
+      purchaseDate:       a.purchaseDate,
+      providerExpiryDate: a.providerExpiryDate,
+      accountStatus:      refreshed,
+      totalSlots:         a.totalSlots,
+      occupied:           slotsEnriched.filter(s => s.status === 'assigned').length,
+      available:          slotsEnriched.filter(s => s.status === 'available').length,
+      note:               a.note,
+      slots:              slotsEnriched,
+      createdAt:          a.createdAt,
+    };
+  });
+
+  res.json({ accounts: result, total: result.length });
+});
+
+/**
+ * GET /api/subscriptions/admin/inventory/accounts/:id
+ * Single account full detail.
+ */
+export const inventoryGetAccount = asyncHandler(async (req, res) => {
+  const account = await Account.findById(req.params.id)
+    .populate('product', 'name quality accent slug logo');
+  if (!account) return res.status(404).json({ message: 'Account not found' });
+
+  const subs = await Subscription.find({ account: account._id, status: { $ne: 'cancelled' } })
+    .populate('user', 'name email phone')
+    .populate('product', 'name');
+
+  const subMap = new Map(subs.map(s => [`${s.slotIndex}`, s]));
+
+  const slotsEnriched = (account.slots || []).map(sl => {
+    const sub = subMap.get(String(sl.index));
+    return {
+      index:       sl.index,
+      label:       sl.label,
+      pin:         sl.pin,
+      status:      sl.status,
+      assignedTo:  sl.assignedTo,
+      assignedAt:  sl.assignedAt,
+      subscription: sub ? {
+        _id:           sub._id,
+        customerName:  sub.user?.name || sub.user?.email || '—',
+        customerEmail: sub.user?.email || '—',
+        customerPhone: sub.user?.phone || '',
+        startDate:     sub.startDate,
+        expiryDate:    sub.expiryDate,
+        status:        sub.status,
+      } : null,
+    };
+  });
+
+  res.json({
+    account: {
+      _id:                account._id,
+      product:            account.product,
+      login:              account.login,
+      password:           account.password,
+      plan:               account.plan,
+      purchaseDate:       account.purchaseDate,
+      providerExpiryDate: account.providerExpiryDate,
+      accountStatus:      account.refreshAccountStatus(),
+      totalSlots:         account.totalSlots,
+      occupied:           slotsEnriched.filter(s => s.status === 'assigned').length,
+      available:          slotsEnriched.filter(s => s.status === 'available').length,
+      note:               account.note,
+      slots:              slotsEnriched,
+      createdAt:          account.createdAt,
+    }
+  });
+});
+
+/**
+ * GET /api/subscriptions/admin/inventory/available
+ * All available slots across all accounts, grouped by service.
+ * Used for the "Available Inventory" quick-assign view.
+ */
+export const inventoryAvailableSlots = asyncHandler(async (req, res) => {
+  const { productId } = req.query;
+  const filter = productId ? { product: productId } : {};
+  const accounts = await Account.find(filter)
+    .populate('product', 'name quality accent slug logo');
+
+  // Build a sequential account number per product
+  const productSeq = {};
+  const result = [];
+
+  for (const acc of accounts) {
+    const pid = String(acc.product?._id || acc.product);
+    productSeq[pid] = (productSeq[pid] || 0) + 1;
+    const seq = productSeq[pid];
+
+    const availableSlots = (acc.slots || []).filter(s => s.status === 'available');
+    for (const sl of availableSlots) {
+      result.push({
+        accountId:          acc._id,
+        accountSeq:         seq,
+        accountLogin:       acc.login,
+        providerExpiryDate: acc.providerExpiryDate,
+        accountStatus:      acc.refreshAccountStatus(),
+        product:            acc.product,
+        slotIndex:          sl.index,
+        slotLabel:          sl.label || `Profile ${sl.index}`,
+      });
+    }
+  }
+
+  res.json({ slots: result, total: result.length });
+});
+
+/**
+ * POST /api/subscriptions/admin/inventory/assign-slot
+ * Assign an available inventory slot directly to a customer (without an order).
+ * Stores customer start/expiry separately from provider expiry.
+ */
+export const inventoryAssignSlot = asyncHandler(async (req, res) => {
+  const {
+    accountId, slotIndex, userId,
+    customerStartDate, customerExpiryDate, adminNotes = ''
+  } = req.body;
+
+  if (!accountId || !slotIndex || !userId)
+    return res.status(422).json({ message: 'accountId, slotIndex and userId are required' });
+  if (!customerExpiryDate)
+    return res.status(422).json({ message: 'customerExpiryDate is required' });
+
+  const session = await mongoose.startSession();
+  let sub;
+  try {
+    await session.withTransaction(async () => {
+      const account = await Account.findById(accountId).session(session);
+      if (!account) throw Object.assign(new Error('Account not found'), { status: 404 });
+
+      const slot = account.slots.find(s => s.index === Number(slotIndex));
+      if (!slot) throw Object.assign(new Error('Slot not found'), { status: 404 });
+      if (slot.status === 'assigned')
+        throw Object.assign(new Error('Slot is no longer available'), { status: 409 });
+
+      const user = await (await import('../models/User.js')).default.findById(userId).session(session);
+      if (!user) throw Object.assign(new Error('Customer not found'), { status: 404 });
+
+      const startDate  = customerStartDate ? new Date(customerStartDate) : new Date();
+      const expiryDate = new Date(customerExpiryDate);
+
+      // Mark slot as assigned
+      await Account.findOneAndUpdate(
+        { _id: accountId, 'slots.index': Number(slotIndex) },
+        { $set: {
+          'slots.$.status':     'assigned',
+          'slots.$.assignedTo': userId,
+          'slots.$.assignedAt': startDate,
+        }},
+        { session }
+      );
+
+      // Create a subscription record (no order reference — direct inventory assignment)
+      sub = await Subscription.create([{
+        user:       userId,
+        order:      null,
+        product:    account.product,
+        account:    accountId,
+        slotIndex:  Number(slotIndex),
+        slotLabel:  slot.label || `Profile ${slotIndex}`,
+        startDate,
+        expiryDate,
+        status:     'active',
+        adminNotes,
+      }], { session });
+      sub = sub[0];
+    });
+  } finally {
+    await session.endSession();
+  }
+
+  if (sub?.user) {
+    await notify(sub.user, 'subscription_assigned', 'Subscription Activated',
+      'Your subscription has been assigned. Check My Subscriptions for details.',
+      { subscriptionId: sub._id });
+  }
+
+  await ActivityLog.create({
+    actor:   req.user._id,
+    user:    userId,
+    action:  'inventory_slot_assigned',
+    details: { accountId, slotIndex, subscriptionId: sub?._id, userId },
+  });
+
+  res.status(201).json({ subscription: sub });
 });
 
 /* ══════════════════ CUSTOMER ══════════════════ */

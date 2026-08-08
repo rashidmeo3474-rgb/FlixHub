@@ -29,6 +29,7 @@ import ActivityLogPage from './admin/ActivityLogPage.jsx';
 import SubscriptionsManager from './admin/SubscriptionsManager.jsx';
 import AccountScreenManager from './admin/AccountScreenManager.jsx';
 import SupportInbox from './admin/SupportInbox.jsx';
+import SubscriptionInventory from './admin/SubscriptionInventory.jsx';
 import MySubscriptions from './pages/MySubscriptions.jsx';
 
 export default function App() {
@@ -64,6 +65,7 @@ export default function App() {
         <Route path="subscriptions"  element={<SubscriptionsManager />} />
         <Route path="accounts"       element={<AccountScreenManager />} />
         <Route path="support"        element={<SupportInbox />} />
+        <Route path="inventory"      element={<SubscriptionInventory />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

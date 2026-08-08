@@ -10,6 +10,7 @@ const NAV = [
   { to: '/admin/payment-proofs', icon: '💳', label: 'Payment Proofs' },
   { to: '/admin/subscriptions',  icon: '🎬', label: 'Subscriptions' },
   { to: '/admin/accounts',       icon: '🖥️', label: 'Screen Manager' },
+  { to: '/admin/inventory',      icon: '🗃️', label: 'Subscription Inventory' },
   { to: '/admin/support',        icon: '💬', label: 'Support' },
   { to: '/admin/products',       icon: '📦', label: 'Products' },
   { to: '/admin/stock',          icon: '🗄️', label: 'Stock' },

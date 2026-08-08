@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const subscriptionSchema = new mongoose.Schema({
   /* relationships */
   user:    { type: mongoose.Schema.Types.ObjectId, ref: 'User',    required: true, index: true },
-  order:   { type: mongoose.Schema.Types.ObjectId, ref: 'Order',   required: true, index: true },
+  order:   { type: mongoose.Schema.Types.ObjectId, ref: 'Order',   default: null,  index: true },
   product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
   account: { type: mongoose.Schema.Types.ObjectId, ref: 'Account', default: null },
 
