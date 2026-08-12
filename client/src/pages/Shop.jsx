@@ -115,7 +115,7 @@ function ShopCard({ product, months, onGuestClick }) {
                   width: '100%', height: '100%',
                   objectFit: product.slug === 'netflix-prime' ? 'contain' : 'cover',
                   objectPosition: 'center',
-                  padding: product.slug === 'netflix-prime' ? '10px' : '0',
+                  padding: product.slug === 'netflix-prime' ? '22px' : '0',
                   filter: 'drop-shadow(0 4px 12px oklch(0 0 0 / 0.55))',
                   position: 'relative', zIndex: 1,
                 }} />
@@ -231,46 +231,160 @@ export default function Shop() {
       <p className="muted" style={{ marginTop: 8, fontSize: 15 }}>{t('shopSub')}</p>
 
       {/* ── Resolution filter tabs ── */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', margin: '22px 0 0' }}>
-        {RESOLUTION_TABS.map(f => (
-          <button key={f.key}
-            className={tab === f.key ? 'chip active' : 'chip'}
-            onClick={() => setTab(f.key)}>
-            {f.label}
-          </button>
-        ))}
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', margin: '22px 0 0' }}>
+        {RESOLUTION_TABS.map((f, i) => {
+          const isActive  = tab === f.key;
+          const isBundle  = f.key === 'bundle';
+
+          /* per-tab accent colors */
+          const tabColor =
+            f.key === 'all'    ? '#00F0FF' :
+            f.key === '480p'   ? '#a0b9e6' :
+            f.key === '720p'   ? '#00F0FF' :
+            f.key === '1080p'  ? '#00FF87' :
+            f.key === '4k'     ? '#C084FF' :
+            f.key === '8k'     ? '#FFD600' :
+            /* bundle */         '#ff6b00';
+
+          return (
+            <button
+              key={f.key}
+              onClick={() => setTab(f.key)}
+              style={{
+                padding: '10px 20px',
+                borderRadius: 999,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                fontWeight: 700,
+                fontSize: 13.5,
+                border: isActive
+                  ? `2px solid ${tabColor}`
+                  : '2px solid rgba(255,255,255,0.10)',
+                background: isActive
+                  ? `linear-gradient(135deg, ${tabColor}22, ${tabColor}0a)`
+                  : 'rgba(255,255,255,0.04)',
+                color: isActive ? tabColor : 'var(--muted)',
+                boxShadow: isActive
+                  ? `0 0 14px ${tabColor}66, 0 0 28px ${tabColor}22`
+                  : 'none',
+                animation: isBundle
+                  ? `bundle-float ${2.2 + i * 0.1}s ease-in-out infinite`
+                  : isActive
+                    ? 'chip-float 2s ease-in-out infinite, chip-glow 2s ease-in-out infinite'
+                    : `chip-float ${2.4 + i * 0.2}s ease-in-out infinite`,
+                animationDelay: `${i * 0.15}s`,
+                transition: 'background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease',
+                position: 'relative',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.border = `2px solid ${tabColor}`;
+                e.currentTarget.style.color  = tabColor;
+                e.currentTarget.style.background = `linear-gradient(135deg, ${tabColor}22, ${tabColor}0a)`;
+                e.currentTarget.style.boxShadow = `0 0 16px ${tabColor}55`;
+              }}
+              onMouseLeave={e => {
+                if (!isActive) {
+                  e.currentTarget.style.border = '2px solid rgba(255,255,255,0.10)';
+                  e.currentTarget.style.color  = 'var(--muted)';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }
+              }}
+            >
+              {f.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* ── Duration selector ── */}
       <div style={{
         margin: '18px 0 26px',
-        background: 'oklch(0.13 0.013 265)',
-        border: '1px solid var(--line)',
-        borderRadius: 14, padding: '16px 20px',
+        background: 'rgba(10,14,26,0.90)',
+        border: '1px solid rgba(0,240,255,0.12)',
+        borderRadius: 16, padding: '18px 22px',
         display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
+        backdropFilter: 'blur(12px)',
+        boxShadow: '0 0 24px rgba(0,240,255,0.06)',
       }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted)',
-          textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+        <span style={{
+          fontSize: 11, fontWeight: 800, color: 'rgba(0,240,255,0.60)',
+          textTransform: 'uppercase', letterSpacing: '0.12em',
+        }}>
           Duration
         </span>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {DURATIONS.map(m => (
-            <button key={m} onClick={() => setMonths(m)} style={{
-              padding: '8px 16px', borderRadius: 9, cursor: 'pointer',
-              fontFamily: 'inherit', fontWeight: 700, fontSize: 13.5,
-              border: months === m ? '1.5px solid transparent' : '1.5px solid var(--line)',
-              background: months === m
-                ? 'linear-gradient(oklch(0.18 0.02 265),oklch(0.18 0.02 265)) padding-box, linear-gradient(135deg,var(--accent),var(--accent-2)) border-box'
-                : 'oklch(0.11 0.012 265)',
-              color: months === m ? 'var(--accent)' : 'var(--muted)',
-              transition: 'all 0.15s',
-            }}>
-              {m} {m === 1 ? t('month') : t('months')}
-            </button>
-          ))}
+          {DURATIONS.map((m, i) => {
+            const isActive = months === m;
+            return (
+              <button
+                key={m}
+                onClick={() => setMonths(m)}
+                style={{
+                  padding: '10px 18px',
+                  borderRadius: 11,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  fontWeight: 700,
+                  fontSize: 13.5,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  border: isActive
+                    ? '1.5px solid #00F0FF'
+                    : '1.5px solid rgba(255,255,255,0.10)',
+                  background: isActive
+                    ? 'rgba(0,240,255,0.10)'
+                    : 'rgba(255,255,255,0.04)',
+                  color: isActive ? '#00F0FF' : 'var(--muted)',
+                  boxShadow: isActive
+                    ? '0 0 16px rgba(0,240,255,0.50), 0 0 32px rgba(0,240,255,0.20), inset 0 0 14px rgba(0,240,255,0.08)'
+                    : 'none',
+                  animation: isActive
+                    ? 'chip-float 2s ease-in-out infinite'
+                    : `chip-float ${2.2 + i * 0.15}s ease-in-out infinite`,
+                  animationDelay: `${i * 0.12}s`,
+                  transition: 'all 0.18s ease',
+                }}
+                onMouseEnter={e => {
+                  if (!isActive) {
+                    e.currentTarget.style.border = '1.5px solid rgba(0,240,255,0.50)';
+                    e.currentTarget.style.color  = '#00F0FF';
+                    e.currentTarget.style.background = 'rgba(0,240,255,0.07)';
+                    e.currentTarget.style.boxShadow = '0 0 12px rgba(0,240,255,0.30)';
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!isActive) {
+                    e.currentTarget.style.border = '1.5px solid rgba(255,255,255,0.10)';
+                    e.currentTarget.style.color  = 'var(--muted)';
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }
+                }}
+              >
+                {/* shimmer sweep on active */}
+                {isActive && (
+                  <span style={{
+                    position: 'absolute', top: 0, left: '-80%',
+                    width: '50%', height: '100%',
+                    background: 'linear-gradient(105deg, transparent 35%, rgba(0,240,255,0.25) 50%, transparent 65%)',
+                    animation: 'dur-shimmer 2.5s ease-in-out infinite',
+                    pointerEvents: 'none',
+                  }} />
+                )}
+                {m} {m === 1 ? t('month') : t('months')}
+              </button>
+            );
+          })}
         </div>
         {months > 1 && (
-          <span style={{ fontSize: 12, color: 'var(--good)', fontWeight: 700, marginLeft: 'auto' }}>
+          <span style={{
+            fontSize: 12, color: '#00FF87', fontWeight: 700,
+            marginLeft: 'auto',
+            textShadow: '0 0 10px rgba(0,255,135,0.50)',
+          }}>
             Total = Monthly Rate × {months}
           </span>
         )}

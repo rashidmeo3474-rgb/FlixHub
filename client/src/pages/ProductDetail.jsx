@@ -122,7 +122,7 @@ export default function ProductDetail() {
                     width: '100%', height: '100%',
                     objectFit: product.slug === 'netflix-prime' ? 'contain' : 'cover',
                     objectPosition: 'center',
-                    padding: product.slug === 'netflix-prime' ? '20px' : '0',
+                    padding: product.slug === 'netflix-prime' ? '40px' : '0',
                     display: 'block', position: 'relative', zIndex: 1,
                   }} />
               : <span style={{ fontSize: 28, fontWeight: 800, color: accent, position: 'relative', zIndex: 1 }}>
