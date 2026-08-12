@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <script src="./support.js"></script>
 </head>
 <body>
@@ -31,6 +31,65 @@
   @keyframes shake{0%{transform:scale(1)}10%{transform:translateX(-10px) rotate(-2.4deg) scale(1.03)}24%{transform:translateX(9px) rotate(2.2deg) scale(1.03)}38%{transform:translateX(-7px) rotate(-1.6deg) scale(1.02)}52%{transform:translateX(6px) rotate(1.2deg) scale(1.02)}68%{transform:translateX(-4px) rotate(-.7deg) scale(1.01)}84%{transform:translateX(2px) rotate(.3deg)}100%{transform:none}}
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
   @keyframes kenburns{0%,100%{transform:scale(1.06) translate(0,0)}50%{transform:scale(1.16) translate(-2%,-2%)}}
+  
+  /* Mobile-first responsive styles */
+  @media (max-width: 1024px) {
+    .herogrid { grid-template-columns: 1fr !important; gap: 28px !important; }
+    .prodgrid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+    .stepgrid { grid-template-columns: 1fr !important; gap: 14px !important; }
+  }
+  
+  @media (max-width: 640px) {
+    body { font-size: 14px !important; }
+    .topnav { display: none !important; }
+    .herogrid { padding: 40px 16px 24px !important; }
+    .prodgrid { grid-template-columns: 1fr !important; gap: 10px !important; }
+    .stepgrid { gap: 12px !important; }
+    
+    /* Mobile header adjustments */
+    header > div { 
+      padding: 12px 16px !important; 
+      flex-wrap: wrap !important; 
+      gap: 10px !important; 
+    }
+    
+    /* Mobile typography */
+    h1, h2, h3 {
+      font-size: clamp(20px, 6vw, 32px) !important;
+      line-height: 1.1 !important;
+      text-align: center !important;
+    }
+    
+    /* Mobile buttons */
+    button, a {
+      min-height: 44px !important;
+      padding: 12px 16px !important;
+      font-size: 14px !important;
+    }
+    
+    /* Mobile product cards */
+    .prodgrid > div {
+      padding: 14px !important;
+      border-radius: 14px !important;
+    }
+    
+    /* Mobile sections */
+    section {
+      padding: 32px 16px !important;
+    }
+    
+    /* Mobile payment methods */
+    .payment-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 8px !important;
+    }
+  }
+  
+  @media (max-width: 400px) {
+    .prodgrid { gap: 8px !important; }
+    section { padding: 24px 12px !important; }
+    .herogrid { padding: 32px 12px 20px !important; }
+  }
 </style>
 </helmet>
 <div dir="{{ dir }}" style="min-height:100vh;color:oklch(0.95 0.006 265);font-family:{{ bodyFont }};background:oklch(0.15 0.012 265);overflow-x:hidden;position:relative">

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import api from '../api/client.js';
 import useApi from '../hooks/useApi.js';
 import { formatDate } from '../utils/format.js';
@@ -72,25 +72,96 @@ const Card = ({ children, style }) => (
   </div>
 );
 
-const Modal = ({ onClose, children, maxWidth = 560 }) => (
-  <div style={{ position: 'fixed', inset: 0, background: 'oklch(0 0 0 / 0.72)', zIndex: 120,
-    display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
-    onClick={onClose}>
-    <div style={{ background: 'oklch(0.15 0.014 265)', border: '1px solid var(--line)',
-      borderRadius: 16, padding: 28, width: '100%', maxWidth, maxHeight: '92vh', overflowY: 'auto' }}
-      onClick={e => e.stopPropagation()}>
-      {children}
-    </div>
-  </div>
-);
+const Modal = ({ onClose, children, maxWidth = 560 }) => {
+  const [isMobile, setIsMobile] = useState(false);
 
-const ModalHeader = ({ title, onClose }) => (
-  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-    <h2 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 19, fontWeight: 700 }}>{title}</h2>
-    <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--muted)',
-      fontSize: 24, cursor: 'pointer', lineHeight: 1 }}>×</button>
-  </div>
-);
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  return (
+    <div 
+      style={{ 
+        position: 'fixed', 
+        inset: 0, 
+        background: 'oklch(0 0 0 / 0.72)', 
+        zIndex: 120,
+        display: 'flex', 
+        alignItems: isMobile ? 'flex-end' : 'center', 
+        justifyContent: 'center', 
+        padding: isMobile ? 0 : 20,
+      }}
+      onClick={onClose}
+    >
+      <div 
+        style={{ 
+          background: 'oklch(0.15 0.014 265)', 
+          border: '1px solid var(--line)',
+          borderRadius: isMobile ? '20px 20px 0 0' : 16, 
+          padding: isMobile ? '24px 20px 32px' : 28, 
+          width: '100%', 
+          maxWidth: isMobile ? 'none' : maxWidth, 
+          maxHeight: isMobile ? '90vh' : '92vh', 
+          overflowY: 'auto',
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const ModalHeader = ({ title, onClose }) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  return (
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'space-between', 
+      alignItems: 'center', 
+      marginBottom: isMobile ? 18 : 20 
+    }}>
+      <h2 style={{ 
+        fontFamily: "'Space Grotesk',sans-serif", 
+        fontSize: isMobile ? 16 : 19, 
+        fontWeight: 700 
+      }}>
+        {title}
+      </h2>
+      <button 
+        onClick={onClose} 
+        style={{ 
+          background: 'none', 
+          border: 'none', 
+          color: 'var(--muted)',
+          fontSize: isMobile ? 20 : 24, 
+          cursor: 'pointer', 
+          lineHeight: 1,
+          padding: isMobile ? 8 : 4,
+          minWidth: isMobile ? '44px' : 'auto',
+          minHeight: isMobile ? '44px' : 'auto',
+        }}
+      >
+        ×
+      </button>
+    </div>
+  );
+};
 
 /* ─────────────────────────────────────────────────
    PASSWORD REVEAL CELL
@@ -117,6 +188,7 @@ function PasswordCell({ password }) {
 ───────────────────────────────────────────────── */
 function AccountFormModal({ account, products, onClose, onDone }) {
   const editing = Boolean(account?._id);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [form, setForm] = useState({
     productId:          account?.product?._id || account?.product || '',
@@ -132,6 +204,15 @@ function AccountFormModal({ account, products, onClose, onDone }) {
 
   const [busy, setBusy] = useState(false);
   const [err,  setErr]  = useState('');
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -154,46 +235,192 @@ function AccountFormModal({ account, products, onClose, onDone }) {
   return (
     <Modal onClose={onClose} maxWidth={540}>
       <ModalHeader title={editing ? 'Edit Account' : 'Add Full Account'} onClose={onClose} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: isMobile ? 14 : 12 
+      }}>
         <div className="field">
-          <label className="label">Service</label>
-          <select value={form.productId} onChange={e => set('productId', e.target.value)} disabled={editing}>
+          <label 
+            className="label"
+            style={{
+              fontSize: isMobile ? 11 : 12.5,
+            }}
+          >
+            Service
+          </label>
+          <select 
+            value={form.productId} 
+            onChange={e => set('productId', e.target.value)} 
+            disabled={editing}
+            style={{
+              padding: isMobile ? '12px 14px' : '11px 13px',
+              fontSize: isMobile ? 15 : 14,
+              borderRadius: isMobile ? 8 : 11,
+            }}
+          >
             <option value="">— select service —</option>
             {products.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
           </select>
         </div>
+        
         <div className="field">
-          <label className="label">Plan <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(e.g. Premium, Standard)</span></label>
-          <input value={form.plan} onChange={e => set('plan', e.target.value)} placeholder="Premium" />
+          <label 
+            className="label"
+            style={{
+              fontSize: isMobile ? 11 : 12.5,
+            }}
+          >
+            Plan <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(e.g. Premium, Standard)</span>
+          </label>
+          <input 
+            value={form.plan} 
+            onChange={e => set('plan', e.target.value)} 
+            placeholder="Premium"
+            style={{
+              padding: isMobile ? '12px 14px' : '11px 13px',
+              fontSize: isMobile ? 15 : 14,
+              borderRadius: isMobile ? 8 : 11,
+            }}
+          />
         </div>
+        
         <div className="field">
-          <label className="label">Account Email / Username</label>
-          <input value={form.login} onChange={e => set('login', e.target.value)} placeholder="account@email.com" />
+          <label 
+            className="label"
+            style={{
+              fontSize: isMobile ? 11 : 12.5,
+            }}
+          >
+            Account Email / Username
+          </label>
+          <input 
+            value={form.login} 
+            onChange={e => set('login', e.target.value)} 
+            placeholder="account@email.com"
+            style={{
+              padding: isMobile ? '12px 14px' : '11px 13px',
+              fontSize: isMobile ? 15 : 14,
+              borderRadius: isMobile ? 8 : 11,
+            }}
+          />
         </div>
+        
         <div className="field">
-          <label className="label">Account Password</label>
-          <input type="password" value={form.password} onChange={e => set('password', e.target.value)}
-            placeholder={editing ? 'Leave blank to keep current' : 'Password'} />
+          <label 
+            className="label"
+            style={{
+              fontSize: isMobile ? 11 : 12.5,
+            }}
+          >
+            Account Password
+          </label>
+          <input 
+            type="password" 
+            value={form.password} 
+            onChange={e => set('password', e.target.value)}
+            placeholder={editing ? 'Leave blank to keep current' : 'Password'}
+            style={{
+              padding: isMobile ? '12px 14px' : '11px 13px',
+              fontSize: isMobile ? 15 : 14,
+              borderRadius: isMobile ? 8 : 11,
+            }}
+          />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', 
+          gap: isMobile ? 14 : 12 
+        }}>
           <div className="field">
-            <label className="label">Purchase Date</label>
-            <input type="date" value={form.purchaseDate} onChange={e => set('purchaseDate', e.target.value)} />
+            <label 
+              className="label"
+              style={{
+                fontSize: isMobile ? 11 : 12.5,
+              }}
+            >
+              Purchase Date
+            </label>
+            <input 
+              type="date" 
+              value={form.purchaseDate} 
+              onChange={e => set('purchaseDate', e.target.value)}
+              style={{
+                padding: isMobile ? '12px 14px' : '11px 13px',
+                fontSize: isMobile ? 15 : 14,
+                borderRadius: isMobile ? 8 : 11,
+              }}
+            />
           </div>
           <div className="field">
-            <label className="label">Provider Expiry</label>
-            <input type="date" value={form.providerExpiryDate} onChange={e => set('providerExpiryDate', e.target.value)} />
+            <label 
+              className="label"
+              style={{
+                fontSize: isMobile ? 11 : 12.5,
+              }}
+            >
+              Provider Expiry
+            </label>
+            <input 
+              type="date" 
+              value={form.providerExpiryDate} 
+              onChange={e => set('providerExpiryDate', e.target.value)}
+              style={{
+                padding: isMobile ? '12px 14px' : '11px 13px',
+                fontSize: isMobile ? 15 : 14,
+                borderRadius: isMobile ? 8 : 11,
+              }}
+            />
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: editing && !isMobile ? '1fr 1fr' : '1fr', 
+          gap: isMobile ? 14 : 12 
+        }}>
           <div className="field">
-            <label className="label">Total Slots / Capacity</label>
-            <input type="number" min="1" max="50" value={form.totalSlots} onChange={e => set('totalSlots', e.target.value)} />
+            <label 
+              className="label"
+              style={{
+                fontSize: isMobile ? 11 : 12.5,
+              }}
+            >
+              Total Slots / Capacity
+            </label>
+            <input 
+              type="number" 
+              min="1" 
+              max="50" 
+              value={form.totalSlots} 
+              onChange={e => set('totalSlots', e.target.value)}
+              style={{
+                padding: isMobile ? '12px 14px' : '11px 13px',
+                fontSize: isMobile ? 15 : 14,
+                borderRadius: isMobile ? 8 : 11,
+              }}
+            />
           </div>
           {editing && (
             <div className="field">
-              <label className="label">Account Status</label>
-              <select value={form.accountStatus} onChange={e => set('accountStatus', e.target.value)}>
+              <label 
+                className="label"
+                style={{
+                  fontSize: isMobile ? 11 : 12.5,
+                }}
+              >
+                Account Status
+              </label>
+              <select 
+                value={form.accountStatus} 
+                onChange={e => set('accountStatus', e.target.value)}
+                style={{
+                  padding: isMobile ? '12px 14px' : '11px 13px',
+                  fontSize: isMobile ? 15 : 14,
+                  borderRadius: isMobile ? 8 : 11,
+                }}
+              >
                 <option value="active">Active</option>
                 <option value="expiring_soon">Expiring Soon</option>
                 <option value="expired">Expired</option>
@@ -202,13 +429,54 @@ function AccountFormModal({ account, products, onClose, onDone }) {
             </div>
           )}
         </div>
+        
         <div className="field">
-          <label className="label">Notes <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(optional)</span></label>
-          <input value={form.note} onChange={e => set('note', e.target.value)} placeholder="Optional admin note…" />
+          <label 
+            className="label"
+            style={{
+              fontSize: isMobile ? 11 : 12.5,
+            }}
+          >
+            Notes <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(optional)</span>
+          </label>
+          <input 
+            value={form.note} 
+            onChange={e => set('note', e.target.value)} 
+            placeholder="Optional admin note…"
+            style={{
+              padding: isMobile ? '12px 14px' : '11px 13px',
+              fontSize: isMobile ? 15 : 14,
+              borderRadius: isMobile ? 8 : 11,
+            }}
+          />
         </div>
       </div>
-      {err && <div className="alert alert-error" style={{ marginTop: 14 }}>{err}</div>}
-      <button className="btn btn-block" style={{ marginTop: 18 }} onClick={submit} disabled={busy}>
+      
+      {err && (
+        <div 
+          className="alert alert-error" 
+          style={{ 
+            marginTop: isMobile ? 16 : 14,
+            fontSize: isMobile ? 12 : 13,
+            padding: isMobile ? '12px 14px' : '10px 12px',
+          }}
+        >
+          {err}
+        </div>
+      )}
+      
+      <button 
+        className="btn btn-block" 
+        style={{ 
+          marginTop: isMobile ? 20 : 18,
+          padding: isMobile ? '16px 24px' : '13px 22px',
+          fontSize: isMobile ? 15 : 15,
+          fontWeight: 700,
+          minHeight: isMobile ? '52px' : 'auto',
+        }} 
+        onClick={submit} 
+        disabled={busy}
+      >
         {busy ? 'Saving…' : editing ? 'Save Changes' : 'Add Account'}
       </button>
     </Modal>
