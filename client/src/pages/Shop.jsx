@@ -250,6 +250,7 @@ export default function Shop() {
             <button
               key={f.key}
               onClick={() => setTab(f.key)}
+              className="shop-tab-btn"
               style={{
                 padding: '10px 20px',
                 borderRadius: 999,
@@ -315,13 +316,14 @@ export default function Shop() {
         }}>
           Duration
         </span>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }} className="shop-duration-row">
           {DURATIONS.map((m, i) => {
             const isActive = months === m;
             return (
               <button
                 key={m}
                 onClick={() => setMonths(m)}
+                className="shop-duration-btn"
                 style={{
                   padding: '10px 18px',
                   borderRadius: 11,

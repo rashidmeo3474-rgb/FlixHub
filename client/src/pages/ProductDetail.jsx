@@ -101,7 +101,7 @@ export default function ProductDetail() {
     <section className="wrap section">
       <Link className="btn btn-ghost btn-sm" to="/shop">← {t('back')}</Link>
 
-      <div className="grid grid-2" style={{ marginTop: 22, alignItems: 'start' }}>
+      <div className="grid grid-2 product-detail-grid" style={{ marginTop: 22, alignItems: 'start' }}>
 
         {/* ── Left: logo card ── */}
         <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
@@ -110,7 +110,7 @@ export default function ProductDetail() {
             background: `linear-gradient(135deg, ${accent}33, oklch(0.22 0.02 265))`,
             overflow: 'hidden', borderRadius: 12,
             display: 'grid', placeItems: 'center', position: 'relative',
-          }}>
+          }} className="product-logo-area">
             {/* soft glow behind logo */}
             <div style={{
               position: 'absolute', inset: 0, pointerEvents: 'none',
@@ -172,7 +172,7 @@ export default function ProductDetail() {
               }}>
                 Choose Quality
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }} className="quality-selector-grid">
                 {variants.map(v => {
                   const isActive = v.slug === product.slug;
                   const qs = QUALITY_COLORS[v.quality] || QUALITY_COLORS['1080p HD'];
@@ -180,6 +180,7 @@ export default function ProductDetail() {
                     <button
                       key={v._id}
                       onClick={() => setSelectedVariant(v)}
+                      className="quality-btn"
                       style={{
                         padding: '12px 20px',
                         borderRadius: 12,
@@ -238,7 +239,7 @@ export default function ProductDetail() {
           {/* ── Duration selector ── */}
           <div className="field">
             <span className="label">{t('duration')}</span>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }} className="duration-row">
               {DURATIONS.map(m => (
                 <button key={m}
                   className={months === m ? 'duration active' : 'duration'}
@@ -254,7 +255,7 @@ export default function ProductDetail() {
           </div>
 
           {/* ── Total price card ── */}
-          <div className="card spread" style={{ transition: 'all 0.2s ease' }}>
+          <div className="card spread price-card-spread" style={{ transition: 'all 0.2s ease' }}>
             <div>
               <span className="label">{t('total')}</span>
               <div className="price price-lg" style={{
@@ -275,7 +276,7 @@ export default function ProductDetail() {
           </div>
 
           {/* ── Action buttons ── */}
-          <div className="row">
+          <div className="row product-action-row">
             <button className="btn btn-ghost" disabled={out}
               onClick={() => { add(item); navigate('/cart'); }}>
               {t('addToCart')}

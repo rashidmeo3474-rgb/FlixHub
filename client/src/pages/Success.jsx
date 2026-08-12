@@ -35,7 +35,7 @@ export default function Success() {
           ))}
         </div>
 
-        <div className="row" style={{ justifyContent: 'center', marginTop: 24 }}>
+        <div className="row success-actions" style={{ justifyContent: 'center', marginTop: 24 }}>
           <Link className="btn btn-ghost" to="/orders">{t('orders')}</Link>
           <Link className="btn" to="/shop">{t('shop')}</Link>
         </div>

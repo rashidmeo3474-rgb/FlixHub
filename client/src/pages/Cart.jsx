@@ -20,8 +20,8 @@ export default function Cart() {
       ) : (
         <div className="stack" style={{ marginTop: 24 }}>
           {items.map((item, index) => (
-            <div className="card row" key={`${item.productId}-${index}`} style={{ gap: 16 }}>
-              <div className="logo-tile" style={{ width: 64, height: 64, flex: 'none', background: `linear-gradient(135deg, ${item.accent}33, oklch(0.22 0.02 265))` }}>
+            <div className="card row cart-item-row" key={`${item.productId}-${index}`} style={{ gap: 16 }}>
+              <div className="logo-tile cart-logo-tile" style={{ width: 64, height: 64, flex: 'none', background: `linear-gradient(135deg, ${item.accent}33, oklch(0.22 0.02 265))` }}>
                 {item.logo ? <img src={item.logo} alt="" /> : <span className="fallback" style={{ fontSize: 11 }}>{item.name}</span>}
               </div>
               <div style={{ flex: 1, minWidth: 140 }}>

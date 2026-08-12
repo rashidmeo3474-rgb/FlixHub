@@ -79,7 +79,7 @@ export default function Home() {
         </div>
 
         {loading && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 14 }}>
+          <div className="home-product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 14 }}>
             {[1,2,3,4,5,6].map(i => (
               <div key={i} style={{
                 borderRadius: 18, height: 340,
@@ -92,7 +92,7 @@ export default function Home() {
         )}
 
         {!loading && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 14 }}>
+          <div className="home-product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 14 }}>
             {products.map(p => (
               <div key={p._id} onClickCapture={e => handleCardClick(e, p)}
                 style={{ cursor: user ? 'default' : 'pointer' }}>

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Outlet, Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
@@ -70,6 +71,9 @@ export default function StoreLayout() {
   const { count } = useCart();
   const { t } = useI18n();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <>
@@ -85,22 +89,96 @@ export default function StoreLayout() {
 
       <header className="app-header">
         <div className="inner">
-          <Link to="/" className="brand"><span className="mark">◆</span>{SITE}</Link>
-          <nav className="nav">
+          <Link to="/" className="brand" onClick={closeMenu}>
+            <span className="mark">◆</span>{SITE}
+          </Link>
+
+          {/* Desktop nav — hidden on mobile via CSS */}
+          <nav className="nav desktop-nav">
             <NavLink to="/" end>{t('home')}</NavLink>
             <NavLink to="/shop">{t('shop')}</NavLink>
             <NavLink to="/orders">{t('orders')}</NavLink>
             <NavLink to="/subscriptions">My Subscriptions</NavLink>
             <NavLink to="/contact">{t('contact')}</NavLink>
           </nav>
-          <div className="header-actions">
+
+          {/* Desktop actions */}
+          <div className="header-actions desktop-actions">
             <LanguageSwitcher />
             {user
               ? <button className="btn btn-ghost btn-sm" onClick={() => { logout(); navigate('/'); }}>👤 {t('logout')}</button>
               : <Link className="btn btn-ghost btn-sm" to="/login">{t('login')}</Link>}
             <Link className="btn btn-sm" to="/cart">🛒 {count}</Link>
           </div>
+
+          {/* Mobile right side — cart + hamburger */}
+          <div className="mobile-header-right">
+            <Link className="btn btn-sm" to="/cart" style={{ padding: '8px 12px', fontSize: 14 }}>🛒 {count}</Link>
+            <button
+              className="hamburger-btn"
+              onClick={() => setMenuOpen(o => !o)}
+              aria-label="Toggle menu"
+              aria-expanded={menuOpen}
+              style={{
+                background: 'none', border: '1px solid var(--line)',
+                borderRadius: 9, padding: '8px 10px', cursor: 'pointer',
+                color: 'var(--text)', fontSize: 18, lineHeight: 1,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              {menuOpen ? '✕' : '☰'}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile dropdown menu */}
+        {menuOpen && (
+          <div style={{
+            position: 'absolute', top: '100%', left: 0, right: 0,
+            background: 'oklch(0.10 0.013 265 / 0.98)',
+            borderBottom: '1px solid var(--line)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            zIndex: 50,
+            padding: '12px 16px 16px',
+            display: 'flex', flexDirection: 'column', gap: 4,
+            animation: 'gateBackdropIn 0.18s ease-out both',
+          }}>
+            {[
+              { to: '/',             label: t('home'),           end: true },
+              { to: '/shop',         label: t('shop') },
+              { to: '/orders',       label: t('orders') },
+              { to: '/subscriptions',label: 'My Subscriptions' },
+              { to: '/contact',      label: t('contact') },
+            ].map(({ to, label, end }) => (
+              <NavLink key={to} to={to} end={end}
+                onClick={closeMenu}
+                style={({ isActive }) => ({
+                  display: 'block', padding: '12px 14px', borderRadius: 10,
+                  fontWeight: 700, fontSize: 15, textDecoration: 'none',
+                  background: isActive ? 'var(--accent)' : 'transparent',
+                  color: isActive ? 'var(--bg)' : 'var(--text)',
+                  transition: 'background 0.15s ease',
+                })}>
+                {label}
+              </NavLink>
+            ))}
+            <div style={{ height: 1, background: 'var(--line)', margin: '8px 0' }} />
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <LanguageSwitcher />
+              {user
+                ? <button className="btn btn-ghost btn-sm" style={{ flex: 1 }}
+                    onClick={() => { logout(); navigate('/'); closeMenu(); }}>
+                    👤 {t('logout')}
+                  </button>
+                : <Link className="btn btn-ghost btn-sm" to="/login" style={{ flex: 1, textAlign: 'center' }}
+                    onClick={closeMenu}>
+                    {t('login')}
+                  </Link>
+              }
+            </div>
+          </div>
+        )}
       </header>
 
       <main><Outlet /></main>

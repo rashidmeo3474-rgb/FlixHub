@@ -12,7 +12,7 @@ export default function Contact() {
       <h1 style={{ fontSize: 'clamp(26px, 3.2vw, 38px)' }}>{t('contact')}</h1>
       <p className="muted" style={{ marginTop: 10, fontSize: 16 }}>{t('heroSub')}</p>
 
-      <div className="grid grid-2" style={{ marginTop: 26 }}>
+      <div className="grid grid-2 contact-grid" style={{ marginTop: 26 }}>
         <a className="card card-hover stack" href={waLink} target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>
           <span style={{ fontSize: 30 }}>💬</span>
           <strong style={{ fontSize: 17 }}>WhatsApp</strong>

@@ -55,7 +55,7 @@ export default function Checkout() {
         ))}
       </div>
 
-      <form className="grid grid-2" onSubmit={submit} style={{ alignItems: 'start' }}>
+      <form className="grid grid-2 checkout-grid" onSubmit={submit} style={{ alignItems: 'start' }}>
         <div className="card stack">
           <div className="field">
             <label className="label" htmlFor="email">{t('email')}</label>
@@ -97,7 +97,7 @@ export default function Checkout() {
           </button>
         </div>
 
-        <aside className="card stack" style={{ gap: 12 }}>
+        <aside className="card stack checkout-summary" style={{ gap: 12 }}>
           <span className="label">{t('orderSummary')}</span>
           {items.map((i, k) => (
             <div className="spread" key={k} style={{ fontSize: 14 }}>

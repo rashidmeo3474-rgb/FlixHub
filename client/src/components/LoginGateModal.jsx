@@ -65,6 +65,7 @@ export default function LoginGateModal({ product, onClose }) {
     >
       <div
         onClick={e => e.stopPropagation()}
+        className="gate-modal-inner"
         style={{
           width: '100%', maxWidth: 440,
           background: 'oklch(0.12 0.014 265 / 0.98)',
