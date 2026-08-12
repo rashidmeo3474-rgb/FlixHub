@@ -23,7 +23,7 @@ const DETAIL_LOGOS = {
   'hbo-720p':       '/logos/hbo-max.png',
   'hbo-4k':         '/logos/hbo-max.png',
   'hbo-8k':         '/logos/hbo-max.png',
-  'netflix-prime':  '/logos/netflix-prime.jpg',
+  'netflix-prime':  '/logos/netflix-prime-new.jpg',
 };
 
 /* Quality tier order for sorting */
