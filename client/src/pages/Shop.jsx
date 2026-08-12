@@ -111,8 +111,14 @@ function ShopCard({ product, months, onGuestClick }) {
           }} />
           {logo
             ? <img src={logo} alt={product.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover',
-                  filter: 'drop-shadow(0 4px 12px oklch(0 0 0 / 0.55))' }} />
+                style={{
+                  width: '100%', height: '100%',
+                  objectFit: product.slug === 'netflix-prime' ? 'contain' : 'cover',
+                  objectPosition: 'center',
+                  padding: product.slug === 'netflix-prime' ? '10px' : '0',
+                  filter: 'drop-shadow(0 4px 12px oklch(0 0 0 / 0.55))',
+                  position: 'relative', zIndex: 1,
+                }} />
             : <span style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 800,
                 fontSize: 17, color: accent, position: 'relative', zIndex: 1 }}>
                 {product.name}
