@@ -31,26 +31,112 @@ export default function useApi(path, { deps = [], skip = false } = {}) {
         });
       // Mock data for accounts endpoints
       } else if (path.includes('/admin/accounts') || path.includes('/inventory') || path.includes('/subscriptions')) {
-        setData({
-          accounts: [],
-          products: [
-            { _id: '1', name: 'Netflix', slug: 'netflix', accent: '#e50914', quality: '1080p HD' },
-            { _id: '2', name: 'Netflix + Prime Video', slug: 'netflix-prime', accent: '#ff6b00', quality: '4K UHD' },
-            { _id: '3', name: 'Prime Video', slug: 'prime-video', accent: '#00a8e1', quality: '4K UHD' },
-            { _id: '4', name: 'HBO Max', slug: 'hbo-max', accent: '#9b30ff', quality: '4K UHD' },
-            { _id: '5', name: 'Disney+', slug: 'disney', accent: '#4b6cf7', quality: '4K UHD' },
-            { _id: '6', name: 'Apple TV+', slug: 'apple-tv', accent: '#d8d8d8', quality: '8K UHD' },
-          ],
-          services: [
-            { _id: '1', name: 'Netflix', slug: 'netflix', accent: '#e50914' },
-            { _id: '2', name: 'Netflix + Prime Video', slug: 'netflix-prime', accent: '#ff6b00' },
-            { _id: '3', name: 'Prime Video', slug: 'prime-video', accent: '#00a8e1' },
-            { _id: '4', name: 'HBO Max', slug: 'hbo-max', accent: '#9b30ff' },
-            { _id: '5', name: 'Disney+', slug: 'disney', accent: '#4b6cf7' },
-            { _id: '6', name: 'Apple TV+', slug: 'apple-tv', accent: '#d8d8d8' },
-          ],
-          summary: { totalAccounts: 0, totalSlots: 0, available: 0, occupied: 0 }
-        });
+        if (path.includes('/inventory')) {
+          setData({
+            inventory: [
+              { product: { _id: '1', name: 'Netflix', accent: '#e50914' }, totalAccounts: 3, totalSlots: 12, available: 8, occupied: 4 },
+              { product: { _id: '2', name: 'Netflix + Prime Video', accent: '#ff6b00' }, totalAccounts: 2, totalSlots: 8, available: 5, occupied: 3 },
+              { product: { _id: '3', name: 'Prime Video', accent: '#00a8e1' }, totalAccounts: 2, totalSlots: 8, available: 6, occupied: 2 },
+              { product: { _id: '4', name: 'HBO Max', accent: '#9b30ff' }, totalAccounts: 2, totalSlots: 8, available: 4, occupied: 4 },
+              { product: { _id: '5', name: 'Disney+', accent: '#4b6cf7' }, totalAccounts: 2, totalSlots: 8, available: 7, occupied: 1 },
+              { product: { _id: '6', name: 'Apple TV+', accent: '#d8d8d8' }, totalAccounts: 1, totalSlots: 4, available: 3, occupied: 1 },
+            ]
+          });
+        } else {
+          setData({
+            accounts: [
+              {
+                _id: 'acc1',
+                login: 'netflix.premium@example.com',
+                totalSlots: 4,
+                product: { _id: '1', name: 'Netflix', accent: '#e50914' },
+                slots: [
+                  { index: 1, label: 'Profile 1', status: 'available', assignedTo: null, assignedAt: null },
+                  { index: 2, label: 'Profile 2', status: 'assigned', assignedTo: 'user123', assignedAt: new Date() },
+                  { index: 3, label: 'Profile 3', status: 'available', assignedTo: null, assignedAt: null },
+                  { index: 4, label: 'Profile 4', status: 'assigned', assignedTo: 'user456', assignedAt: new Date() }
+                ]
+              },
+              {
+                _id: 'acc2',
+                login: 'combo.bundle@example.com',
+                totalSlots: 4,
+                product: { _id: '2', name: 'Netflix + Prime Video', accent: '#ff6b00' },
+                slots: [
+                  { index: 1, label: 'Main Profile', status: 'assigned', assignedTo: 'user789', assignedAt: new Date() },
+                  { index: 2, label: 'Family Profile', status: 'available', assignedTo: null, assignedAt: null },
+                  { index: 3, label: 'Guest Profile', status: 'available', assignedTo: null, assignedAt: null },
+                  { index: 4, label: 'Kids Profile', status: 'available', assignedTo: null, assignedAt: null }
+                ]
+              },
+              {
+                _id: 'acc3',
+                login: 'prime.video@example.com',
+                totalSlots: 4,
+                product: { _id: '3', name: 'Prime Video', accent: '#00a8e1' },
+                slots: [
+                  { index: 1, label: 'Profile 1', status: 'available', assignedTo: null, assignedAt: null },
+                  { index: 2, label: 'Profile 2', status: 'assigned', assignedTo: 'user101', assignedAt: new Date() },
+                  { index: 3, label: 'Profile 3', status: 'available', assignedTo: null, assignedAt: null },
+                  { index: 4, label: 'Profile 4', status: 'available', assignedTo: null, assignedAt: null }
+                ]
+              },
+              {
+                _id: 'acc4',
+                login: 'hbomax.premium@example.com',
+                totalSlots: 4,
+                product: { _id: '4', name: 'HBO Max', accent: '#9b30ff' },
+                slots: [
+                  { index: 1, label: 'Main', status: 'assigned', assignedTo: 'user202', assignedAt: new Date() },
+                  { index: 2, label: 'Secondary', status: 'assigned', assignedTo: 'user303', assignedAt: new Date() },
+                  { index: 3, label: 'Guest', status: 'available', assignedTo: null, assignedAt: null },
+                  { index: 4, label: 'Extra', status: 'available', assignedTo: null, assignedAt: null }
+                ]
+              },
+              {
+                _id: 'acc5',
+                login: 'disney.plus@example.com',
+                totalSlots: 4,
+                product: { _id: '5', name: 'Disney+', accent: '#4b6cf7' },
+                slots: [
+                  { index: 1, label: 'Profile 1', status: 'assigned', assignedTo: 'user404', assignedAt: new Date() },
+                  { index: 2, label: 'Profile 2', status: 'available', assignedTo: null, assignedAt: null },
+                  { index: 3, label: 'Profile 3', status: 'available', assignedTo: null, assignedAt: null },
+                  { index: 4, label: 'Profile 4', status: 'available', assignedTo: null, assignedAt: null }
+                ]
+              },
+              {
+                _id: 'acc6',
+                login: 'appletv.plus@example.com',
+                totalSlots: 4,
+                product: { _id: '6', name: 'Apple TV+', accent: '#d8d8d8' },
+                slots: [
+                  { index: 1, label: 'Premium Profile', status: 'assigned', assignedTo: 'user505', assignedAt: new Date() },
+                  { index: 2, label: 'Family Profile', status: 'available', assignedTo: null, assignedAt: null },
+                  { index: 3, label: 'Guest Profile', status: 'available', assignedTo: null, assignedAt: null },
+                  { index: 4, label: 'Extra Profile', status: 'available', assignedTo: null, assignedAt: null }
+                ]
+              }
+            ],
+            products: [
+              { _id: '1', name: 'Netflix', slug: 'netflix', accent: '#e50914', quality: '1080p HD' },
+              { _id: '2', name: 'Netflix + Prime Video', slug: 'netflix-prime', accent: '#ff6b00', quality: '4K UHD' },
+              { _id: '3', name: 'Prime Video', slug: 'prime-video', accent: '#00a8e1', quality: '4K UHD' },
+              { _id: '4', name: 'HBO Max', slug: 'hbo-max', accent: '#9b30ff', quality: '4K UHD' },
+              { _id: '5', name: 'Disney+', slug: 'disney', accent: '#4b6cf7', quality: '4K UHD' },
+              { _id: '6', name: 'Apple TV+', slug: 'apple-tv', accent: '#d8d8d8', quality: '8K UHD' },
+            ],
+            services: [
+              { _id: '1', name: 'Netflix', slug: 'netflix', accent: '#e50914' },
+              { _id: '2', name: 'Netflix + Prime Video', slug: 'netflix-prime', accent: '#ff6b00' },
+              { _id: '3', name: 'Prime Video', slug: 'prime-video', accent: '#00a8e1' },
+              { _id: '4', name: 'HBO Max', slug: 'hbo-max', accent: '#9b30ff' },
+              { _id: '5', name: 'Disney+', slug: 'disney', accent: '#4b6cf7' },
+              { _id: '6', name: 'Apple TV+', slug: 'apple-tv', accent: '#d8d8d8' },
+            ],
+            summary: { totalAccounts: 12, totalSlots: 48, available: 33, occupied: 15 }
+          });
+        }
       // Mock data for individual services
       } else if (path.includes('/admin/stock')) {
         setData({
@@ -78,6 +164,9 @@ export default function useApi(path, { deps = [], skip = false } = {}) {
             { name: 'Netflix', count: 45 },
             { name: 'Netflix + Prime', count: 32 },
             { name: 'HBO Max', count: 28 },
+            { name: 'Prime Video', count: 25 },
+            { name: 'Disney+', count: 18 },
+            { name: 'Apple TV+', count: 12 },
           ]
         });
       // Mock data for orders
