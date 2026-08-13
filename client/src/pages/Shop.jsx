@@ -77,16 +77,16 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
         position: 'relative',
         borderRadius: isMobile ? 16 : 18,
         padding: isMobile ? 1.5 : 2,
-        // Netflix+Prime gets special gradient
+        // Netflix+Prime gets original orange color scheme (not gradient)
         ...(product.slug?.includes('netflix-prime') ? {
-          background: `conic-gradient(from var(--spin-angle), #e50914, #ff6b00, #00a8e1, #ff6b00, #e50914)`,
+          background: `conic-gradient(from var(--spin-angle), #ff6b00, #e50914, #00F0FF, #e50914, #ff6b00)`,
         } : {
           background: `conic-gradient(from var(--spin-angle), ${accent}, ${ring2}, #00F0FF, ${ring2}, ${accent})`,
         }),
         animation: `spin-border ${animationDuration} linear infinite`,
-        // Netflix+Prime gets mixed color shadows
+        // Netflix+Prime gets orange-based shadows
         ...(product.slug?.includes('netflix-prime') ? {
-          boxShadow: `0 0 ${isMobile ? 12 : 16}px #ff6b0044, 0 0 ${isMobile ? 24 : 32}px #e5091418`,
+          boxShadow: `0 0 ${isMobile ? 12 : 16}px #ff6b0044, 0 0 ${isMobile ? 24 : 32}px #ff6b0018`,
         } : {
           boxShadow: `0 0 ${isMobile ? 12 : 16}px ${accent}44, 0 0 ${isMobile ? 24 : 32}px ${accent}18`,
         }),
@@ -98,7 +98,7 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
       onMouseEnter={e => {
         if (!isMobile) {
           if (product.slug?.includes('netflix-prime')) {
-            e.currentTarget.style.boxShadow = `0 0 28px #ff6b0088, 0 0 56px #e5091430, 0 8px 32px oklch(0 0 0 / 0.25)`;
+            e.currentTarget.style.boxShadow = `0 0 28px #ff6b0088, 0 0 56px #ff6b0030, 0 8px 32px oklch(0 0 0 / 0.25)`;
           } else {
             e.currentTarget.style.boxShadow = `0 0 28px ${accent}88, 0 0 56px ${accent}30, 0 8px 32px oklch(0 0 0 / 0.25)`;
           }
@@ -109,7 +109,7 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
       onMouseLeave={e => {
         if (!isMobile) {
           if (product.slug?.includes('netflix-prime')) {
-            e.currentTarget.style.boxShadow = `0 0 16px #ff6b0044, 0 0 32px #e5091418`;
+            e.currentTarget.style.boxShadow = `0 0 16px #ff6b0044, 0 0 32px #ff6b0018`;
           } else {
             e.currentTarget.style.boxShadow = `0 0 16px ${accent}44, 0 0 32px ${accent}18`;
           }
@@ -175,12 +175,12 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
                   zIndex: 1,
                   // HBO Max specific styling to hide bottom text
                   ...(product.slug?.includes('hbo') && {
-                    transform: 'scale(1.15)', // Scale up to crop bottom
+                    transform: 'scale(1.08)', // Reduced zoom from 1.15 to 1.08
                     transformOrigin: 'center top', // Scale from top
                   }),
                   // Netflix+Prime specific styling for better fit
                   ...(product.slug?.includes('netflix-prime') && {
-                    transform: 'scale(1.05)', // Slight zoom for better visibility
+                    transform: 'scale(0.95)', // Zoom out from 1.05 to 0.95
                     borderRadius: '8px', // Add slight border radius
                   })
                 }} />
@@ -229,12 +229,9 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
               </div>
               <div style={{ 
                 fontSize: isMobile ? 10 : 11, 
-                // Netflix+Prime gets gradient color
+                // Netflix+Prime gets simple orange color
                 ...(product.slug?.includes('netflix-prime') ? {
-                  background: 'linear-gradient(90deg, #e50914, #ff6b00, #00a8e1)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
+                  color: '#ff6b00',
                 } : {
                   color: accent,
                 }),
@@ -269,12 +266,9 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
               fontFamily: "'Space Grotesk',sans-serif", 
               fontSize: isMobile ? 18 : 22, 
               fontWeight: 700, 
-              // Netflix+Prime gets gradient color
+              // Netflix+Prime gets simple orange color
               ...(product.slug?.includes('netflix-prime') ? {
-                background: 'linear-gradient(90deg, #e50914, #ff6b00, #00a8e1)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
+                color: '#ff6b00',
               } : {
                 color: accent,
               }),
@@ -327,9 +321,9 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
               fontWeight: 800,
               fontSize: isMobile ? 13 : 13.5, 
               textDecoration: 'none',
-              // Netflix+Prime gets gradient background
+              // Netflix+Prime gets simple orange gradient
               ...(product.slug?.includes('netflix-prime') ? {
-                background: 'linear-gradient(135deg, #e50914 0%, #ff6b00 50%, #00a8e1 100%)',
+                background: 'linear-gradient(135deg, #ff6b00 0%, #ff8533 100%)',
               } : {
                 background: `linear-gradient(135deg, ${accent}, ${accent}99)`,
               }),
