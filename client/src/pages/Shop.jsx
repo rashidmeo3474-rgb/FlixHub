@@ -166,8 +166,8 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
                   objectFit: product.slug?.includes('hbo') ? 'cover' : 
                            product.slug?.includes('netflix-prime') ? 'cover' : // Changed from 'contain' to 'cover'
                            'cover',
-                  objectPosition: product.slug?.includes('hbo') ? 'center 20%' : 
-                                 product.slug?.includes('netflix-prime') ? 'center center' : // Center the Netflix+Prime image
+                  objectPosition: product.slug?.includes('hbo') ? 'center 15%' : 
+                                 product.slug?.includes('netflix-prime') ? 'center 25%' : // Moved up from center
                                  'center', 
                   padding: product.slug?.includes('netflix-prime') ? '0' : '0', // Removed padding for better fit
                   filter: 'drop-shadow(0 4px 12px oklch(0 0 0 / 0.55))',
@@ -175,13 +175,14 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
                   zIndex: 1,
                   // HBO Max specific styling to hide bottom text
                   ...(product.slug?.includes('hbo') && {
-                    transform: 'scale(1.08)', // Reduced zoom from 1.15 to 1.08
-                    transformOrigin: 'center top', // Scale from top
+                    transform: 'scale(1.08) translateY(-5%)', // Added upward translation
+                    transformOrigin: 'center 15%', // Adjusted origin point
                   }),
                   // Netflix+Prime specific styling for better fit
                   ...(product.slug?.includes('netflix-prime') && {
-                    transform: 'scale(0.95)', // Zoom out from 1.05 to 0.95
-                    borderRadius: '8px', // Add slight border radius
+                    transform: 'scale(0.95) translateY(-8%)', // Added upward translation
+                    borderRadius: '8px',
+                    transformOrigin: 'center 25%', // Adjusted origin point
                   })
                 }} />
             : <span style={{ 
