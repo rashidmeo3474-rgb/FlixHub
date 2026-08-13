@@ -5,12 +5,34 @@ import { money } from '../utils/format.js';
 
 const EMPTY = { name: '', quality: '4K UHD', monthlyPrice: '', compareAt: '', accent: '#54d6e8', category: 'movies', logo: '', warrantyMonths: 1 };
 
+// Available services for easy selection
+const PREDEFINED_SERVICES = [
+  { name: 'Netflix', accent: '#e50914', logo: '/logos/netflix.jpg' },
+  { name: 'Prime Video', accent: '#00a8e1', logo: '/logos/prime-video.png' },
+  { name: 'HBO Max', accent: '#9b30ff', logo: '/logos/hbo-max-shop.png' },
+  { name: 'Disney+', accent: '#4b6cf7', logo: '/logos/disney.png' },
+  { name: 'Apple TV+', accent: '#d8d8d8', logo: '/logos/apple-tv.png' },
+  { name: 'Netflix + Prime Video', accent: '#ff6b00', logo: '/logos/netflix-prime-shop.png', category: 'bundle' },
+  { name: 'Netflix + HBO Max', accent: '#c026d3', logo: '/logos/netflix-hbo.png', category: 'bundle' },
+  { name: 'All Streaming Bundle', accent: '#6366f1', logo: '/logos/all-bundle.png', category: 'bundle' },
+];
+
 export default function ProductsManager() {
   const { data, loading, error, reload } = useApi('/products');
   const [form, setForm] = useState(EMPTY);
   const [editId, setEditId] = useState(null);
   const [status, setStatus] = useState(null);
   const [busy, setBusy] = useState(false);
+
+  const fillService = (service) => {
+    setForm({
+      ...form,
+      name: service.name,
+      accent: service.accent,
+      logo: service.logo,
+      category: service.category || 'movies'
+    });
+  };
 
   const change = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
@@ -97,6 +119,37 @@ export default function ProductsManager() {
         {editId ? '✏️ Edit Product' : '➕ Add Product'}
         {editId && <button onClick={reset} style={{ marginLeft: 12, fontSize: 12, background: 'none', border: '1px solid var(--line)', borderRadius: 6, padding: '4px 10px', color: 'var(--muted)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>}
       </h2>
+      
+      {/* Quick Service Selector */}
+      {!editId && (
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--muted)', marginBottom: 8, display: 'block' }}>Quick Select Service:</label>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {PREDEFINED_SERVICES.map((service, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => fillService(service)}
+                style={{
+                  padding: '6px 12px',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  background: form.name === service.name ? service.accent : 'oklch(0.10 0.01 265)',
+                  color: form.name === service.name ? '#fff' : 'var(--text)',
+                  border: `1px solid ${form.name === service.name ? service.accent : 'var(--line)'}`,
+                  borderRadius: 8,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  fontFamily: 'inherit',
+                }}
+              >
+                {service.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      
       <form onSubmit={submit} style={{ background: 'oklch(0.13 0.013 265)', border: '1px solid var(--line)', borderRadius: 14, padding: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, maxWidth: 760 }}>
         <div className="field"><label className="label">Name *</label><input required value={form.name} onChange={change('name')} placeholder="Netflix" /></div>
         <div className="field"><label className="label">Quality</label><input value={form.quality} onChange={change('quality')} placeholder="4K UHD" /></div>
