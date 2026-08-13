@@ -132,18 +132,19 @@ export default function ProductCard({ product, index = 0 }) {
       } : {}}>
         {!logo && null}
 
-        {/* quality badge top-right */}
+        {/* quality badge using existing CSS class */}
         {product.quality && (
-          <span style={{
-            position: 'absolute', top: 10, right: 12, zIndex: 4,
-            fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 6,
-            background: (QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).bg,
-            color: (QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).color,
-            border: `1px solid ${(QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).border}`,
-            boxShadow: `0 0 8px ${(QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).border}`,
-            whiteSpace: 'nowrap',
-            textShadow: `0 0 6px ${(QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).color}`,
-          }}>{product.quality}</span>
+          <span 
+            className="pcard-quality"
+            style={{
+              background: (QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).bg,
+              color: (QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).color,
+              border: `1px solid ${(QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).border}`,
+              boxShadow: `0 0 8px ${(QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).border}`,
+            }}
+          >
+            {product.quality}
+          </span>
         )}
 
         {/* genre label bottom-left */}

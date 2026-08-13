@@ -36,6 +36,32 @@ api.interceptors.response.use(
         });
       }
       
+      // Mock response for admin accounts/inventory endpoints
+      if (path.includes('/admin/accounts') || path.includes('/inventory') || path.includes('/subscriptions')) {
+        return Promise.resolve({
+          data: {
+            accounts: [],
+            products: [
+              { _id: '1', name: 'Netflix', slug: 'netflix', accent: '#e50914', quality: '1080p HD' },
+              { _id: '2', name: 'Netflix + Prime Video', slug: 'netflix-prime', accent: '#ff6b00', quality: '4K UHD' },
+              { _id: '3', name: 'Prime Video', slug: 'prime-video', accent: '#00a8e1', quality: '4K UHD' },
+              { _id: '4', name: 'HBO Max', slug: 'hbo-max', accent: '#9b30ff', quality: '4K UHD' },
+              { _id: '5', name: 'Disney+', slug: 'disney', accent: '#4b6cf7', quality: '4K UHD' },
+              { _id: '6', name: 'Apple TV+', slug: 'apple-tv', accent: '#d8d8d8', quality: '8K UHD' },
+            ],
+            services: [
+              { _id: '1', name: 'Netflix', slug: 'netflix', accent: '#e50914' },
+              { _id: '2', name: 'Netflix + Prime Video', slug: 'netflix-prime', accent: '#ff6b00' },
+              { _id: '3', name: 'Prime Video', slug: 'prime-video', accent: '#00a8e1' },
+              { _id: '4', name: 'HBO Max', slug: 'hbo-max', accent: '#9b30ff' },
+              { _id: '5', name: 'Disney+', slug: 'disney', accent: '#4b6cf7' },
+              { _id: '6', name: 'Apple TV+', slug: 'apple-tv', accent: '#d8d8d8' },
+            ],
+            summary: { totalAccounts: 0, totalSlots: 0, available: 0, occupied: 0 }
+          }
+        });
+      }
+      
       // Mock response for products
       if (path.includes('/products')) {
         return Promise.resolve({
