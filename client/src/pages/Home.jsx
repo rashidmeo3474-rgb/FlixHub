@@ -27,16 +27,26 @@ export default function Home() {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const HOME_SLUGS = ['netflix', 'prime-video', 'disney', 'apple-tv-1080p', 'netflix-prime', 'hbo-max'];
+  const HOME_SLUGS = ['netflix-480p', 'netflix-720p', 'netflix', 'prime-video', 'disney', 'apple-tv-1080p', 'netflix-prime', 'hbo-max-480p', 'hbo-max'];
   const all = data?.products || [];
 
   const FALLBACK_CARDS = {
-    'netflix':        { _id: 'netflix',        slug: 'netflix',        name: 'Netflix',               accent: '#e50914', monthlyPrice: 450,  compareAt: 600,  inStock: 8, quality: '1080p HD', logo: '/logos/netflix.jpg'       },
+    // Netflix Quality Variants
+    'netflix-480p':   { _id: 'netflix-480p',   slug: 'netflix-480p',   name: 'Netflix Mobile',        accent: '#e50914', monthlyPrice: 250,  compareAt: 350,  inStock: 12, quality: '480p SD', logo: '/logos/netflix.jpg'       },
+    'netflix-720p':   { _id: 'netflix-720p',   slug: 'netflix-720p',   name: 'Netflix Basic',         accent: '#e50914', monthlyPrice: 350,  compareAt: 450,  inStock: 10, quality: '720p HD', logo: '/logos/netflix.jpg'       },
+    'netflix':        { _id: 'netflix',        slug: 'netflix',        name: 'Netflix Premium',       accent: '#e50914', monthlyPrice: 450,  compareAt: 600,  inStock: 8, quality: '1080p HD', logo: '/logos/netflix.jpg'       },
+    
+    // Other Services
     'prime-video':    { _id: 'prime-video',    slug: 'prime-video',    name: 'Prime Video',           accent: '#00a8e1', monthlyPrice: 350,  compareAt: 500,  inStock: 8, quality: '4K UHD', logo: '/logos/prime-video-new.png'   },
     'disney':         { _id: 'disney',         slug: 'disney',         name: 'Disney+',               accent: '#4b6cf7', monthlyPrice: 400,  compareAt: 550,  inStock: 8, quality: '4K UHD', logo: null                       },
-    'apple-tv-1080p': { _id: 'apple-tv-1080p', slug: 'apple-tv-1080p', name: 'Apple TV+',             accent: '#d8d8d8', monthlyPrice: 1800, compareAt: 2500, inStock: 8, quality: '8K UHD', logo: '/logos/apple-tv.png'      },
-    'netflix-prime':  { _id: 'netflix-prime',  slug: 'netflix-prime',  name: 'Netflix + Prime Video', accent: '#ff6b00', monthlyPrice: 600,  compareAt: 1000, inStock: 8, quality: '4K UHD',  logo: '/logos/netflix-prime-home.png' },
-    'hbo-max':        { _id: 'hbo-max',        slug: 'hbo-max',        name: 'HBO Max',               accent: '#9b30ff', monthlyPrice: 450,  compareAt: 600,  inStock: 8, quality: '4K UHD', logo: '/logos/hbo-max-new.png'       },
+    'apple-tv-1080p': { _id: 'apple-tv-1080p', slug: 'apple-tv-1080p', name: 'Apple TV+',             accent: '#d8d8d8', monthlyPrice: 1800, compareAt: 2500, inStock: 3, quality: '8K UHD', logo: '/logos/apple-tv.png'      },
+    
+    // Bundle
+    'netflix-prime':  { _id: 'netflix-prime',  slug: 'netflix-prime',  name: 'Netflix + Prime Video', accent: '#ff6b00', monthlyPrice: 600,  compareAt: 1000, inStock: 5, quality: '4K UHD',  logo: '/logos/netflix-prime-home.png' },
+    
+    // HBO Max Quality Variants
+    'hbo-max-480p':  { _id: 'hbo-max-480p',  slug: 'hbo-max-480p',  name: 'HBO Max Basic',         accent: '#9b30ff', monthlyPrice: 300,  compareAt: 450,  inStock: 9, quality: '480p SD', logo: '/logos/hbo-max-new.png'       },
+    'hbo-max':       { _id: 'hbo-max',       slug: 'hbo-max',       name: 'HBO Max Premium',       accent: '#9b30ff', monthlyPrice: 450,  compareAt: 600,  inStock: 6, quality: '4K UHD', logo: '/logos/hbo-max-new.png'       },
   };
 
   const products = HOME_SLUGS.map(slug => all.find(p => p.slug === slug) || FALLBACK_CARDS[slug]);
