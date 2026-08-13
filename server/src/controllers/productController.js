@@ -47,26 +47,70 @@ const calcPrices = (monthly) =>
 
 const withStock = async (products) => {
   try {
+    // Check if database connection is available
+    const mongoose = await import('mongoose');
+    if (mongoose.default.connection.readyState !== 1) {
+      console.warn('Database not connected - showing 0 stock');
+      return products.map((p) => ({
+        ...p.toObject(),
+        inStock: 0, // Show 0 when database is not connected
+        prices: calcPrices(p.monthlyPrice),
+      }));
+    }
+
     const counts = await Account.aggregate([
-      { $match: { 
-        $or: [
-          { status: 'available' },
-          { accountStatus: 'active', 'slots.status': 'available' }
-        ]
-      }},
-      { $group: { _id: '$product', count: { $sum: 1 } } }
+      { 
+        $match: { 
+          $and: [
+            { accountStatus: { $in: ['active', 'expiring_soon'] } },
+            {
+              $or: [
+                { status: 'available' },
+                { 'slots.status': 'available' }
+              ]
+            }
+          ]
+        }
+      },
+      { 
+        $group: { 
+          _id: '$product', 
+          availableAccounts: { $sum: 1 },
+          availableSlots: { 
+            $sum: { 
+              $size: { 
+                $filter: {
+                  input: '$slots',
+                  cond: { $eq: ['$$this.status', 'available'] }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          // Count either available accounts OR available slots (whichever is higher)
+          count: { $max: ['$availableAccounts', '$availableSlots'] }
+        }
+      }
     ]);
+
     const map = new Map(counts.map((c) => [String(c._id), c.count]));
+    
     return products.map((p) => ({
       ...p.toObject(),
-      inStock: map.get(String(p._id)) || 15, // Increased fallback stock
+      inStock: map.get(String(p._id)) || 0, // Show real count, 0 if none
       prices: calcPrices(p.monthlyPrice),
     }));
+    
   } catch (error) {
-    console.warn('Stock calculation failed, using fallback:', error.message);
+    console.warn('Stock calculation error:', error.message);
+    // Return 0 stock when there's an error instead of fake numbers
     return products.map((p) => ({
       ...p.toObject(),
-      inStock: 15, // Fallback stock when database query fails
+      inStock: 0, // Show 0 when there's an error
       prices: calcPrices(p.monthlyPrice),
     }));
   }
@@ -79,7 +123,7 @@ const buildFallback = () =>
     active: true,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    inStock: 15, // Increased fallback stock
+    inStock: 0, // Show 0 for fallback products when no real accounts
     prices: calcPrices(p.monthlyPrice),
   }));
 

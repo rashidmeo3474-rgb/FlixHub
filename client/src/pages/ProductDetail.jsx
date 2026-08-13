@@ -256,13 +256,13 @@ export default function ProductDetail() {
               {t('warranty')}
             </span>
             <span 
-              className={out ? 'badge badge-warn' : 'badge badge-good'}
+              className={out ? 'badge badge-bad' : product.inStock <= 5 ? 'badge badge-warn' : 'badge badge-good'}
               style={{
                 fontSize: isMobile ? 10 : 11,
                 padding: isMobile ? '3px 8px' : '4px 9px',
               }}
             >
-              {out ? 'Restocking Soon' : `${product.inStock} Available`}
+              {out ? 'Out of Stock' : product.inStock <= 5 ? `Only ${product.inStock} Left` : `${product.inStock} Available`}
             </span>
           </div>
 
@@ -484,9 +484,10 @@ export default function ProductDetail() {
                 minHeight: isMobile ? '48px' : 'auto',
                 width: isMobile ? '100%' : 'auto',
                 order: isMobile ? 2 : 1,
+                opacity: out ? 0.5 : 1,
               }}
             >
-              {out ? 'Notify When Available' : t('addToCart')}
+              {out ? 'Out of Stock' : t('addToCart')}
             </button>
             <button 
               className="btn" 
@@ -498,9 +499,10 @@ export default function ProductDetail() {
                 minHeight: isMobile ? '48px' : 'auto',
                 width: isMobile ? '100%' : 'auto',
                 order: isMobile ? 1 : 2,
+                opacity: out ? 0.5 : 1,
               }}
             >
-              {out ? 'Join Waitlist' : `${t('buyNow')} →`}
+              {out ? 'Currently Unavailable' : `${t('buyNow')} →`}
             </button>
           </div>
 

@@ -7,6 +7,7 @@ import {
   allUsers, getUserDetail, updateUserRole, deleteUser,
   activityLog
 } from '../controllers/adminController.js';
+import { getStockOverview, checkLowStockAlerts } from '../controllers/stockController.js';
 
 const router = Router();
 router.use(adminOnly);
@@ -14,8 +15,10 @@ router.use(adminOnly);
 /* stats */
 router.get('/stats', stats);
 
-/* stock */
+/* stock - improved with real-time accurate counts */
 router.get('/stock', stockOverview);
+router.get('/stock/overview', getStockOverview);
+router.get('/stock/alerts', checkLowStockAlerts);
 router.post('/stock', addAccounts);
 router.delete('/stock/:id', deleteAccount);
 
