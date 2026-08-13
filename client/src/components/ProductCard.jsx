@@ -32,6 +32,15 @@ const THEMES = {
   'hbo-max':      { accent: '#9b30ff', particle: '✧', label: 'Dark · History',     speed: 3.8, shimmerColor: 'rgba(155,48,255,0.25)' },
 };
 
+/* Quality badge colors */
+const QUALITY_COLORS = {
+  '480p SD':  { bg: 'rgba(160,185,230,0.14)', color: '#a0b9e6', border: 'rgba(160,185,230,0.25)' },
+  '720p HD':  { bg: 'rgba(0,240,255,0.12)',   color: '#00F0FF', border: 'rgba(0,240,255,0.28)'   },
+  '1080p HD': { bg: 'rgba(0,255,135,0.12)',   color: '#00FF87', border: 'rgba(0,255,135,0.28)'   },
+  '4K UHD':   { bg: 'rgba(157,0,255,0.14)',   color: '#C084FF', border: 'rgba(157,0,255,0.30)'   },
+  '8K UHD':   { bg: 'rgba(255,214,0,0.14)',   color: '#FFD600', border: 'rgba(255,214,0,0.28)'   },
+};
+
 const getTheme = (slug) => THEMES[slug] || { accent: '#54d6e8', particle: '•', label: '', speed: 4, shimmerColor: 'rgba(84,214,232,0.2)' };
 
 export default function ProductCard({ product, index = 0 }) {
@@ -122,6 +131,20 @@ export default function ProductCard({ product, index = 0 }) {
         backgroundPosition: 'center top',
       } : {}}>
         {!logo && null}
+
+        {/* quality badge top-right */}
+        {product.quality && (
+          <span style={{
+            position: 'absolute', top: 10, right: 12, zIndex: 4,
+            fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 6,
+            background: (QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).bg,
+            color: (QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).color,
+            border: `1px solid ${(QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).border}`,
+            boxShadow: `0 0 8px ${(QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).border}`,
+            whiteSpace: 'nowrap',
+            textShadow: `0 0 6px ${(QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).color}`,
+          }}>{product.quality}</span>
+        )}
 
         {/* genre label bottom-left */}
         {theme.label && (
