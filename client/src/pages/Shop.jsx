@@ -39,12 +39,12 @@ const SHOP_LOGOS = {
   'apple-tv':       '/logos/apple-tv.png',
   'apple-tv-1080p': '/logos/apple-tv.png',
   'apple-tv-8k':    '/logos/apple-tv.png',
-  'hbo-max':        '/logos/hbo-max.png',
-  'hbo-480p':       '/logos/hbo-max.png',
-  'hbo-720p':       '/logos/hbo-max.png',
-  'hbo-4k':         '/logos/hbo-max.png',
-  'hbo-8k':         '/logos/hbo-max.png',
-  'netflix-prime':  '/logos/netflix-prime-new.jpg',
+  'hbo-max':        '/logos/hbo-max-shop.png',
+  'hbo-480p':       '/logos/hbo-max-shop.png',
+  'hbo-720p':       '/logos/hbo-max-shop.png',
+  'hbo-4k':         '/logos/hbo-max-shop.png',
+  'hbo-8k':         '/logos/hbo-max-shop.png',
+  'netflix-prime':  '/logos/netflix-prime-shop.png',
 };
 
 /* ─────────────────────────────────────────────────────────────
@@ -65,6 +65,10 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
                 : product.slug?.includes('apple')   ? '#c0c0c0'
                 : '#9D00FF';
 
+  // Performance optimized animation settings
+  const animationDuration = isMobile ? '5s' : '3s';
+  const hoverDuration = isMobile ? '2.5s' : '1.2s';
+
   return (
     /* ── spinning border ring wrapper ── */
     <div
@@ -73,20 +77,25 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
         borderRadius: isMobile ? 16 : 18,
         padding: isMobile ? 1.5 : 2,
         background: `conic-gradient(from var(--spin-angle), ${accent}, ${ring2}, #00F0FF, ${ring2}, ${accent})`,
-        animation: isMobile ? 'spin-border 4.5s linear infinite' : 'spin-border 3.5s linear infinite',
+        animation: `spin-border ${animationDuration} linear infinite`,
         boxShadow: `0 0 ${isMobile ? 12 : 16}px ${accent}44, 0 0 ${isMobile ? 24 : 32}px ${accent}18`,
-        transition: 'box-shadow 0.25s ease, transform 0.2s ease',
+        transition: 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Smoother easing
+        transform: 'translate3d(0, 0, 0) scale(1)', // GPU acceleration
+        willChange: 'transform, box-shadow', // Optimization hint
       }}
+      className="shop-card-wrapper"
       onMouseEnter={e => {
         if (!isMobile) {
-          e.currentTarget.style.boxShadow = `0 0 28px ${accent}88, 0 0 56px ${accent}30`;
-          e.currentTarget.style.animationDuration = '1.2s';
+          e.currentTarget.style.boxShadow = `0 0 28px ${accent}88, 0 0 56px ${accent}30, 0 8px 32px oklch(0 0 0 / 0.25)`;
+          e.currentTarget.style.animationDuration = hoverDuration;
+          e.currentTarget.style.transform = 'translate3d(0, -8px, 0) scale(1.02)';
         }
       }}
       onMouseLeave={e => {
         if (!isMobile) {
           e.currentTarget.style.boxShadow = `0 0 16px ${accent}44, 0 0 32px ${accent}18`;
-          e.currentTarget.style.animationDuration = '3.5s';
+          e.currentTarget.style.animationDuration = animationDuration;
+          e.currentTarget.style.transform = 'translate3d(0, 0, 0) scale(1)';
         }
       }}
     >
@@ -99,7 +108,20 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
         background: 'oklch(0.11 0.014 265)',
         height: '100%',
         minHeight: isMobile ? '280px' : '310px',
-      }}>
+        transition: 'background 0.3s ease',
+      }}
+      className="shop-card-inner"
+      onMouseEnter={e => {
+        if (!isMobile) {
+          e.currentTarget.style.background = 'oklch(0.13 0.016 265)';
+        }
+      }}
+      onMouseLeave={e => {
+        if (!isMobile) {
+          e.currentTarget.style.background = 'oklch(0.11 0.014 265)';
+        }
+      }}
+      >
 
         {/* logo / hero area */}
         <div style={{
@@ -114,7 +136,8 @@ function ShopCard({ product, months, onGuestClick, isMobile = false }) {
           <div style={{
             position: 'absolute', inset: 0, pointerEvents: 'none',
             background: `radial-gradient(ellipse 65% 55% at 50% 40%, ${accent}15 0%, transparent 70%)`,
-            animation: 'glow-pulse 2.5s ease-in-out infinite',
+            animation: isMobile ? 'glow-pulse-fast 2s ease-in-out infinite' : 'glow-pulse 2.5s ease-in-out infinite',
+            willChange: 'opacity', // Performance optimization
           }} />
           {logo
             ? <img src={logo} alt={product.name}

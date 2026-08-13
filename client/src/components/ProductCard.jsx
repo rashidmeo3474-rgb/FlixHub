@@ -10,15 +10,16 @@ const LOGOS = {
   'netflix-720p':   '/logos/netflix.png',
   'netflix-4k':     '/logos/netflix.png',
   'netflix-8k':     '/logos/netflix.png',
-  'hbo-max':        '/logos/hbo-max.png',
-  'hbo-480p':       '/logos/hbo-max.png',
-  'hbo-720p':       '/logos/hbo-max.png',
-  'hbo-4k':         '/logos/hbo-max.png',
-  'hbo-8k':         '/logos/hbo-max.png',
+  'prime-video':    '/logos/prime-video-new.png',
+  'hbo-max':        '/logos/hbo-max-new.png',
+  'hbo-480p':       '/logos/hbo-max-new.png',
+  'hbo-720p':       '/logos/hbo-max-new.png',
+  'hbo-4k':         '/logos/hbo-max-new.png',
+  'hbo-8k':         '/logos/hbo-max-new.png',
   'apple-tv':       '/logos/apple-tv.png',
   'apple-tv-1080p': '/logos/apple-tv.png',
   'apple-tv-8k':    '/logos/apple-tv.png',
-  'netflix-prime':  '/logos/netflix-prime-new.jpg',
+  'netflix-prime':  '/logos/netflix-prime-home.png',
 };
 
 /* ── Per-product theme: color, particle style, animation speed ── */
@@ -47,19 +48,29 @@ export default function ProductCard({ product, index = 0 }) {
     if (!card) return;
     card.style.animationDelay = `${(index % 4) * 0.55}s`;
     card.style.animationDuration = `${theme.speed}s`;
+    // Add performance optimizations
+    card.style.willChange = 'transform, opacity';
+    card.style.transform = 'translate3d(0, 0, 0)'; // Force hardware acceleration
   }, [index, theme.speed]);
 
   function handleMouseMove(e) {
     const card = cardRef.current;
     if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 18;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * -18;
-    card.style.setProperty('--rx', `${y}deg`);
-    card.style.setProperty('--ry', `${x}deg`);
-    card.style.setProperty('--mx', `${((e.clientX - rect.left) / rect.width) * 100}%`);
-    card.style.setProperty('--my', `${((e.clientY - rect.top) / rect.height) * 100}%`);
-    card.classList.add('pcard--tilting');
+    
+    // Throttle mouse move events for better performance
+    if (card.dataset.throttled) return;
+    card.dataset.throttled = 'true';
+    requestAnimationFrame(() => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 18;
+      const y = ((e.clientY - rect.top) / rect.height - 0.5) * -18;
+      card.style.setProperty('--rx', `${y}deg`);
+      card.style.setProperty('--ry', `${x}deg`);
+      card.style.setProperty('--mx', `${((e.clientX - rect.left) / rect.width) * 100}%`);
+      card.style.setProperty('--my', `${((e.clientY - rect.top) / rect.height) * 100}%`);
+      card.classList.add('pcard--tilting');
+      delete card.dataset.throttled;
+    });
   }
 
   function handleMouseLeave() {

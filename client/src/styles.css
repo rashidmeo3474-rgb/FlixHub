@@ -82,6 +82,42 @@ a:hover { color: oklch(0.9 0.1 195); }
 }
 
 /* ── Spinning border keyframe ── */
+/* ═══════════════════════════════════════════════════════════════
+   PERFORMANCE OPTIMIZATIONS
+═══════════════════════════════════════════════════════════════ */
+
+/* Force hardware acceleration for animations */
+.pcard, .shop-card-wrapper, .shop-card-inner {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Optimize spinning animations */
+.shop-card-wrapper {
+  contain: layout style paint;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .shop-card-wrapper {
+    animation: none !important;
+  }
+  .pcard {
+    animation: none !important;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+═══════════════════════════════════════════════════════════════ */
+
 @keyframes spin-border {
   from { --spin-angle: 0deg; }
   to   { --spin-angle: 360deg; }
@@ -93,6 +129,10 @@ a:hover { color: oklch(0.9 0.1 195); }
 @keyframes glow-pulse {
   0%,100% { opacity: 0.7; }
   50%      { opacity: 1; }
+}
+@keyframes glow-pulse-fast {
+  0%,100% { opacity: 0.75; }
+  50%      { opacity: 0.95; }
 }
 @keyframes priceFlash {
   0%   { transform: scale(1.00); opacity: 0.5; }
@@ -1072,7 +1112,21 @@ textarea {
   .cinema-grid { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 100px; }
 
   /* pcard float slowed on mobile for perf */
-  .pcard { animation-duration: 6s; }
+  .pcard { 
+    animation-duration: 6s; 
+    will-change: transform; /* Hardware acceleration */
+  }
+  
+  /* Optimize shop card animations for mobile */
+  .shop-card-wrapper {
+    will-change: transform, box-shadow !important;
+    transform: translate3d(0, 0, 0) !important; /* Force GPU acceleration */
+  }
+  
+  /* Reduce animation complexity on mobile */
+  .shop-card-wrapper {
+    animation-duration: 6s !important; /* Slower spin for better performance */
+  }
 
   /* buttons — full touch targets */
   .btn { padding: 14px 20px; font-size: 14px; min-height: 48px; }
