@@ -1587,3 +1587,30 @@ textarea {
     font-size: 16px; /* Prevents zoom on iOS */
   }
 }
+/* Badge styles */
+.badge { 
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center;
+  padding: 4px 9px; 
+  border-radius: 7px; 
+  font-size: 11px; 
+  font-weight: 700;
+  line-height: 1.2; 
+  white-space: nowrap; 
+}
+
+.badge.badge-good { 
+  background: oklch(0.72 0.16 150 / 0.18); 
+  color: var(--good); 
+}
+
+.badge.badge-bad  { 
+  background: oklch(0.65 0.22 25 / 0.18);  
+  color: var(--bad); 
+}
+
+.badge.badge-warn { 
+  background: oklch(0.7 0.19 60 / 0.18);   
+  color: var(--warn); 
+}

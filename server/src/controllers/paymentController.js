@@ -133,7 +133,7 @@ export const reviewPaymentProof = asyncHandler(async (req, res) => {
             { status: 'assigned', assignedTo: order._id, assignedAt: new Date() },
             { new: true, session, sort: { createdAt: 1 } }
           );
-          if (!account) throw Object.assign(new Error(`${item.name} is out of stock`), { status: 409 });
+          if (!account) throw Object.assign(new Error(`${item.name} is temporarily unavailable. New stock will be added within 24 hours.`), { status: 409 });
           const expiresAt = new Date();
           expiresAt.setMonth(expiresAt.getMonth() + item.months);
           item.credentials = { login: account.login, password: account.password, profile: account.profile, expiresAt };

@@ -46,16 +46,30 @@ const calcPrices = (monthly) =>
   Object.fromEntries([1, 2, 3, 4, 5, 6].map((m) => [m, monthly * m]));
 
 const withStock = async (products) => {
-  const counts = await Account.aggregate([
-    { $match: { status: 'available' } },
-    { $group: { _id: '$product', count: { $sum: 1 } } }
-  ]);
-  const map = new Map(counts.map((c) => [String(c._id), c.count]));
-  return products.map((p) => ({
-    ...p.toObject(),
-    inStock: map.get(String(p._id)) || 8,
-    prices: calcPrices(p.monthlyPrice),
-  }));
+  try {
+    const counts = await Account.aggregate([
+      { $match: { 
+        $or: [
+          { status: 'available' },
+          { accountStatus: 'active', 'slots.status': 'available' }
+        ]
+      }},
+      { $group: { _id: '$product', count: { $sum: 1 } } }
+    ]);
+    const map = new Map(counts.map((c) => [String(c._id), c.count]));
+    return products.map((p) => ({
+      ...p.toObject(),
+      inStock: map.get(String(p._id)) || 15, // Increased fallback stock
+      prices: calcPrices(p.monthlyPrice),
+    }));
+  } catch (error) {
+    console.warn('Stock calculation failed, using fallback:', error.message);
+    return products.map((p) => ({
+      ...p.toObject(),
+      inStock: 15, // Fallback stock when database query fails
+      prices: calcPrices(p.monthlyPrice),
+    }));
+  }
 };
 
 const buildFallback = () =>
@@ -65,7 +79,7 @@ const buildFallback = () =>
     active: true,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    inStock: 8,
+    inStock: 15, // Increased fallback stock
     prices: calcPrices(p.monthlyPrice),
   }));
 

@@ -137,7 +137,7 @@ export const payOrder = asyncHandler(async (req, res) => {
         );
         if (!account) {
           throw Object.assign(
-            new Error(item.name + ' is out of stock — our team will restock shortly'),
+            new Error(`${item.name} is temporarily unavailable. New stock will be added within 24 hours.`),
             { status: 409 }
           );
         }

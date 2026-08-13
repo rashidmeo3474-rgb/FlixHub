@@ -256,13 +256,13 @@ export default function ProductDetail() {
               {t('warranty')}
             </span>
             <span 
-              className={out ? 'badge badge-bad' : 'badge badge-good'}
+              className={out ? 'badge badge-warn' : 'badge badge-good'}
               style={{
                 fontSize: isMobile ? 10 : 11,
                 padding: isMobile ? '3px 8px' : '4px 9px',
               }}
             >
-              {out ? t('outOfStock') : `${product.inStock} ${t('inStock')}`}
+              {out ? 'Restocking Soon' : `${product.inStock} Available`}
             </span>
           </div>
 
@@ -486,7 +486,7 @@ export default function ProductDetail() {
                 order: isMobile ? 2 : 1,
               }}
             >
-              {t('addToCart')}
+              {out ? 'Notify When Available' : t('addToCart')}
             </button>
             <button 
               className="btn" 
@@ -500,7 +500,7 @@ export default function ProductDetail() {
                 order: isMobile ? 1 : 2,
               }}
             >
-              {t('buyNow')} →
+              {out ? 'Join Waitlist' : `${t('buyNow')} →`}
             </button>
           </div>
 
