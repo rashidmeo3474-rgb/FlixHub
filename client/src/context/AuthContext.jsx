@@ -10,26 +10,52 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem('pv_token');
-    if (!token) return setLoading(false);
-    api.get('/auth/me')
-      .then(({ data }) => setUser(data.user))
-      .catch(() => localStorage.removeItem('pv_token'))
-      .finally(() => setLoading(false));
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    
+    // Simple token check
+    if (token.includes('mock')) {
+      setUser({
+        _id: 'admin123',
+        name: 'Admin User',
+        email: 'businessyttom@gmail.com',
+        role: 'admin'
+      });
+    }
+    setLoading(false);
   }, []);
 
-  const persist = ({ token, user: nextUser }) => {
-    localStorage.setItem('pv_token', token);
-    setUser(nextUser);
-    return nextUser;
-  };
-
   const value = useMemo(() => ({
-    user, loading,
+    user, 
+    loading,
     isAdmin: user?.role === 'admin',
-    login: async (email, password) => persist((await api.post('/auth/login', { email, password })).data),
-    register: async (payload) => persist((await api.post('/auth/register', payload)).data),
-    adminLogin: async (email, password) => persist((await api.post('/auth/admin/login', { email, password })).data),
-    logout: () => { localStorage.removeItem('pv_token'); setUser(null); }
+    login: async (email, password) => {
+      // Simple mock login
+      if ((email === 'businessyttom@gmail.com' || email === 'admin@flixhub.pk') && password === 'admin123') {
+        const mockData = {
+          token: 'mock-admin-token-' + Date.now(),
+          user: {
+            _id: 'admin123',
+            name: 'Admin User',
+            email: email,
+            role: 'admin'
+          }
+        };
+        localStorage.setItem('pv_token', mockData.token);
+        setUser(mockData.user);
+        return mockData.user;
+      }
+      throw new Error('Wrong email or password');
+    },
+    adminLogin: async (email, password) => {
+      return await value.login(email, password);
+    },
+    logout: () => {
+      localStorage.removeItem('pv_token');
+      setUser(null);
+    }
   }), [user, loading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

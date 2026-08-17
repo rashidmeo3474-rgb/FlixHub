@@ -1,26 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useI18n } from '../context/I18nContext.jsx';
 import { money } from '../utils/format.js';
-import { useRef, useEffect, useState } from 'react';
-
-/* ── Per-product logo map (local public/logos/) ── */
-const LOGOS = {
-  'netflix':        '/logos/netflix.png',
-  'netflix-480p':   '/logos/netflix.png',
-  'netflix-720p':   '/logos/netflix.png',
-  'netflix-4k':     '/logos/netflix.png',
-  'netflix-8k':     '/logos/netflix.png',
-  'prime-video':    '/logos/prime-video-new.png',
-  'hbo-max':        '/logos/hbo-max-new.png',
-  'hbo-480p':       '/logos/hbo-max-new.png',
-  'hbo-720p':       '/logos/hbo-max-new.png',
-  'hbo-4k':         '/logos/hbo-max-new.png',
-  'hbo-8k':         '/logos/hbo-max-new.png',
-  'apple-tv':       '/logos/apple-tv.png',
-  'apple-tv-1080p': '/logos/apple-tv.png',
-  'apple-tv-8k':    '/logos/apple-tv.png',
-  'netflix-prime':  '/logos/netflix-prime-home.png',
-};
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { getServiceImage } from '../utils/images.js';
 
 /* ── Per-product theme: color, particle style, animation speed ── */
 const THEMES = {
@@ -48,9 +30,18 @@ export default function ProductCard({ product, index = 0 }) {
   const out = product.inStock === 0;
   const cardRef = useRef(null);
   const [ripples, setRipples] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
   const theme = getTheme(product.slug);
   const accent = product.accent || theme.accent;
-  const logo = LOGOS[product.slug] || product.logo || null;
+  const logo = getServiceImage(product.slug, 'home') || product.logo || null;
+
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const card = cardRef.current;
@@ -62,42 +53,53 @@ export default function ProductCard({ product, index = 0 }) {
     card.style.transform = 'translate3d(0, 0, 0)'; // Force hardware acceleration
   }, [index, theme.speed]);
 
-  function handleMouseMove(e) {
+  // Optimized mouse tracking with better throttling
+  const handleMouseMove = useCallback((e) => {
     const card = cardRef.current;
-    if (!card) return;
+    if (!card || isMobile) return; // Skip on mobile
     
-    // Throttle mouse move events for better performance
-    if (card.dataset.throttled) return;
-    card.dataset.throttled = 'true';
-    requestAnimationFrame(() => {
+    // Use requestAnimationFrame for smooth 60fps updates
+    if (card.rafId) return; // Already scheduled
+    
+    card.rafId = requestAnimationFrame(() => {
       const rect = card.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 18;
-      const y = ((e.clientY - rect.top) / rect.height - 0.5) * -18;
+      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 12; // Reduced intensity
+      const y = ((e.clientY - rect.top) / rect.height - 0.5) * -12;
+      
       card.style.setProperty('--rx', `${y}deg`);
       card.style.setProperty('--ry', `${x}deg`);
       card.style.setProperty('--mx', `${((e.clientX - rect.left) / rect.width) * 100}%`);
       card.style.setProperty('--my', `${((e.clientY - rect.top) / rect.height) * 100}%`);
       card.classList.add('pcard--tilting');
-      delete card.dataset.throttled;
+      
+      card.rafId = null;
     });
-  }
+  }, [isMobile]);
 
-  function handleMouseLeave() {
+  const handleMouseLeave = useCallback(() => {
     const card = cardRef.current;
     if (!card) return;
+    
+    if (card.rafId) {
+      cancelAnimationFrame(card.rafId);
+      card.rafId = null;
+    }
+    
     card.classList.remove('pcard--tilting');
     card.style.setProperty('--rx', '0deg');
     card.style.setProperty('--ry', '0deg');
-  }
+  }, []);
 
-  function handleClick(e) {
+  const handleClick = useCallback((e) => {
+    if (!ripples || ripples.length >= 3) return; // Limit ripples
+    
     const card = cardRef.current;
     if (!card) return;
     const rect = card.getBoundingClientRect();
     const id = Date.now();
-    setRipples(prev => [...prev, { id, x: e.clientX - rect.left, y: e.clientY - rect.top }]);
-    setTimeout(() => setRipples(prev => prev.filter(r => r.id !== id)), 700);
-  }
+    setRipples(prev => [...prev.slice(-2), { id, x: e.clientX - rect.left, y: e.clientY - rect.top }]);
+    setTimeout(() => setRipples(prev => prev.filter(r => r.id !== id)), 500);
+  }, [ripples]);
 
   return (
     <article
@@ -111,6 +113,8 @@ export default function ProductCard({ product, index = 0 }) {
         '--rx': '0deg', '--ry': '0deg',
         '--mx': '50%',  '--my': '50%',
         '--shimmer-color': theme.shimmerColor,
+        transform: 'translate3d(0, 0, 0)', // GPU acceleration
+        willChange: isMobile ? 'auto' : 'transform', // Conditional optimization
       }}
     >
       {/* spinning accent border ring */}

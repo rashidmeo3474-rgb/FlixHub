@@ -397,7 +397,6 @@ export default function LoginGateModal({ product, onClose }) {
             to="/shop" 
             onClick={onClose} 
             style={{
-              display: 'block', 
               textAlign: 'center', 
               padding: isMobile ? '14px 20px' : '10px',
               borderRadius: isMobile ? 10 : 11, 

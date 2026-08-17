@@ -26,7 +26,60 @@
   --shadow: 0 22px 50px oklch(0 0 0 / 0.55);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0;
+}
+
+body {
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERFORMANCE OPTIMIZATIONS
+═══════════════════════════════════════════════════════════════ */
+
+/* Optimize root performance */
+html {
+  scroll-behavior: smooth;
+  transform: translateZ(0); /* GPU acceleration */
+}
+
+/* Reduce motion for performance-sensitive users */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Optimize fonts and rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+  transform: translate3d(0, 0, 0); /* GPU acceleration */
+  will-change: scroll-position;
+}
+
+/* Performance hint for animations */
+.performance-critical {
+  contain: layout style paint;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
 
 /* Prevent iOS auto-zoom on input focus (requires font-size ≥ 16px on inputs) */
 @media (max-width: 860px) {
@@ -86,31 +139,69 @@ a:hover { color: oklch(0.9 0.1 195); }
    PERFORMANCE OPTIMIZATIONS
 ═══════════════════════════════════════════════════════════════ */
 
-/* Force hardware acceleration for animations */
+/* ═══════════════════════════════════════════════════════════════
+   PERFORMANCE OPTIMIZED ANIMATIONS
+═══════════════════════════════════════════════════════════════ */
+
+/* Force hardware acceleration and optimize animations */
 .pcard, .shop-card-wrapper, .shop-card-inner {
   transform: translate3d(0, 0, 0);
   will-change: transform;
   backface-visibility: hidden;
-  perspective: 1000px;
-}
-
-/* Optimize spinning animations */
-.shop-card-wrapper {
   contain: layout style paint;
 }
 
-/* Reduce motion for users who prefer it */
-@media (prefers-reduced-motion: reduce) {
+/* Optimize spinning animations - use transform instead of custom properties */
+.shop-card-wrapper {
+  contain: layout style paint;
+  animation: spin-border-optimized 3s linear infinite;
+}
+
+@keyframes spin-border-optimized {
+  from { transform: rotate(0deg) translate3d(0, 0, 0); }
+  to   { transform: rotate(360deg) translate3d(0, 0, 0); }
+}
+
+/* Reduce motion and disable heavy animations on mobile */
+@media (max-width: 768px) {
   .shop-card-wrapper {
     animation: none !important;
   }
   .pcard {
+    animation-duration: 0.5s !important;
+  }
+  .pcard--tilting {
+    transform: translate3d(0, 0, 0) !important; /* Disable 3D tilt on mobile */
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .shop-card-wrapper, .pcard {
     animation: none !important;
   }
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Optimize keyframe animations */
+@keyframes spin-border {
+  from { --spin-angle: 0deg; }
+  to   { --spin-angle: 360deg; }
+}
+
+/* Simplified fade in animation */
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translate3d(0, 20px, 0); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translate3d(0, 0, 0); 
   }
 }
 
@@ -186,14 +277,56 @@ a:hover { color: oklch(0.9 0.1 195); }
   50%      { opacity: 0.7; }
 }
 
-/* ── cinematic background ── */
+/* ── Optimized cinematic background ── */
 .cinema-bg {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  perspective: 1200px;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.cinema-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* Reduced from 10 */
+  grid-auto-rows: 140px;
+  gap: 1px;
+  width: 120%; /* Reduced coverage */
+  height: 120%;
+  opacity: 0.08; /* Reduced opacity for better performance */
+  animation: cinema-drift 60s linear infinite; /* Slower animation */
+  transform: translate3d(-10%, -10%, 0);
+  contain: strict; /* Performance optimization */
+}
+
+.cinema-poster {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 3px;
+  transform: translate3d(0, 0, 0); /* GPU acceleration */
+  contain: layout size style; /* Optimize rendering */
+}
+
+.cinema-overlay {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 30% 70%, oklch(0.08 0.012 265 / 0.85) 0%, transparent 60%),
+    linear-gradient(135deg, 
+      oklch(0.06 0.01 265 / 0.95) 0%, 
+      oklch(0.08 0.012 265 / 0.88) 50%, 
+      oklch(0.06 0.01 265 / 0.95) 100%
+    );
+  backdrop-filter: blur(0.5px); /* Reduced blur for performance */
+  z-index: 1;
+}
+
+@keyframes cinema-drift {
+  from { transform: translate3d(-10%, -10%, 0); }
+  to   { transform: translate3d(-15%, -15%, 0); }
 }
 .cinema-grid {
   display: grid;

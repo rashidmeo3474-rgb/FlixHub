@@ -4,27 +4,8 @@ import useApi from '../hooks/useApi.js';
 import { useCart } from '../context/CartContext.jsx';
 import { useI18n } from '../context/I18nContext.jsx';
 import { money, DURATIONS, priceFor } from '../utils/format.js';
+import { getServiceImage } from '../utils/images.js';
 
-const DETAIL_LOGOS = {
-  'netflix':        '/logos/netflix.jpg',
-  'netflix-480p':   '/logos/netflix.jpg',
-  'netflix-720p':   '/logos/netflix.jpg',
-  'netflix-4k':     '/logos/netflix.jpg',
-  'netflix-8k':     '/logos/netflix.jpg',
-  'prime-video':    '/logos/prime-video.png',
-  'prime-480p':     '/logos/prime-video.png',
-  'prime-720p':     '/logos/prime-video.png',
-  'prime-4k':       '/logos/prime-video.png',
-  'apple-tv':       '/logos/apple-tv.png',
-  'apple-tv-1080p': '/logos/apple-tv.png',
-  'apple-tv-8k':    '/logos/apple-tv.png',
-  'hbo-max':        '/logos/hbo-max-shop.png',
-  'hbo-480p':       '/logos/hbo-max-shop.png',
-  'hbo-720p':       '/logos/hbo-max-shop.png',
-  'hbo-4k':         '/logos/hbo-max-shop.png',
-  'hbo-8k':         '/logos/hbo-max-shop.png',
-  'netflix-prime':  '/logos/netflix-prime-shop.png',
-};
 
 /* Quality tier order for sorting */
 const QUALITY_ORDER = ['480p SD', '720p HD', '1080p HD', '4K UHD', '8K UHD'];
@@ -112,7 +93,7 @@ export default function ProductDetail() {
   const accent  = product.accent || '#54d6e8';
   const total   = product.prices?.[months] ?? priceFor(product.monthlyPrice, months);
   const out     = product.inStock === 0;
-  const logo    = DETAIL_LOGOS[product.slug] || product.logo || null;
+  const logo    = getServiceImage(product.slug, 'home') || product.logo || null; // Use HOME images for consistency
   const hasVariants = variants.length > 1;
 
   const item = {
@@ -165,7 +146,9 @@ export default function ProductDetail() {
         >
           <div style={{
             height: isMobile ? 200 : isTablet ? 250 : 300,
-            background: `linear-gradient(135deg, ${accent}33, oklch(0.22 0.02 265))`,
+            background: product.slug === 'netflix-prime' 
+              ? 'linear-gradient(135deg, #ff6b00, #e50914)' // Clean gradient for Netflix+Prime
+              : `linear-gradient(135deg, ${accent}33, oklch(0.22 0.02 265))`,
             overflow: 'hidden', 
             borderRadius: 12,
             display: 'grid', 
@@ -186,10 +169,15 @@ export default function ProductDetail() {
                     height: '100%',
                     objectFit: product.slug === 'netflix-prime' ? 'contain' : 'cover',
                     objectPosition: 'center',
-                    padding: product.slug === 'netflix-prime' ? (isMobile ? '24px' : '40px') : '0',
+                    padding: product.slug === 'netflix-prime' ? (isMobile ? '20px' : '32px') : '0', // Reduced padding for better fit
                     display: 'block', 
                     position: 'relative', 
                     zIndex: 1,
+                    // Netflix+Prime specific scaling and positioning for clean look
+                    ...(product.slug === 'netflix-prime' && {
+                      transform: 'scale(0.85)', // Scale down slightly for better proportion
+                      filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.4))', // Add shadow for depth
+                    })
                   }} />
               : <span style={{ 
                   fontSize: isMobile ? 20 : isTablet ? 24 : 28, 

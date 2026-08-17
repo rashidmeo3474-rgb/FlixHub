@@ -7,17 +7,16 @@ import ProductCard from '../components/ProductCard.jsx';
 import LoginGateModal from '../components/LoginGateModal.jsx';
 
 export default function Home() {
-  const { t }    = useI18n();
+  const { data, loading } = useApi('/api/products');
+  const { t } = useI18n();
   const { user } = useAuth();
-  const { data, loading } = useApi('/products');
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
 
-  // Detect screen size for responsive behavior
   useEffect(() => {
     const checkScreenSize = () => {
-      const mobile = window.innerWidth <= 640;
-      const tablet = window.innerWidth > 640 && window.innerWidth <= 1024;
+      const mobile = window.innerWidth <= 768;
+      const tablet = window.innerWidth > 768 && window.innerWidth <= 1024;
       setIsMobile(mobile);
       setIsTablet(tablet);
     };
@@ -31,12 +30,12 @@ export default function Home() {
   const all = data?.products || [];
 
   const FALLBACK_CARDS = {
-    'netflix':        { _id: 'netflix',        slug: 'netflix',        name: 'Netflix',               accent: '#e50914', monthlyPrice: 450,  compareAt: 600,  inStock: 8, logo: '/logos/netflix.jpg'       },
-    'prime-video':    { _id: 'prime-video',    slug: 'prime-video',    name: 'Prime Video',           accent: '#00a8e1', monthlyPrice: 350,  compareAt: 500,  inStock: 8, logo: '/logos/prime-video-new.png'   },
-    'disney':         { _id: 'disney',         slug: 'disney',         name: 'Disney+',               accent: '#4b6cf7', monthlyPrice: 400,  compareAt: 550,  inStock: 8, logo: null                       },
-    'apple-tv-1080p': { _id: 'apple-tv-1080p', slug: 'apple-tv-1080p', name: 'Apple TV+',             accent: '#d8d8d8', monthlyPrice: 1800, compareAt: 2500, inStock: 8, logo: '/logos/apple-tv.png'      },
-    'netflix-prime':  { _id: 'netflix-prime',  slug: 'netflix-prime',  name: 'Netflix + Prime Video', accent: '#ff6b00', monthlyPrice: 600,  compareAt: 1000, inStock: 8, logo: '/logos/netflix-prime-home.png' },
-    'hbo-max':        { _id: 'hbo-max',        slug: 'hbo-max',        name: 'HBO Max',               accent: '#9b30ff', monthlyPrice: 450,  compareAt: 600,  inStock: 8, logo: '/logos/hbo-max-new.png'       },
+    'netflix':        { _id: 'netflix',        slug: 'netflix',        name: 'Netflix',               accent: '#e50914', monthlyPrice: 450,  compareAt: 600,  inStock: 8, logo: '/scenes/n01.jpg', quality: '720p HD'       },
+    'prime-video':    { _id: 'prime-video',    slug: 'prime-video',    name: 'Prime Video',           accent: '#00a8e1', monthlyPrice: 350,  compareAt: 500,  inStock: 8, logo: '/uploads/images (4).jpeg', quality: '4K UHD'   },
+    'disney':         { _id: 'disney',         slug: 'disney',         name: 'Disney+',               accent: '#4b6cf7', monthlyPrice: 400,  compareAt: 550,  inStock: 8, logo: '/uploads/images (2).jpeg', quality: '4K UHD'   },
+    'apple-tv-1080p': { _id: 'apple-tv-1080p', slug: 'apple-tv-1080p', name: 'Apple TV+',             accent: '#d8d8d8', monthlyPrice: 1800, compareAt: 2500, inStock: 8, logo: '/logos/apple-tv.png', quality: '8K UHD'      },
+    'netflix-prime':  { _id: 'netflix-prime',  slug: 'netflix-prime',  name: 'Netflix + Prime Video', accent: '#ff6b00', monthlyPrice: 600,  compareAt: 1000, inStock: 8, logo: '/scenes/f01.jpg', quality: '4K UHD' },
+    'hbo-max':        { _id: 'hbo-max',        slug: 'hbo-max',        name: 'HBO Max',               accent: '#9b30ff', monthlyPrice: 450,  compareAt: 600,  inStock: 8, logo: '/scenes/f02.jpg', quality: '4K UHD'       },
   };
 
   const products = HOME_SLUGS.map(slug => all.find(p => p.slug === slug) || FALLBACK_CARDS[slug]);
@@ -46,20 +45,20 @@ export default function Home() {
   const steps = [
     { 
       n: '1', 
-      title: t('viewPlan'),  
-      body: t('duration'),
+      title: t('viewPlan') || 'View Plan',  
+      body: t('duration') || 'Choose your duration',
       icon: '👁️'
     },
     { 
       n: '2', 
-      title: t('pay'),       
-      body: t('paymentMethod'),
+      title: t('pay') || 'Pay',       
+      body: t('paymentMethod') || 'Select payment method',
       icon: '💳'
     },
     { 
       n: '3', 
-      title: t('delivered'), 
-      body: t('credentials'),
+      title: t('delivered') || 'Delivered', 
+      body: t('credentials') || 'Get your credentials',
       icon: '✅'
     },
   ];
@@ -118,14 +117,14 @@ export default function Home() {
                 alignSelf: isMobile ? 'center' : 'flex-start',
               }}
             >
-              {t('heroBadge')}
+              {t('heroBadge') || '100% Automated · Instant Delivery'}
             </span>
             <h1 style={{ 
               fontSize: isMobile ? 'clamp(28px, 8vw, 40px)' : isTablet ? 'clamp(32px, 6vw, 48px)' : 'clamp(36px, 5vw, 58px)', 
               lineHeight: isMobile ? 1.1 : 1.04,
               marginBottom: isMobile ? 8 : 0,
             }}>
-              {t('heroTitle')}
+              {t('heroTitle') || 'Premium subscriptions. Paid & delivered in seconds.'}
             </h1>
             <p 
               className="muted" 
@@ -135,7 +134,7 @@ export default function Home() {
                 maxWidth: isMobile ? '100%' : 540,
               }}
             >
-              {t('heroSub')}
+              {t('heroSub') || 'No screenshots, no waiting. Pay through a secure gateway and your account details appear instantly on screen and in your email.'}
             </p>
             <div 
               className="row" 
@@ -153,7 +152,7 @@ export default function Home() {
                   fontSize: isMobile ? 14 : 15,
                 }}
               >
-                {t('browse')} →
+                {t('browse') || 'Browse plans'} →
               </Link>
               <a 
                 className="btn btn-ghost" 
@@ -163,14 +162,14 @@ export default function Home() {
                   fontSize: isMobile ? 14 : 15,
                 }}
               >
-                {t('howItWorks')}
+                {t('howItWorks') || 'How it works'}
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* product grid */}
+      {/* product grid with original complex ProductCard components */}
       <section 
         className="product-showcase"
         style={{ 
@@ -193,7 +192,7 @@ export default function Home() {
             fontSize: isMobile ? 'clamp(20px, 6vw, 28px)' : isTablet ? 'clamp(22px, 4vw, 30px)' : 'clamp(24px, 3vw, 34px)',
             margin: 0,
           }}>
-            {t('shop')}
+            {t('shop') || 'Shop'}
           </h2>
           <Link 
             to="/shop"
@@ -209,7 +208,7 @@ export default function Home() {
               transition: 'all 0.2s ease',
             }}
           >
-            {t('browse')} →
+            {t('browse') || 'Browse'} →
           </Link>
         </div>
 
@@ -255,7 +254,7 @@ export default function Home() {
                   animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`,
                 }}
               >
-                <ProductCard product={p} />
+                <ProductCard product={p} index={index} />
               </div>
             ))}
           </div>
@@ -295,7 +294,7 @@ export default function Home() {
           marginBottom: isMobile ? 16 : 22,
           textAlign: isMobile ? 'center' : 'left',
         }}>
-          {t('howItWorks')}
+          {t('howItWorks') || 'How it works'}
         </h2>
         <div 
           className={isMobile ? 'grid grid-1' : isTablet ? 'grid grid-2' : 'grid grid-3'}
