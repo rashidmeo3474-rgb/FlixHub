@@ -27,10 +27,10 @@ export default function StoreLayout() {
   }, []);
 
   const navigationItems = [
-    { to: '/', label: t('home'), end: true, icon: '🏠' },
-    { to: '/shop', label: t('shop'), icon: '🛍️' },
-    { to: '/orders', label: t('orders'), icon: '📋' },
-    { to: '/contact', label: t('contact'), icon: '📞' },
+    { to: '/', label: 'Home', end: true, icon: '🏠' },
+    { to: '/shop', label: 'Shop', icon: '🛍️' },
+    { to: '/orders', label: 'Orders', icon: '📋' },
+    { to: '/contact', label: 'Contact', icon: '📞' },
   ];
 
   return (
@@ -62,17 +62,17 @@ export default function StoreLayout() {
               <button 
                 className="btn btn-ghost btn-sm" 
                 onClick={() => { logout(); navigate('/'); }}
-                title={t('logout')}
+                title="Logout"
               >
-                👤 <span className="desktop-only">{t('logout')}</span>
+                👤 Logout
               </button>
             ) : (
               <Link 
                 className="btn btn-ghost btn-sm" 
                 to="/login"
-                title={t('login')}
+                title="Login"
               >
-                👤 <span className="desktop-only">{t('login')}</span>
+                👤 Login
               </Link>
             )}
             <Link 
@@ -150,9 +150,9 @@ export default function StoreLayout() {
 
       <footer className="footer">
         <div className="inner">
-          <span>© {SITE} — {t('heroBadge')}</span>
+          <span>© {SITE} — Premium Streaming Services</span>
           <Link to="/admin/login">
-            {t('adminPortal')}
+            Admin Portal
           </Link>
         </div>
       </footer>
