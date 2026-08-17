@@ -133,7 +133,6 @@ export default function Home() {
                 gap: isMobile ? 8 : 12,
               }}
             >
-            >
               <Link 
                 className="btn" 
                 to="/shop"
