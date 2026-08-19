@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logo Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #0a0a0f; color: white; }
+        .logo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .logo-item { text-align: center; padding: 20px; border: 1px solid #333; border-radius: 8px; }
+        .logo-item img { width: 100px; height: 60px; object-fit: contain; background: white; border-radius: 4px; padding: 10px; }
+        .status { margin-top: 10px; font-size: 12px; }
+        .success { color: #22c55e; }
+        .error { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <h1>Logo Accessibility Test</h1>
+    <div class="logo-grid" id="logoGrid"></div>
+
+    <script>
+        const logos = [
+            { name: 'Netflix', path: '/logos/netflix.jpg' },
+            { name: 'Netflix PNG', path: '/logos/netflix.png' },
+            { name: 'Disney+', path: '/logos/disney.png' },
+            { name: 'Prime Video', path: '/logos/prime-video-card.jpeg' },
+            { name: 'Apple TV+', path: '/logos/apple.png' },
+            { name: 'HBO Max', path: '/logos/hbo-max-new.png' },
+            { name: 'Netflix + Prime', path: '/logos/netflix-prime-home.png' },
+            { name: 'HBO Shop', path: '/logos/hbo-max-shop.png' }
+        ];
+
+        const grid = document.getElementById('logoGrid');
+
+        logos.forEach(logo => {
+            const item = document.createElement('div');
+            item.className = 'logo-item';
+            
+            const img = document.createElement('img');
+            img.src = logo.path;
+            img.alt = logo.name;
+            
+            const title = document.createElement('h3');
+            title.textContent = logo.name;
+            
+            const status = document.createElement('div');
+            status.className = 'status';
+            status.textContent = 'Loading...';
+            
+            img.onload = () => {
+                status.textContent = '✅ Loaded successfully';
+                status.className = 'status success';
+            };
+            
+            img.onerror = () => {
+                status.textContent = '❌ Failed to load';
+                status.className = 'status error';
+            };
+            
+            item.appendChild(title);
+            item.appendChild(img);
+            item.appendChild(status);
+            grid.appendChild(item);
+        });
+    </script>
+</body>
+</html>

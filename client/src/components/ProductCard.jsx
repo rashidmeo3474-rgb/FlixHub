@@ -2,16 +2,18 @@ import { Link } from 'react-router-dom';
 import { money } from '../utils/format.js';
 
 const LOGOS = {
-  netflix: '/logos/netflix.png',
-  'netflix-prime': '/logos/netflix-prime.jpg',
+  netflix: '/logos/netflix.jpg',
+  'netflix-prime': '/logos/netflix-prime-home.png',
   'prime-video': '/logos/prime-video-card.jpeg',
-  'apple-tv': '/logos/apple-tv.png',
-  'hbo-max': '/logos/hbo-max.png'
+  'apple-tv-1080p': '/logos/apple.png',
+  'disney': '/logos/disney.png',
+  'hbo-max': '/logos/hbo-max-new.png'
 };
 
 export default function ProductCard({ product, index = 0 }) {
-  const logoSrc = LOGOS[product.slug] || product.image;
-  const basePrice = product.prices?.[0]?.amount || 0;
+  // Use the logo from the product object first, then fallback to LOGOS mapping
+  const logoSrc = product.logo || LOGOS[product.slug] || '/logos/netflix.jpg';
+  const basePrice = product.monthlyPrice || product.prices?.[0]?.amount || 0;
 
   return (
     <Link
@@ -56,7 +58,8 @@ export default function ProductCard({ product, index = 0 }) {
               borderRadius: 8
             }}
             onError={e => {
-              e.target.src = '/logos/netflix.png';
+              console.log('Image failed to load:', e.target.src);
+              e.target.src = '/logos/netflix.jpg';
             }}
           />
         </div>
