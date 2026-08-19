@@ -29,6 +29,7 @@ export default function StoreLayout() {
   const navigationItems = [
     { to: '/', label: 'Home', end: true, icon: '🏠' },
     { to: '/shop', label: 'Shop', icon: '🛍️' },
+    ...(user ? [{ to: '/dashboard', label: 'Dashboard', icon: '👤' }] : []),
     { to: '/orders', label: 'Orders', icon: '📋' },
     { to: '/contact', label: 'Contact', icon: '📞' },
   ];
@@ -59,13 +60,47 @@ export default function StoreLayout() {
 
           <div className="header-actions desktop-actions">
             {user ? (
-              <button 
-                className="btn btn-ghost btn-sm" 
-                onClick={() => { logout(); navigate('/'); }}
-                title="Logout"
-              >
-                👤 Logout
-              </button>
+              <div className="user-section" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Link 
+                  to="/dashboard" 
+                  className="btn btn-ghost btn-sm user-btn"
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 6,
+                    padding: '6px 12px',
+                  }}
+                  title={`Welcome ${user.name || user.email}`}
+                >
+                  <div 
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, oklch(0.82 0.18 65), oklch(0.65 0.22 25))',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 11,
+                      fontWeight: 800,
+                      color: 'var(--bg)',
+                    }}
+                  >
+                    {(user.name || user.email).charAt(0).toUpperCase()}
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 600 }}>
+                    {user.name ? user.name.split(' ')[0] : user.email.split('@')[0]}
+                  </span>
+                </Link>
+                <button 
+                  className="btn btn-ghost btn-sm" 
+                  onClick={() => { logout(); navigate('/'); }}
+                  title="Logout"
+                  style={{ fontSize: 13 }}
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
               <Link 
                 className="btn btn-ghost btn-sm" 
@@ -126,6 +161,41 @@ export default function StoreLayout() {
 
         {menuOpen && (
           <div className="mobile-menu">
+            {user && (
+              <div className="mobile-user-section" style={{
+                padding: '16px 20px',
+                borderBottom: '1px solid var(--line)',
+                background: 'oklch(0.16 0.014 265)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                  <div 
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, oklch(0.82 0.18 65), oklch(0.65 0.22 25))',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 14,
+                      fontWeight: 800,
+                      color: 'var(--bg)',
+                    }}
+                  >
+                    {(user.name || user.email).charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 14 }}>
+                      {user.name || user.email.split('@')[0]}
+                    </div>
+                    <div className="muted" style={{ fontSize: 11 }}>
+                      {user.email}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div className="mobile-nav-section">
               {navigationItems.map(({ to, label, end, icon }) => (
                 <NavLink 
@@ -139,6 +209,29 @@ export default function StoreLayout() {
                   <span>{label}</span>
                 </NavLink>
               ))}
+              
+              {user && (
+                <button
+                  onClick={() => { logout(); navigate('/'); closeMenu(); }}
+                  className="mobile-nav-link"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'inherit',
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '12px 20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    borderTop: '1px solid var(--line)',
+                    marginTop: '8px',
+                  }}
+                >
+                  <span>🚪</span>
+                  <span>Logout</span>
+                </button>
+              )}
             </div>
           </div>
         )}

@@ -14,6 +14,7 @@ import Orders from './pages/Orders.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Contact from './pages/Contact.jsx';
+import UserDashboard from './pages/UserDashboard.jsx';
 
 /* admin */
 import AdminLogin from './admin/AdminLogin.jsx';
@@ -47,6 +48,7 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} />
         <Route path="/orders" element={<ProtectedRoute role="user"><Orders /></ProtectedRoute>} />
         <Route path="/subscriptions" element={<ProtectedRoute role="user"><MySubscriptions /></ProtectedRoute>} />
       </Route>
