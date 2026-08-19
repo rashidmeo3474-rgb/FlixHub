@@ -76,34 +76,34 @@ export default function Checkout() {
         {t('checkout')}
       </h1>
 
-      {/* Progress steps */}
-      <div 
-        className="steps" 
-        style={{
-          marginBottom: isMobile ? 24 : 32,
-          gap: isMobile ? 6 : 10,
-        }}
-      >
-        {[t('email'), t('pay'), t('delivered')].map((label, i) => (
-          <div key={label} style={{ flex: 1 }}>
-            <div 
-              className={i === 0 ? 'bar on' : 'bar'} 
-              style={{
-                height: isMobile ? 3 : 5,
-              }}
-            />
-            <span style={{ 
-              fontSize: isMobile ? 11 : 12.5, 
-              fontWeight: 700,
-              display: 'block',
-              marginTop: isMobile ? 4 : 7,
-              textAlign: 'center',
-            }}>
-              {label}
-            </span>
-          </div>
-        ))}
-      </div>
+        <div 
+          className="steps" 
+          style={{
+            marginBottom: isMobile ? 24 : 32,
+            gap: isMobile ? 6 : 10,
+          }}
+        >
+          {[t('email'), t('pay'), t('delivered')].map((label, i) => (
+            <div key={label} style={{ flex: 1 }}>
+              <div 
+                className={i === 0 ? 'bar on' : 'bar'} 
+                style={{
+                  height: isMobile ? 3 : 4,
+                }}
+              />
+              <span style={{ 
+                fontSize: isMobile ? 11 : 12.5, 
+                fontWeight: 600,
+                display: 'block',
+                marginTop: isMobile ? 6 : 8,
+                textAlign: 'center',
+                color: i === 0 ? 'var(--accent)' : 'var(--muted)',
+              }}>
+                {label}
+              </span>
+            </div>
+          ))}
+        </div>
 
       <form 
         className={isMobile ? 'checkout-mobile' : 'grid grid-2 checkout-grid'} 

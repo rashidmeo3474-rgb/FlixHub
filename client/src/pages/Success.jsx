@@ -25,12 +25,30 @@ export default function Success() {
             <div className="creds" key={i}>
               <div className="spread">
                 <strong>{item.name}</strong>
-                <span className="badge" style={{ background: 'var(--accent)', color: 'var(--bg)' }}>{monthsLabel(item.months, t)}</span>
+                <span className="badge" style={{ background: 'var(--accent)', color: 'var(--bg)' }}>
+                  {monthsLabel(item.months, t)}
+                </span>
               </div>
-              <div className="cred-row"><span className="muted">email</span><span>{item.credentials?.login}</span></div>
-              <div className="cred-row"><span className="muted">password</span><span>{item.credentials?.password}</span></div>
-              {item.credentials?.profile && <div className="cred-row"><span className="muted">profile</span><span>{item.credentials.profile}</span></div>}
-              {item.credentials?.expiresAt && <div className="cred-row"><span className="muted">valid until</span><span>{formatDate(item.credentials.expiresAt)}</span></div>}
+              <div className="cred-row">
+                <span className="muted">Email</span>
+                <span>{item.credentials?.login}</span>
+              </div>
+              <div className="cred-row">
+                <span className="muted">Password</span>
+                <span>{item.credentials?.password}</span>
+              </div>
+              {item.credentials?.profile && (
+                <div className="cred-row">
+                  <span className="muted">Profile</span>
+                  <span>{item.credentials.profile}</span>
+                </div>
+              )}
+              {item.credentials?.expiresAt && (
+                <div className="cred-row">
+                  <span className="muted">Valid Until</span>
+                  <span>{formatDate(item.credentials.expiresAt)}</span>
+                </div>
+              )}
             </div>
           ))}
         </div>

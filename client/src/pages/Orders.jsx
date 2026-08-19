@@ -42,8 +42,14 @@ export default function Orders() {
                       <strong style={{ fontSize: 14 }}>{item.name}</strong>
                       <span className="muted" style={{ fontSize: 12.5 }}>{monthsLabel(item.months, t)}</span>
                     </div>
-                    <div className="cred-row"><span className="muted">email</span><span>{item.credentials?.login}</span></div>
-                    <div className="cred-row"><span className="muted">password</span><span>{item.credentials?.password}</span></div>
+                    <div className="cred-row">
+                      <span className="muted">Email</span>
+                      <span>{item.credentials?.login}</span>
+                    </div>
+                    <div className="cred-row">
+                      <span className="muted">Password</span>
+                      <span>{item.credentials?.password}</span>
+                    </div>
                   </div>
                 ))}
               </div>

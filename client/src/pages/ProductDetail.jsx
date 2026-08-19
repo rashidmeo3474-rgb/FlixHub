@@ -16,6 +16,17 @@ export default function ProductDetail() {
   const [selectedDuration, setSelectedDuration] = useState(1);
   const [showGate, setShowGate] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile screen
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const product = data?.product;
 
@@ -86,8 +97,8 @@ export default function ProductDetail() {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
-          gap: 40
+          gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)',
+          gap: isMobile ? 24 : 40
         }}>
           <div>
             <img
