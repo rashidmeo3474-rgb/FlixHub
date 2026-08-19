@@ -303,3 +303,161 @@ a:hover { color: oklch(0.9 0.1 195); }
   background: oklch(0.7 0.19 60 / 0.18);
   color: var(--warn);
 }
+
+/* Hero section styles */
+.hero-section {
+  background: linear-gradient(135deg, 
+    oklch(0.09 0.02 265) 0%, 
+    oklch(0.07 0.01 265) 100%),
+    url('/scenes/f01.jpg') center/cover no-repeat;
+  background-blend-mode: overlay;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+}
+
+/* Product showcase styles */
+.product-showcase {
+  position: relative;
+}
+
+.home-product-grid {
+  display: grid;
+  gap: 16px;
+}
+
+/* Grid helper classes for responsive design */
+.grid {
+  display: grid;
+  gap: 20px;
+}
+
+.grid-1 {
+  grid-template-columns: 1fr;
+}
+
+/* Missing responsive grid classes */
+@media (max-width: 640px) {
+  .home-product-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .hero-section {
+    min-height: 50vh;
+    padding: 40px 0 !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .home-product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  
+  .hero-section {
+    min-height: 55vh;
+  }
+}
+
+@media (min-width: 1025px) {
+  .home-product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+/* Button ghost style - missing variant */
+.btn.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.btn.btn-ghost:hover {
+  background: var(--surface);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+}
+
+/* Skeleton loading enhancement */
+@keyframes skeletonShimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg, 
+    oklch(0.13 0.014 265 / 0.8) 25%, 
+    oklch(0.15 0.014 265 / 0.9) 50%, 
+    oklch(0.13 0.014 265 / 0.8) 75%
+  );
+  background-size: 200px 100%;
+  animation: skeletonShimmer 1.5s infinite;
+}
+
+/* Improved card hover effects */
+.card {
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.card:hover::before {
+  left: 100%;
+}
+
+/* Typography enhancements */
+h1, h2, h3, .display {
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus states for accessibility */
+.btn:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Improved mobile touch targets */
+@media (max-width: 640px) {
+  .btn {
+    min-height: 44px;
+    padding: 16px 24px;
+  }
+  
+  .chip {
+    min-height: 44px;
+    padding: 12px 20px;
+  }
+}

@@ -6,11 +6,12 @@ import { useAuth } from '../context/AuthContext.jsx';
 import ProductCard from '../components/ProductCard.jsx';
 import LoginGateModal from '../components/LoginGateModal.jsx';
 export default function Home() {
-  const { t }    = useI18n();
+  const { t } = useI18n();
   const { user } = useAuth();
   const { data, loading } = useApi('/products');
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
   // Detect screen size for responsive behavior
   useEffect(() => {
     const checkScreenSize = () => {
@@ -23,6 +24,18 @@ export default function Home() {
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
+
+  // Handle loading timeout for better UX
+  useEffect(() => {
+    if (loading) {
+      const timer = setTimeout(() => {
+        setLoadingTimeout(true);
+      }, 3000); // Show fallback after 3 seconds
+      return () => clearTimeout(timer);
+    } else {
+      setLoadingTimeout(false);
+    }
+  }, [loading]);
   const HOME_SLUGS = ['netflix', 'prime-video', 'disney', 'apple-tv-1080p', 'netflix-prime', 'hbo-max'];
   const all = data?.products || [];
   const FALLBACK_CARDS = {
@@ -199,7 +212,7 @@ export default function Home() {
             {t('browse')} →
           </Link>
         </div>
-        {loading && (
+        {loading && !loadingTimeout && (
           <div 
             className="home-product-grid" 
             style={{ 
@@ -214,15 +227,28 @@ export default function Home() {
                 style={{
                   borderRadius: 18, 
                   height: isMobile ? 280 : isTablet ? 320 : 340,
-                  background: 'oklch(0.13 0.014 265 / 0.97)',
-                  animation: 'skeletonPulse 1.4s ease-in-out infinite',
+                  background: 'linear-gradient(90deg, oklch(0.13 0.014 265 / 0.8) 25%, oklch(0.15 0.014 265 / 0.9) 50%, oklch(0.13 0.014 265 / 0.8) 75%)',
+                  backgroundSize: '200px 100%',
+                  animation: 'skeletonShimmer 1.5s infinite',
                   animationDelay: `${i * 0.1}s`,
                 }} 
               />
             ))}
           </div>
         )}
-        {!loading && (
+        
+        {loadingTimeout && loading && (
+          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <p className="muted" style={{ marginBottom: '16px' }}>
+              ⏱️ Loading is taking longer than expected...
+            </p>
+            <p style={{ fontSize: '14px', color: 'var(--muted)' }}>
+              The backend server might not be running. Showing cached products.
+            </p>
+          </div>
+        )}
+        
+        {(!loading || loadingTimeout) && (
           <div 
             className="home-product-grid" 
             style={{ 
