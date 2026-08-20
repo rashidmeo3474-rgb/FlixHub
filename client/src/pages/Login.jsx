@@ -17,7 +17,7 @@ export default function Login() {
     setBusy(true); setError(null);
     try {
       await login(form.email, form.password);
-      navigate(state?.from || '/orders', { replace: true });
+      navigate(state?.from || '/dashboard', { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {

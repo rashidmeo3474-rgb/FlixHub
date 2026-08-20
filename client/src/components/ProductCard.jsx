@@ -1,212 +1,157 @@
 import { Link } from 'react-router-dom';
-import { useI18n } from '../context/I18nContext.jsx';
+import { useState, useEffect } from 'react';
 import { money } from '../utils/format.js';
-import { useRef, useEffect, useState } from 'react';
+import { getImageSrc } from '../utils/imageUtils.js';
 
-/* ── Per-product logo map (local public/logos/) ── */
 const LOGOS = {
-  'netflix':        '/logos/netflix.png',
-  'netflix-480p':   '/logos/netflix.png',
-  'netflix-720p':   '/logos/netflix.png',
-  'netflix-4k':     '/logos/netflix.png',
-  'netflix-8k':     '/logos/netflix.png',
-  'prime-video':    '/logos/prime-video-new.png',
-  'hbo-max':        '/logos/hbo-max-new.png',
-  'hbo-480p':       '/logos/hbo-max-new.png',
-  'hbo-720p':       '/logos/hbo-max-new.png',
-  'hbo-4k':         '/logos/hbo-max-new.png',
-  'hbo-8k':         '/logos/hbo-max-new.png',
-  'apple-tv':       '/logos/apple-tv.png',
-  'apple-tv-1080p': '/logos/apple-tv.png',
-  'apple-tv-8k':    '/logos/apple-tv.png',
-  'netflix-prime':  '/logos/netflix-prime-home.png',
+  netflix: '/logos/netflix.jpg',
+  'netflix-prime': '/logos/netflix-prime-home.png',
+  'prime-video': '/logos/prime-video-card.jpeg',
+  'apple-tv-1080p': '/logos/apple.png',
+  'disney': '/logos/disney-simple.svg',
+  'hbo-max': '/logos/hbo-max-new.png'
 };
-
-/* ── Per-product theme: color, particle style, animation speed ── */
-const THEMES = {
-  'netflix':      { accent: '#e50914', particle: '★', label: 'Action · Drama',    speed: 3.2, shimmerColor: 'rgba(229,9,20,0.25)' },
-  'prime-video':  { accent: '#00a8e1', particle: '⬡', label: 'Adventure · Sci-Fi', speed: 4.0, shimmerColor: 'rgba(0,168,225,0.25)' },
-  'disney':       { accent: '#4b6cf7', particle: '✦', label: 'Fantasy · Family',   speed: 3.6, shimmerColor: 'rgba(75,108,247,0.25)' },
-  'apple-tv':     { accent: '#d8d8d8', particle: '◆', label: 'Premium · Thriller', speed: 4.4, shimmerColor: 'rgba(216,216,216,0.18)' },
-  'netflix-prime':{ accent: '#ff6b00', particle: '⬟', label: 'Best Bundle',        speed: 2.8, shimmerColor: 'rgba(255,107,0,0.28)' },
-  'hbo-max':      { accent: '#9b30ff', particle: '✧', label: 'Dark · History',     speed: 3.8, shimmerColor: 'rgba(155,48,255,0.25)' },
-};
-
-/* Quality badge colors */
-const QUALITY_COLORS = {
-  '480p SD':  { bg: 'rgba(160,185,230,0.14)', color: '#a0b9e6', border: 'rgba(160,185,230,0.25)' },
-  '720p HD':  { bg: 'rgba(0,240,255,0.12)',   color: '#00F0FF', border: 'rgba(0,240,255,0.28)'   },
-  '1080p HD': { bg: 'rgba(0,255,135,0.12)',   color: '#00FF87', border: 'rgba(0,255,135,0.28)'   },
-  '4K UHD':   { bg: 'rgba(157,0,255,0.14)',   color: '#C084FF', border: 'rgba(157,0,255,0.30)'   },
-  '8K UHD':   { bg: 'rgba(255,214,0,0.14)',   color: '#FFD600', border: 'rgba(255,214,0,0.28)'   },
-};
-
-const getTheme = (slug) => THEMES[slug] || { accent: '#54d6e8', particle: '•', label: '', speed: 4, shimmerColor: 'rgba(84,214,232,0.2)' };
 
 export default function ProductCard({ product, index = 0 }) {
-  const { t } = useI18n();
-  const out = product.inStock === 0;
-  const cardRef = useRef(null);
-  const [ripples, setRipples] = useState([]);
-  const theme = getTheme(product.slug);
-  const accent = product.accent || theme.accent;
-  const logo = LOGOS[product.slug] || product.logo || null;
+  const [imageSrc, setImageSrc] = useState('/logos/netflix.jpg');
+  const [imageError, setImageError] = useState(false);
+
+  // Determine the correct image source
+  const logoSrc = product.logo || LOGOS[product.slug] || '/logos/netflix.jpg';
+  const basePrice = product.monthlyPrice || product.prices?.[0]?.amount || 0;
 
   useEffect(() => {
-    const card = cardRef.current;
-    if (!card) return;
-    card.style.animationDelay = `${(index % 4) * 0.55}s`;
-    card.style.animationDuration = `${theme.speed}s`;
-    // Add performance optimizations
-    card.style.willChange = 'transform, opacity';
-    card.style.transform = 'translate3d(0, 0, 0)'; // Force hardware acceleration
-  }, [index, theme.speed]);
+    setImageSrc(getImageSrc(logoSrc));
+    setImageError(false);
+  }, [logoSrc]);
 
-  function handleMouseMove(e) {
-    const card = cardRef.current;
-    if (!card) return;
-    
-    // Throttle mouse move events for better performance
-    if (card.dataset.throttled) return;
-    card.dataset.throttled = 'true';
-    requestAnimationFrame(() => {
-      const rect = card.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 18;
-      const y = ((e.clientY - rect.top) / rect.height - 0.5) * -18;
-      card.style.setProperty('--rx', `${y}deg`);
-      card.style.setProperty('--ry', `${x}deg`);
-      card.style.setProperty('--mx', `${((e.clientX - rect.left) / rect.width) * 100}%`);
-      card.style.setProperty('--my', `${((e.clientY - rect.top) / rect.height) * 100}%`);
-      card.classList.add('pcard--tilting');
-      delete card.dataset.throttled;
-    });
-  }
-
-  function handleMouseLeave() {
-    const card = cardRef.current;
-    if (!card) return;
-    card.classList.remove('pcard--tilting');
-    card.style.setProperty('--rx', '0deg');
-    card.style.setProperty('--ry', '0deg');
-  }
-
-  function handleClick(e) {
-    const card = cardRef.current;
-    if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const id = Date.now();
-    setRipples(prev => [...prev, { id, x: e.clientX - rect.left, y: e.clientY - rect.top }]);
-    setTimeout(() => setRipples(prev => prev.filter(r => r.id !== id)), 700);
-  }
+  const handleImageError = () => {
+    if (!imageError) {
+      setImageError(true);
+      setImageSrc('/logos/netflix.jpg'); // Fallback to default
+    }
+  };
 
   return (
-    <article
-      ref={cardRef}
-      className="pcard"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
+    <Link
+      to={`/product/${product.slug}`}
       style={{
-        '--accent': accent,
-        '--rx': '0deg', '--ry': '0deg',
-        '--mx': '50%',  '--my': '50%',
-        '--shimmer-color': theme.shimmerColor,
+        display: 'block',
+        textDecoration: 'none',
+        color: 'inherit'
       }}
     >
-      {/* spinning accent border ring */}
-      <div className="pcard-ring" />
-
-      {/* mouse spotlight */}
-      <div className="pcard-glare" />
-
-      {/* click ripples */}
-      {ripples.map(r => (
-        <span key={r.id} className="pcard-ripple" style={{ left: r.x, top: r.y }} />
-      ))}
-
-      {/* ── HERO IMAGE AREA ── */}
-      <div className="pcard-hero" style={logo ? {
-        backgroundImage: `url(${logo})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center top',
-      } : {}}>
-        {!logo && null}
-
-        {/* quality badge using existing CSS class */}
-        {product.quality && (
-          <span 
-            className="pcard-quality"
+      <div
+        style={{
+          background: 'linear-gradient(135deg, oklch(0.15 0.02 280) 0%, oklch(0.12 0.03 260) 100%)',
+          borderRadius: 18,
+          padding: 20,
+          height: '100%',
+          minHeight: 300,
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          overflow: 'hidden',
+          transition: 'all 0.3s ease',
+          cursor: 'pointer',
+          border: '1px solid oklch(0.2 0.02 260 / 0.3)'
+        }}
+      >
+        <div style={{
+          width: '100%',
+          height: 140,
+          marginBottom: 16,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <img
+            src={imageSrc}
+            alt={product.name}
             style={{
-              background: (QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).bg,
-              color: (QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).color,
-              border: `1px solid ${(QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).border}`,
-              boxShadow: `0 0 8px ${(QUALITY_COLORS[product.quality] || QUALITY_COLORS['1080p HD']).border}`,
+              maxWidth: '100%',
+              maxHeight: '100%',
+              objectFit: 'contain',
+              borderRadius: 8
             }}
-          >
-            {product.quality}
-          </span>
-        )}
-
-        {/* genre label bottom-left */}
-        {theme.label && (
-          <span style={{
-            position: 'absolute', bottom: 10, left: 12, zIndex: 4,
-            fontSize: 10, fontWeight: 800, letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            color: accent, opacity: 0.85,
-            textShadow: `0 0 8px ${accent}`,
-          }}>{theme.label}</span>
-        )}
-
-        <div className="pcard-hero-overlay" />
-
-        {/* floating accent particles — themed symbol */}
-        <div className="pcard-particles" aria-hidden="true">
-          {[0, 1, 2].map(i => (
-            <span key={i} className={`pcard-dot pcard-dot-${i}`}
-              style={{
-                background: 'transparent',
-                color: accent,
-                fontSize: i === 0 ? 10 : i === 1 ? 8 : 6,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                textShadow: `0 0 6px ${accent}`,
-              }}>
-              {theme.particle}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* ── CARD BODY ── */}
-      <div className="pcard-body">
-        <div className="pcard-info">
-          <strong className="pcard-name">{product.name}</strong>
-          <span className={out ? 'badge badge-bad' : 'badge badge-good'}>
-            {out ? t('outOfStock') : `${product.inStock} ${t('inStock')}`}
-          </span>
+            onError={handleImageError}
+            loading="lazy"
+          />
         </div>
 
-        <div className="pcard-price">
-          <span className="pcard-amount" style={product.slug === 'netflix-prime' ? {
-              background: 'linear-gradient(90deg, #e50914, #00a8e1)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            } : { color: accent }}>
-            {money(product.monthlyPrice)}
-          </span>
-          {product.compareAt > 0 && <span className="strike">{money(product.compareAt)}</span>}
-        </div>
-
-        <Link className="pcard-btn" to={`/product/${product.slug}`}
-          style={product.slug === 'netflix-prime' ? {
-            background: 'linear-gradient(135deg, #e50914 0%, #6b0ac9 50%, #00a8e1 100%)',
-          } : {
-            background: `linear-gradient(135deg, ${accent}, ${accent}99)`,
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <h3 style={{
+            fontSize: 18,
+            fontWeight: 600,
+            marginBottom: 8,
+            lineHeight: 1.3,
+            color: 'oklch(0.95 0.01 280)'
           }}>
-          {t('viewPlan')}
-        </Link>
+            {product.name}
+          </h3>
+
+          <p style={{
+            color: 'oklch(0.7 0.01 260)',
+            fontSize: 14,
+            lineHeight: 1.5,
+            marginBottom: 16,
+            flex: 1
+          }}>
+            {product.description}
+          </p>
+
+          {product.quality && (
+            <div style={{
+              display: 'inline-flex',
+              backgroundColor: 'oklch(0.2 0.05 260 / 0.8)',
+              color: 'oklch(0.8 0.02 280)',
+              padding: '4px 10px',
+              borderRadius: 12,
+              fontSize: 12,
+              fontWeight: 500,
+              marginBottom: 12,
+              alignSelf: 'flex-start'
+            }}>
+              {product.quality}
+            </div>
+          )}
+
+          <div style={{
+            marginTop: 'auto',
+            padding: '12px 0'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <span style={{
+                color: 'oklch(0.6 0.01 260)',
+                fontSize: 13
+              }}>
+                Starting from
+              </span>
+              <div style={{
+                fontSize: 20,
+                fontWeight: 700,
+                color: 'oklch(0.9 0.02 280)',
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: 4
+              }}>
+                {money(basePrice)}
+                <span style={{
+                  fontSize: 12,
+                  fontWeight: 400,
+                  color: 'oklch(0.6 0.01 260)'
+                }}>
+                  /month
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </article>
+    </Link>
   );
 }

@@ -5,14 +5,13 @@ import { useI18n } from '../context/I18nContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import ProductCard from '../components/ProductCard.jsx';
 import LoginGateModal from '../components/LoginGateModal.jsx';
-
 export default function Home() {
-  const { t }    = useI18n();
+  const { t } = useI18n();
   const { user } = useAuth();
   const { data, loading } = useApi('/products');
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
-
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
   // Detect screen size for responsive behavior
   useEffect(() => {
     const checkScreenSize = () => {
@@ -21,28 +20,34 @@ export default function Home() {
       setIsMobile(mobile);
       setIsTablet(tablet);
     };
-    
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
+  // Handle loading timeout for better UX
+  useEffect(() => {
+    if (loading) {
+      const timer = setTimeout(() => {
+        setLoadingTimeout(true);
+      }, 3000); // Show fallback after 3 seconds
+      return () => clearTimeout(timer);
+    } else {
+      setLoadingTimeout(false);
+    }
+  }, [loading]);
   const HOME_SLUGS = ['netflix', 'prime-video', 'disney', 'apple-tv-1080p', 'netflix-prime', 'hbo-max'];
   const all = data?.products || [];
-
   const FALLBACK_CARDS = {
     'netflix':        { _id: 'netflix',        slug: 'netflix',        name: 'Netflix',               accent: '#e50914', monthlyPrice: 450,  compareAt: 600,  inStock: 8, logo: '/logos/netflix.jpg'       },
-    'prime-video':    { _id: 'prime-video',    slug: 'prime-video',    name: 'Prime Video',           accent: '#00a8e1', monthlyPrice: 350,  compareAt: 500,  inStock: 8, logo: '/logos/prime-video-new.png'   },
-    'disney':         { _id: 'disney',         slug: 'disney',         name: 'Disney+',               accent: '#4b6cf7', monthlyPrice: 400,  compareAt: 550,  inStock: 8, logo: null                       },
-    'apple-tv-1080p': { _id: 'apple-tv-1080p', slug: 'apple-tv-1080p', name: 'Apple TV+',             accent: '#d8d8d8', monthlyPrice: 1800, compareAt: 2500, inStock: 8, logo: '/logos/apple-tv.png'      },
+    'prime-video':    { _id: 'prime-video',    slug: 'prime-video',    name: 'Prime Video',           accent: '#00a8e1', monthlyPrice: 350,  compareAt: 500,  inStock: 8, logo: '/logos/prime-video-card.jpeg'   },
+    'disney':         { _id: 'disney',         slug: 'disney',         name: 'Disney+',               accent: '#4b6cf7', monthlyPrice: 400,  compareAt: 550,  inStock: 8, logo: '/logos/disney-simple.svg'        },    
+    'apple-tv-1080p': { _id: 'apple-tv-1080p', slug: 'apple-tv-1080p', name: 'Apple TV+',             accent: '#d8d8d8', monthlyPrice: 1800, compareAt: 2500, inStock: 8, logo: '/logos/apple.png'      },
     'netflix-prime':  { _id: 'netflix-prime',  slug: 'netflix-prime',  name: 'Netflix + Prime Video', accent: '#ff6b00', monthlyPrice: 600,  compareAt: 1000, inStock: 8, logo: '/logos/netflix-prime-home.png' },
     'hbo-max':        { _id: 'hbo-max',        slug: 'hbo-max',        name: 'HBO Max',               accent: '#9b30ff', monthlyPrice: 450,  compareAt: 600,  inStock: 8, logo: '/logos/hbo-max-new.png'       },
   };
-
   const products = HOME_SLUGS.map(slug => all.find(p => p.slug === slug) || FALLBACK_CARDS[slug]);
-
   const [gateProduct, setGateProduct] = useState(null);
-
   const steps = [
     { 
       n: '1', 
@@ -63,7 +68,6 @@ export default function Home() {
       icon: '✅'
     },
   ];
-
   const handleCardClick = (e, product) => {
     if (!user) {
       e.preventDefault();
@@ -71,14 +75,12 @@ export default function Home() {
       setGateProduct(product);
     }
   };
-
   // Get responsive grid columns
   const getGridColumns = () => {
     if (isMobile) return 1;
     if (isTablet) return 2;
     return 3;
   };
-
   return (
     <>
       {gateProduct && !user && (
@@ -87,7 +89,6 @@ export default function Home() {
           onClose={() => setGateProduct(null)}
         />
       )}
-
       {/* hero */}
       <section 
         className="hero-section"
@@ -169,7 +170,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* product grid */}
       <section 
         className="product-showcase"
@@ -212,8 +212,7 @@ export default function Home() {
             {t('browse')} →
           </Link>
         </div>
-
-        {loading && (
+        {loading && !loadingTimeout && (
           <div 
             className="home-product-grid" 
             style={{ 
@@ -228,16 +227,28 @@ export default function Home() {
                 style={{
                   borderRadius: 18, 
                   height: isMobile ? 280 : isTablet ? 320 : 340,
-                  background: 'oklch(0.13 0.014 265 / 0.97)',
-                  animation: 'skeletonPulse 1.4s ease-in-out infinite',
+                  background: 'linear-gradient(90deg, oklch(0.13 0.014 265 / 0.8) 25%, oklch(0.15 0.014 265 / 0.9) 50%, oklch(0.13 0.014 265 / 0.8) 75%)',
+                  backgroundSize: '200px 100%',
+                  animation: 'skeletonShimmer 1.5s infinite',
                   animationDelay: `${i * 0.1}s`,
                 }} 
               />
             ))}
           </div>
         )}
-
-        {!loading && (
+        
+        {loadingTimeout && loading && (
+          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <p className="muted" style={{ marginBottom: '16px' }}>
+              ⏱️ Loading is taking longer than expected...
+            </p>
+            <p style={{ fontSize: '14px', color: 'var(--muted)' }}>
+              The backend server might not be running. Showing cached products.
+            </p>
+          </div>
+        )}
+        
+        {(!loading || loadingTimeout) && (
           <div 
             className="home-product-grid" 
             style={{ 
@@ -260,7 +271,6 @@ export default function Home() {
             ))}
           </div>
         )}
-        
         {/* Mobile "View All" button */}
         {isMobile && (
           <div style={{ textAlign: 'center', marginTop: 24 }}>
@@ -280,7 +290,6 @@ export default function Home() {
           </div>
         )}
       </section>
-
       {/* how it works */}
       <section 
         id="how" 
@@ -358,7 +367,6 @@ export default function Home() {
             </div>
           ))}
         </div>
-        
         {/* Mobile CTA */}
         {isMobile && (
           <div style={{ 

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import api from '../api/client.js';
 
 const AuthContext = createContext(null);
+
 export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }) {
@@ -11,6 +12,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem('pv_token');
     if (!token) return setLoading(false);
+
     api.get('/auth/me')
       .then(({ data }) => setUser(data.user))
       .catch(() => localStorage.removeItem('pv_token'))

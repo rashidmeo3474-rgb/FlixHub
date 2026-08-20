@@ -8,13 +8,13 @@ const EMPTY = { name: '', quality: '4K UHD', monthlyPrice: '', compareAt: '', ac
 // Available services for easy selection
 const PREDEFINED_SERVICES = [
   { name: 'Netflix', accent: '#e50914', logo: '/logos/netflix.jpg' },
-  { name: 'Prime Video', accent: '#00a8e1', logo: '/logos/prime-video.png' },
+  { name: 'Prime Video', accent: '#00a8e1', logo: '/logos/prime-video-card.jpeg' },
   { name: 'HBO Max', accent: '#9b30ff', logo: '/logos/hbo-max-shop.png' },
-  { name: 'Disney+', accent: '#4b6cf7', logo: '/logos/disney.png' },
-  { name: 'Apple TV+', accent: '#d8d8d8', logo: '/logos/apple-tv.png' },
-  { name: 'Netflix + Prime Video', accent: '#ff6b00', logo: '/logos/netflix-prime-shop.png', category: 'bundle' },
-  { name: 'Netflix + HBO Max', accent: '#c026d3', logo: '/logos/netflix-hbo.png', category: 'bundle' },
-  { name: 'All Streaming Bundle', accent: '#6366f1', logo: '/logos/all-bundle.png', category: 'bundle' },
+  { name: 'Disney+', accent: '#4b6cf7', logo: '/logos/disney-simple.svg' },
+  { name: 'Apple TV+', accent: '#d8d8d8', logo: '/logos/apple.png' },
+  { name: 'Netflix + Prime Video', accent: '#ff6b00', logo: '/logos/netflix-prime-home.png', category: 'bundle' },
+  { name: 'Netflix + HBO Max', accent: '#c026d3', logo: '/logos/hbo-max-shop.png', category: 'bundle' },
+  { name: 'All Streaming Bundle', accent: '#6366f1', logo: '/logos/netflix-prime-shop.png', category: 'bundle' },
 ];
 
 export default function ProductsManager() {

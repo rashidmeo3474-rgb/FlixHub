@@ -16,7 +16,7 @@ export default function Register() {
     setBusy(true); setError(null);
     try {
       await register(form);
-      navigate('/orders', { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {

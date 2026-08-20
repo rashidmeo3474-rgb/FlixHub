@@ -1,19 +1,36 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import api from '../api/client.js';
 
-/** Small fetch helper: { data, loading, error, reload } */
+/** Enhanced fetch helper: { data, loading, error, reload } with optimized performance */
 export default function useApi(path, { deps = [], skip = false } = {}) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(!skip);
   const [error, setError] = useState(null);
+  const abortControllerRef = useRef(null);
 
   const load = useCallback(async () => {
     if (skip) return;
-    setLoading(true); setError(null);
+
+    // Cancel previous request if still pending
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new abort controller for this request
+    abortControllerRef.current = new AbortController();
+
+    setLoading(true);
+    setError(null);
+    
     try {
-      const res = await api.get(path);
+      const res = await api.get(path, {
+        signal: abortControllerRef.current.signal,
+        timeout: 8000 // 8 second timeout to prevent long waits
+      });
       setData(res.data);
     } catch (err) {
+      // Don't set error state if request was aborted
+      if (err.name === 'AbortError') return;
       // If products API fails, provide mock data
       if (path === '/products' && err.response?.status !== 200) {
         setData({
@@ -190,6 +207,15 @@ export default function useApi(path, { deps = [], skip = false } = {}) {
   }, [path, skip]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Cleanup function to cancel pending requests
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   return { data, loading, error, reload: load };
 }

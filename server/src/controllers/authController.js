@@ -3,45 +3,68 @@ import { asyncHandler } from '../middleware/error.js';
 import { signToken, publicUser } from '../utils/token.js';
 
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, password, phone } = req.body;
-  const normalizedEmail = String(email || '').toLowerCase().trim();
-  if (!normalizedEmail || !password) return res.status(422).json({ message: 'Email and password are required' });
-  if (await User.exists({ email: normalizedEmail }))
-    return res.status(409).json({ message: 'This email is already registered' });
+    const { name, email, password, phone } = req.body;
+    const normalizedEmail = String(email || '').toLowerCase().trim();
+    if (!normalizedEmail || !password) return res.status(422).json({ message: 'Email and password are required' });
+    if (await User.exists({ email: normalizedEmail }))
+        return res.status(409).json({ message: 'This email is already registered' });
 
-  const user = await User.create({ name, email: normalizedEmail, password, phone, role: 'user' });
-  res.status(201).json({ token: signToken(user), user: publicUser(user) });
+    const user = await User.create({
+        name: String(name || '').trim() || normalizedEmail.split('@')[0],
+        email: normalizedEmail,
+        password,
+        phone: String(phone || '').trim(),
+        role: 'user',
+    });
+
+    const token = signToken(user._id);
+    res.status(201).json({ token, user: publicUser(user) });
 });
 
 export const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email: String(email || '').toLowerCase() }).select('+password');
-  if (!user || !(await user.matchPassword(password || '')))
-    return res.status(401).json({ message: 'Wrong email or password' });
+    const { email, password } = req.body;
+    const normalizedEmail = String(email || '').toLowerCase().trim();
+    if (!normalizedEmail || !password) return res.status(422).json({ message: 'Email and password are required' });
 
-  res.json({ token: signToken(user), user: publicUser(user) });
+    const user = await User.findOne({ email: normalizedEmail }).select('+password');
+    if (!user || !(await user.matchPassword(password)))
+        return res.status(401).json({ message: 'Invalid email or password' });
+
+    const token = signToken(user._id);
+    res.json({ token, user: publicUser(user) });
 });
 
 export const adminLogin = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email: String(email || '').toLowerCase() }).select('+password');
-  if (!user || !(await user.matchPassword(password || '')))
-    return res.status(401).json({ message: 'Wrong email or password' });
-  if (user.role !== 'admin')
-    return res.status(403).json({ message: 'This account has no admin access' });
+    const { email, password } = req.body;
+    const normalizedEmail = String(email || '').toLowerCase().trim();
+    if (!normalizedEmail || !password) return res.status(422).json({ message: 'Email and password are required' });
 
-  res.json({ token: signToken(user), user: publicUser(user) });
+    const user = await User.findOne({ email: normalizedEmail, role: 'admin' }).select('+password');
+    if (!user || !(await user.matchPassword(password)))
+        return res.status(401).json({ message: 'Invalid admin credentials' });
+
+    const token = signToken(user._id);
+    res.json({ token, user: publicUser(user) });
 });
 
-export const me = asyncHandler(async (req, res) => res.json({ user: publicUser(req.user) }));
+export const me = asyncHandler(async (req, res) => {
+    res.json({ user: publicUser(req.user) });
+});
 
 export const updateProfile = asyncHandler(async (req, res) => {
-  const { name, phone, language } = req.body;
-  Object.assign(req.user, {
-    name: name ?? req.user.name,
-    phone: phone ?? req.user.phone,
-    language: language ?? req.user.language
-  });
-  await req.user.save();
-  res.json({ user: publicUser(req.user) });
+    const { name, phone } = req.body;
+    const userId = req.user._id;
+
+    const updateData = {};
+    if (name !== undefined) updateData.name = String(name || '').trim();
+    if (phone !== undefined) updateData.phone = String(phone || '').trim();
+
+    const user = await User.findByIdAndUpdate(userId, updateData, { 
+        new: true, 
+        runValidators: true 
+    });
+    
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    res.json({ user: publicUser(user) });
 });
