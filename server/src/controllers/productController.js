@@ -132,6 +132,24 @@ export const listProducts = asyncHandler(async (req, res) => {
   if (req.query.category) filter.category = req.query.category;
   if (req.query.quality)  filter.quality  = new RegExp(req.query.quality, 'i');
 
+  // Check database connection first
+  const mongoose = await import('mongoose');
+  if (mongoose.default.connection.readyState !== 1) {
+    console.warn('Database not connected - returning fallback products');
+    const fallbackAll = buildFallback();
+    const hasFilter = req.query.category || req.query.quality;
+    
+    if (hasFilter) {
+      return res.json({ products: fallbackAll.filter(p => {
+        if (req.query.category && p.category !== req.query.category) return false;
+        if (req.query.quality  && !new RegExp(req.query.quality, 'i').test(p.quality)) return false;
+        return true;
+      })});
+    }
+    
+    return res.json({ products: fallbackAll });
+  }
+
   try {
     const dbProducts = await Product.find(filter).sort({ createdAt: 1 });
     const fallbackAll = buildFallback();
@@ -169,6 +187,16 @@ export const listProducts = asyncHandler(async (req, res) => {
 
 export const getProduct = asyncHandler(async (req, res) => {
   const slug = req.params.slug;
+  
+  // Check database connection first
+  const mongoose = await import('mongoose');
+  if (mongoose.default.connection.readyState !== 1) {
+    console.warn('Database not connected - returning fallback product');
+    const fallback = buildFallback().find((p) => p.slug === slug);
+    if (!fallback) return res.status(404).json({ message: 'Product not found' });
+    return res.json({ product: fallback });
+  }
+
   try {
     const product = await Product.findOne({ slug, active: true });
     if (product) {
