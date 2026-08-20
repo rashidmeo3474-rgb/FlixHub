@@ -17,9 +17,23 @@ api.interceptors.response.use(
   (error) => {
     const message = error.response?.data?.message || 'Something went wrong. Please try again.';
     
+    // Handle authentication errors specifically
+    if (error.response?.status === 401) {
+      localStorage.removeItem('pv_token');
+      window.location.href = '/login';
+      return Promise.reject(Object.assign(error, { message: 'Session expired. Please login again.' }));
+    }
+    
     // Handle timeout and connection issues with immediate mock data fallback
     if (error.code === 'ECONNABORTED' || error.code === 'ECONNREFUSED' || error.response?.status >= 500) {
       const path = error.config?.url || '';
+      
+      // For authentication endpoints, show clear connection error
+      if (path.includes('/auth/')) {
+        return Promise.reject(Object.assign(error, { 
+          message: 'Cannot connect to server. Please ensure the backend is running on port 5000.' 
+        }));
+      }
       
       // Immediate mock response for products
       if (path.includes('/products')) {

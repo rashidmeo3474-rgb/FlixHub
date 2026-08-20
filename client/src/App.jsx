@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import StoreLayout from './components/StoreLayout.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import ConnectionStatus from './components/ConnectionStatus.jsx';
 
 /* store pages */
 import Home from './pages/Home.jsx';
@@ -35,42 +36,45 @@ import MySubscriptions from './pages/MySubscriptions.jsx';
 
 export default function App() {
   return (
-    <Routes>
-      {/* ── User portal ── */}
-      <Route element={<StoreLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/shop" element={<Shop />} />
-        <Route path="/product/:slug" element={<ProductDetail />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/payment/:orderId" element={<Payment />} />
-        <Route path="/success/:reference" element={<Success />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} />
-        <Route path="/orders" element={<ProtectedRoute role="user"><Orders /></ProtectedRoute>} />
-        <Route path="/subscriptions" element={<ProtectedRoute role="user"><MySubscriptions /></ProtectedRoute>} />
-      </Route>
+    <>
+      <ConnectionStatus />
+      <Routes>
+        {/* ── User portal ── */}
+        <Route element={<StoreLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/product/:slug" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/payment/:orderId" element={<Payment />} />
+          <Route path="/success/:reference" element={<Success />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} />
+          <Route path="/orders" element={<ProtectedRoute role="user"><Orders /></ProtectedRoute>} />
+          <Route path="/subscriptions" element={<ProtectedRoute role="user"><MySubscriptions /></ProtectedRoute>} />
+        </Route>
 
-      {/* ── Admin portal ── */}
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin" element={<ProtectedRoute role="admin" redirect="/admin/login"><AdminLayout /></ProtectedRoute>}>
-        <Route index element={<Dashboard />} />
-        <Route path="orders" element={<OrdersManager />} />
-        <Route path="products" element={<ProductsManager />} />
-        <Route path="stock" element={<StockManager />} />
-        <Route path="users" element={<UsersManager />} />
-        <Route path="payment-proofs" element={<PaymentProofs />} />
-        <Route path="settings" element={<PaymentSettings />} />
-        <Route path="activity"       element={<ActivityLogPage />} />
-        <Route path="subscriptions"  element={<SubscriptionsManager />} />
-        <Route path="accounts"       element={<AccountScreenManager />} />
-        <Route path="support"        element={<SupportInbox />} />
-        <Route path="inventory"      element={<SubscriptionInventory />} />
-      </Route>
+        {/* ── Admin portal ── */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<ProtectedRoute role="admin" redirect="/admin/login"><AdminLayout /></ProtectedRoute>}>
+          <Route index element={<Dashboard />} />
+          <Route path="orders" element={<OrdersManager />} />
+          <Route path="products" element={<ProductsManager />} />
+          <Route path="stock" element={<StockManager />} />
+          <Route path="users" element={<UsersManager />} />
+          <Route path="payment-proofs" element={<PaymentProofs />} />
+          <Route path="settings" element={<PaymentSettings />} />
+          <Route path="activity"       element={<ActivityLogPage />} />
+          <Route path="subscriptions"  element={<SubscriptionsManager />} />
+          <Route path="accounts"       element={<AccountScreenManager />} />
+          <Route path="support"        element={<SupportInbox />} />
+          <Route path="inventory"      element={<SubscriptionInventory />} />
+        </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }

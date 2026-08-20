@@ -1,19 +1,36 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { money } from '../utils/format.js';
+import { getImageSrc } from '../utils/imageUtils.js';
 
 const LOGOS = {
   netflix: '/logos/netflix.jpg',
   'netflix-prime': '/logos/netflix-prime-home.png',
   'prime-video': '/logos/prime-video-card.jpeg',
   'apple-tv-1080p': '/logos/apple.png',
-  'disney': '/logos/disney.png',
+  'disney': '/logos/disney-simple.svg',
   'hbo-max': '/logos/hbo-max-new.png'
 };
 
 export default function ProductCard({ product, index = 0 }) {
-  // Use the logo from the product object first, then fallback to LOGOS mapping
+  const [imageSrc, setImageSrc] = useState('/logos/netflix.jpg');
+  const [imageError, setImageError] = useState(false);
+
+  // Determine the correct image source
   const logoSrc = product.logo || LOGOS[product.slug] || '/logos/netflix.jpg';
   const basePrice = product.monthlyPrice || product.prices?.[0]?.amount || 0;
+
+  useEffect(() => {
+    setImageSrc(getImageSrc(logoSrc));
+    setImageError(false);
+  }, [logoSrc]);
+
+  const handleImageError = () => {
+    if (!imageError) {
+      setImageError(true);
+      setImageSrc('/logos/netflix.jpg'); // Fallback to default
+    }
+  };
 
   return (
     <Link
@@ -49,7 +66,7 @@ export default function ProductCard({ product, index = 0 }) {
           justifyContent: 'center'
         }}>
           <img
-            src={logoSrc}
+            src={imageSrc}
             alt={product.name}
             style={{
               maxWidth: '100%',
@@ -57,10 +74,8 @@ export default function ProductCard({ product, index = 0 }) {
               objectFit: 'contain',
               borderRadius: 8
             }}
-            onError={e => {
-              console.log('Image failed to load:', e.target.src);
-              e.target.src = '/logos/netflix.jpg';
-            }}
+            onError={handleImageError}
+            loading="lazy"
           />
         </div>
 
